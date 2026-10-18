@@ -8,14 +8,15 @@ All math and physics engines load instantly, full-screen, and require zero setup
 
 ## 🪐 Module 1: Vector Geometry & Celestial Kinematics
 
-### 📐 dot-cross-product-interactive.html
+### 📐 dot_cross_product_interactive.html
 A mathematically precise visualization sandbox designed to explore vector interactions in both 2D and 3D space. Students can manipulate, rotate, and animate two independent vectors, capital $\vec{A}$ and capital $\vec{B}$, to observe how their products shift dynamically.
 
 * **2D Vector Projections:** See exactly how vector $\vec{A}$ projects onto vector $\vec{B}$ to determine the scalar Dot Product ($\vec{A} \cdot \vec{B} = ||\vec{A}|| ||\vec{B}|| \cos\theta$). The tool visually maps out when the projection is positive, negative, or zero (orthogonal).
 * **3D Cross Product Space:** Rotate the canvas into 3D to see the orthogonal Cross Product vector ($\vec{C} = \vec{A} \times \vec{B}$) move dynamically. The engine tracks the changing area of the spanned parallelogram ($||\vec{A} \times \vec{B}|| = ||\vec{A}|| ||\vec{B}|| \sin\theta$) and enforces the Right-Hand Rule.
 * **Astrophysics Application:** This exact geometry forms the framework for computing orbital angular momentum ($\vec{L} = \vec{r} \times \vec{p}$) and tracking velocity component projections along line-of-sight vectors.
 
-👉 [**Launch Interactive Vector Simulator (Full Screen)**](https://arsalahmedkhan.github.io/ioaa-astrophysics-simulations.html)
+👉 [**Launch Interactive Vector Simulator (Full Screen)**](https://YOUR_GITHUB_USERNAME.github.io/ioaa-astrophysics-simulations/dot_cross_product_interactive.html)
+
 ---
 
 ## 💡 Student Quick Start Guide
