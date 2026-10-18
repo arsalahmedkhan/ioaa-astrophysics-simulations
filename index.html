@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IOAA Astrophysics Simulations</title>
+<link rel="preconnect" href="https://googleapis.com">
+<link rel="preconnect" href="https://gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://googleapis.com/css2?family=Inter:wght@400;600;800&display=swap">
+<style>
+:root {
+    color-scheme: dark;
+    --bg: #080d1a;
+    --panel: #101a2b;
+    --edge: rgba(167,193,229,.12);
+    --soft: #9eb0c8;
+    --text: #edf5ff;
+    --accent: #54d4df;
+}
+* { box-sizing: border-box; }
+body {
+    margin: 0;
+    padding: 40px 20px;
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    justify-content: center;
+}
+.container { max-width: 800px; width: 100%; }
+h1 { font-size: 32px; font-weight: 800; margin-bottom: 5px; }
+.subtitle { color: var(--soft); margin-bottom: 40px; font-size: 16px; }
+.section-title { font-size: 14px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 15px; }
+.grid { display: flex; flex-direction: column; gap: 15px; }
+.card {
+    background: var(--panel);
+    border: 1px solid var(--edge);
+    padding: 20px;
+    border-radius: 12px;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s, border-color 0.2s;
+}
+.card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(84, 212, 223, 0.4);
+}
+.card h3 { margin: 0 0 8px 0; font-size: 18px; color: #fff; }
+.card p { margin: 0; font-size: 14px; color: var(--soft); line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🔭 IOAA Astrophysics Simulations</h1>
+    <p class="subtitle">Interactive web-based visualizers for Olympiad training.</p>
+    
+    <div class="section-title">Module 1: Celestial Mechanics</div>
+    <div class="grid">
+        <!-- SIMULATION 1 -->
+        <a href="dot-cross-product-interactive.html" class="card">
+            <h3>📐 Dot & Cross Product Interactive Lab</h3>
+            <p>Visualize position and velocity vectors dynamically across an elliptical trajectory to evaluate orbital angular momentum math.</p>
+        </a>
+
+        <!-- SIMULATION 2 (Placeholder example for your next lab) -->
+        <a href="blackbody-radiation.html" class="card">
+            <h3>🌟 Blackbody Radiation Curve Simulator</h3>
+            <p>Adjust stellar temperatures to observe peak wavelength shifts and experiment with Wien's Displacement Law.</p>
+        </a>
+    </div>
+</div>
+
+</body>
+</html>
