@@ -15,7 +15,7 @@ A mathematically precise visualization sandbox designed to explore vector intera
 * **3D Cross Product Space:** Rotate the canvas into 3D to see the orthogonal Cross Product vector ($\vec{C} = \vec{A} \times \vec{B}$) move dynamically. The engine tracks the changing area of the spanned parallelogram ($||\vec{A} \times \vec{B}|| = ||\vec{A}|| ||\vec{B}|| \sin\theta$) and enforces the Right-Hand Rule.
 * **Astrophysics Application:** This exact geometry forms the framework for computing orbital angular momentum ($\vec{L} = \vec{r} \times \vec{p}$) and tracking velocity component projections along line-of-sight vectors.
 
-👉 [**Launch Interactive Vector Simulator (Full Screen)**](https://arsalahmedkhan.github.io/ioaa-astrophysics-simulations/dot-cross-product-interactive.html)
+👉 [**Launch Interactive Vector Simulator (Full Screen)**](https://arsalahmedkhan.github.io/ioaa-astrophysics-simulations.html)
 ---
 
 ## 💡 Student Quick Start Guide
