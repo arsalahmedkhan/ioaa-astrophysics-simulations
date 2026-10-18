@@ -1,0 +1,912 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Orbit Vector Lab</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="theme-color" content="#070d1b">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap">
+<style>
+:root{color-scheme:dark;--bg:#080d1a;--panel:#101a2b;--panel2:#0d1727;--edge:rgba(167,193,229,.12);--soft:#9eb0c8;--muted:#6f849f;--text:#edf5ff;--a:#ffb15c;--b:#54d4df;--c:#bc95ff;--dot:#ffdd91;--radius:22px}
+*{box-sizing:border-box}html{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;background:var(--bg);scroll-behavior:smooth}body{margin:0;min-height:100vh;color:var(--text);background:radial-gradient(ellipse at 74% 0%,rgba(46,68,121,.23),transparent 34%),radial-gradient(ellipse at 0% 80%,rgba(16,123,141,.10),transparent 40%),var(--bg)}button,input{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible{outline:2px solid #92c9ff;outline-offset:3px} .app{max-width:1530px;margin:auto;padding:27px clamp(16px,3vw,44px) 40px}.topline{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-bottom:23px;border-bottom:1px solid var(--edge)}.brand{display:flex;align-items:center;gap:12px}.brandmark{width:37px;height:37px;display:grid;place-items:center;border:1px solid rgba(103,227,237,.4);border-radius:13px;color:#8ae3ec;font-size:24px;box-shadow:inset 0 0 15px rgba(84,212,223,.08)}.brand strong{font-size:15px;letter-spacing:.24em;font-weight:850}.brand sub{display:block;font-size:9px;letter-spacing:.19em;color:#8da4c0;margin-top:2px}.session{font-size:10px;letter-spacing:.19em;font-weight:800;color:#9bb1d2;border:1px solid var(--edge);border-radius:99px;padding:9px 12px}.hero{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin:30px 0 23px}.eyebrow{color:#66cad4;letter-spacing:.25em;text-transform:uppercase;font-size:10px;font-weight:800;margin:0 0 11px}.hero h1{font-size:clamp(28px,3.5vw,51px);line-height:1.1;letter-spacing:-.058em;font-weight:780;margin:0}.hero h1 em{font-style:normal;background:linear-gradient(110deg,#f8faff 0%,#adc8ea 65%,#68bcd2);-webkit-background-clip:text;background-clip:text;color:transparent}.subtitle{font-size:13px;color:var(--soft);margin:11px 0 0;line-height:1.6}.tag{white-space:nowrap;border:1px solid rgba(90,219,201,.2);background:rgba(69,187,177,.07);color:#77d5c4;padding:9px 12px;border-radius:99px;font-size:10px;letter-spacing:.07em;font-weight:750}.tag .pulse{display:inline-block;height:6px;width:6px;border-radius:50%;background:#60e0c6;box-shadow:0 0 12px #60e0c6;margin-right:6px}.layout{display:grid;grid-template-columns:315px minmax(0,1fr);align-items:start;gap:18px}.sidebar{display:flex;flex-direction:column;gap:15px}.surface{background:linear-gradient(148deg,rgba(22,36,57,.88),rgba(12,21,37,.94));border:1px solid var(--edge);border-radius:var(--radius);box-shadow:0 14px 65px rgba(0,0,0,.12)}.sidepad{padding:19px}.sectiontop{display:flex;align-items:center;justify-content:space-between;margin-bottom:17px}.sectitle{font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:#b4c7df;font-weight:800;margin:0}.hint{font-size:10px;color:var(--muted)}.vector-head{display:flex;align-items:center;gap:10px;margin-bottom:15px}.vector-letter{width:32px;height:32px;display:grid;place-items:center;border-radius:10px;font-weight:850;font-size:17px;background:rgba(255,177,92,.10);border:1px solid rgba(255,177,92,.21);color:var(--a)}.vector-b .vector-letter{color:var(--b);background:rgba(84,212,223,.08);border-color:rgba(84,212,223,.18)}.vector-desc strong{display:block;font-size:12px}.vector-desc small{display:block;font-size:11px;color:var(--muted);margin-top:2px}.coord{display:grid;grid-template-columns:15px 1fr 48px;align-items:center;gap:12px;margin:12px 0}.axislabel{font-size:11px;color:#91a9c5;font-weight:850}.coord input[type=range]{width:100%;appearance:none;-webkit-appearance:none;height:4px;border-radius:20px;background:#34455e;accent-color:var(--a);cursor:pointer}.vector-b .coord input[type=range]{accent-color:var(--b)}.coord input[type=range]::-webkit-slider-thumb{appearance:none;-webkit-appearance:none;width:12px;height:12px;background:var(--a);border:2px solid #0e1b2b;border-radius:50%;box-shadow:0 0 0 1px rgba(255,177,92,.4)}.vector-b .coord input[type=range]::-webkit-slider-thumb{background:var(--b);box-shadow:0 0 0 1px rgba(84,212,223,.4)}.coord input[type=number]{width:48px;border:1px solid rgba(165,186,215,.16);background:#0a1526;border-radius:8px;color:var(--text);padding:5px 1px;text-align:center;font-size:11px;font-weight:750;appearance:textfield;-moz-appearance:textfield}.coord input[type=number]::-webkit-inner-spin-button,.coord input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}.vsummary{font-size:11px;color:#d7e2f4;margin-top:15px;border-top:1px solid var(--edge);padding-top:12px}.vsummary b{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-weight:700}.divider{height:1px;background:var(--edge);margin:18px 0}.presets{display:grid;grid-template-columns:1fr 1fr;gap:8px}.preset{border:1px solid rgba(161,189,221,.17);color:#aabbd1;background:rgba(135,162,195,.045);border-radius:10px;padding:9px 8px;font-size:10px;font-weight:750;transition:.2s}.preset:hover,.preset:focus-visible{color:white;border-color:rgba(125,215,236,.5);background:rgba(91,161,203,.12)}.maincol{display:flex;flex-direction:column;gap:15px;min-width:0}.visual{overflow:hidden;position:relative}.visualheader{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:15px 18px;border-bottom:1px solid var(--edge);flex-wrap:wrap}.mode{display:inline-flex;border-radius:13px;background:#0a1424;border:1px solid var(--edge);padding:4px;gap:3px}.mode button{border:0;background:transparent;color:#91a8c5;border-radius:9px;padding:10px 15px;font-size:12px;font-weight:780;transition:.2s}.mode button.active{background:#263852;color:#f5faff;box-shadow:0 2px 9px rgba(0,0,0,.14)}.headtools{display:flex;align-items:center;gap:9px}.smallbtn{border:1px solid var(--edge);border-radius:10px;background:#101f32;color:#abc0d8;font-size:11px;font-weight:700;padding:10px 11px}.smallbtn:hover{background:#1a304b;color:white}.smallbtn.on{color:#82e5d2;border-color:rgba(109,216,194,.35)}.canvas-shell{position:relative;height:clamp(380px,49vw,540px);min-height:390px;background:radial-gradient(ellipse at 52% 43%,rgba(20,46,76,.35),transparent 63%),radial-gradient(ellipse at 85% 90%,rgba(40,25,85,.16),transparent 60%),#091323;overflow:hidden;touch-action:none;cursor:grab}.canvas-shell.grabbing{cursor:grabbing}.canvas-shell canvas{width:100%;height:100%;display:block}.canvas-overlays{position:absolute;inset:0;pointer-events:none}.vlegend{position:absolute;left:18px;bottom:18px;display:flex;flex-wrap:wrap;gap:11px;background:rgba(7,16,29,.71);backdrop-filter:blur(9px);border:1px solid rgba(170,196,233,.1);padding:11px 12px;border-radius:12px;font-size:10px;color:#a9bdd7}.vlegend span{display:flex;gap:6px;align-items:center}.vlegend i{width:8px;height:8px;border-radius:50%;display:block}.stagehint{position:absolute;top:20px;left:19px;color:#8ca7c7;font-size:10px;letter-spacing:.07em}.theta-pill{position:absolute;right:18px;top:19px;background:rgba(8,19,36,.75);border:1px solid rgba(172,192,221,.15);backdrop-filter:blur(8px);padding:11px 13px;border-radius:12px;color:#cdd9ec;font-size:11px}.theta-pill b{font-size:17px;font-weight:750;display:block;color:#f3f8fe;padding-top:3px}.scene-footer{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-top:1px solid var(--edge);gap:12px;flex-wrap:wrap}.scene-footer p{margin:0;font-size:10px;color:#7f99b7;line-height:1.6}.actions{display:flex;gap:7px}.action-primary{background:linear-gradient(135deg,#bfe9f4,#8ad7e6);border:0;border-radius:10px;color:#091725;font-weight:850;font-size:11px;padding:10px 14px;box-shadow:0 7px 25px rgba(77,212,223,.12);transition:transform .15s}.action-primary:hover{transform:translateY(-1px)}.results{display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);gap:14px}.result-card{padding:20px 21px;min-height:222px}.result-card .intro{display:flex;justify-content:space-between;align-items:center;gap:8px}.eyelabel{font-size:10px;text-transform:uppercase;letter-spacing:.16em;color:#8198b4;font-weight:800}.badge{border:1px solid rgba(107,213,191,.17);background:rgba(100,210,193,.05);border-radius:99px;padding:6px 8px;color:#91c5bf;font-size:9px;font-weight:800;white-space:nowrap}.result-number{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:clamp(30px,3.6vw,49px);letter-spacing:-.06em;margin-top:24px;line-height:1.1;color:var(--dot);font-weight:780;overflow-wrap:anywhere}.result-number.cross{color:var(--c);font-size:clamp(25px,2.7vw,38px)}.result-caption{font-size:11px;color:#899fb9;margin-top:9px;line-height:1.55}.equation{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:13px;line-height:1.9;letter-spacing:-.018em;color:#deecff;margin-top:19px;overflow-wrap:anywhere}.equation.secondary{font-size:12px;color:#93a9c6;margin-top:13px;line-height:1.7}.concept{display:flex;gap:10px;align-items:flex-start;border-radius:12px;background:rgba(65,108,150,.075);border:1px solid rgba(139,187,214,.08);padding:13px 13px;margin-top:17px;color:#a8bdd8;font-size:11px;line-height:1.7}.concept b{color:#e8f1ff}.concept-icon{font-size:15px;color:#86cce1}.lesson{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;padding:15px 19px}.lesson p{font-size:11px;color:#9ab1cc;margin:6px 0 0;line-height:1.65}.lesson .sectitle{font-size:10px}.lesson strong{color:#eaf2ff}.question{font-size:12px;color:#bfdaef;margin-top:12px}.predict{font-weight:700;color:#e1d39e;padding:6px 0}.foot{display:flex;justify-content:space-between;gap:12px;margin:21px 2px 0;color:#587089;font-size:10px;letter-spacing:.04em;flex-wrap:wrap}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(max-width:1050px){.layout{grid-template-columns:280px minmax(0,1fr)}.results{grid-template-columns:1fr}.result-card{min-height:unset}.canvas-shell{height:465px}.result-number{margin-top:14px}}@media(max-width:720px){.app{padding-top:16px}.layout{grid-template-columns:1fr}.sidebar{display:grid;grid-template-columns:1fr 1fr}.sidebar .presets-card{grid-column:1/-1}.hero{display:block}.tag{display:inline-block;margin-top:17px}.canvas-shell{height:430px;min-height:360px}.visualheader{padding:12px}.results{grid-template-columns:1fr}.foot{line-height:1.7}}@media(max-width:470px){.sidebar{display:flex}.mode{width:100%}.mode button{flex:1}.headtools{width:100%;justify-content:space-between}.canvas-shell{height:370px;min-height:370px}.vlegend{left:10px;bottom:10px;gap:8px;padding:8px}.theta-pill{right:10px;top:10px}.stagehint{top:15px;left:10px}.result-number{font-size:32px}.lesson{display:block}}
+
+/* Angle studio and dimensionality switch */
+.angle-card{background:linear-gradient(150deg,rgba(35,45,73,.90),rgba(17,26,44,.97));border-color:rgba(182,155,245,.17)}
+.angle-meter{display:flex;justify-content:space-between;align-items:center;margin:2px 0 12px}.angle-overline{font-size:9px;font-weight:850;letter-spacing:.17em;color:#a4add3}.angle-readout{display:flex;align-items:baseline;gap:9px;margin-top:5px}.angle-readout>span{font-size:34px;letter-spacing:-.055em;font-weight:800;font-variant-numeric:tabular-nums;color:#e4d1ff}.angle-readout small{font-size:8px;font-weight:850;letter-spacing:.12em;color:#897fa9}.angle-glyph{color:#bfa1fa;font-family:Georgia,serif;font-size:54px;line-height:1;opacity:.86}
+.angle-slider{width:100%;appearance:none;-webkit-appearance:none;height:7px;border-radius:100px;background:linear-gradient(90deg,rgba(93,205,226,.72),rgba(184,136,245,.88));cursor:pointer}.angle-slider::-webkit-slider-thumb{appearance:none;-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:#f4ecff;border:4px solid #ae84f3;box-shadow:0 0 0 4px rgba(164,119,249,.16),0 0 18px rgba(178,127,251,.25)}.angle-slider::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:#f4ecff;border:4px solid #ae84f3;box-shadow:0 0 0 4px rgba(164,119,249,.16)}.angle-slider:disabled{opacity:.4;cursor:not-allowed}
+.angle-range-label{display:flex;justify-content:space-between;color:#8197b2;font-family:ui-monospace,monospace;font-size:10px;margin:9px 1px 12px}.angle-quick{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}.angle-quick button{border:1px solid rgba(171,150,218,.18);border-radius:8px;background:rgba(137,115,179,.07);color:#c7b7df;font-weight:800;font-size:10px;padding:7px 3px}.angle-quick button:hover{border-color:#b390f0;color:#fff;background:rgba(168,132,240,.15)}.angle-quick button:disabled{cursor:not-allowed;opacity:.38}.angle-help{margin:12px 0 0;color:#899bb6;font-size:10px;line-height:1.6}
+.view-toggle{display:inline-flex;border-radius:11px;background:#081220;border:1px solid rgba(167,193,229,.16);padding:3px;gap:2px}.view-toggle button{border:0;background:transparent;border-radius:8px;padding:8px 10px;font-weight:850;font-size:11px;color:#8ba0bb}.view-toggle button.active{background:#355078;color:#fff}.view-toggle button:hover:not(.active){color:#e0ebfa}.zoom-btn{font-size:16px;font-weight:700;padding:7px 11px}.canvas-shell.is-2d{cursor:crosshair}.canvas-shell.is-2d.grabbing{cursor:grabbing}.dimension-note{position:absolute;left:19px;top:48px;color:#819fc0;letter-spacing:.025em;font-size:10px;max-width:54%}.dimension-note[hidden]{display:none}.coord input:disabled{opacity:.25;cursor:not-allowed}.coord.dimmed .axislabel{opacity:.35}
+@media(max-width:1150px){.headtools{flex-wrap:wrap}.view-toggle{order:0}}
+@media(max-width:720px){.sidebar .angle-card{grid-column:1/-1}.angle-quick{grid-template-columns:repeat(7,minmax(0,1fr))}}
+@media(max-width:470px){.angle-quick{grid-template-columns:repeat(4,minmax(0,1fr))}.canvas-shell{height:410px;min-height:410px}.dimension-note{max-width:65%;font-size:9px}.scene-footer .actions{flex-wrap:wrap}.mode button{padding:10px 8px;font-size:11px}}
+
+/* ---------- Safe-area gutters ---------- */
+.app{padding-block:27px 40px;padding-left:max(clamp(16px,3vw,44px),env(safe-area-inset-left,0px));padding-right:max(clamp(16px,3vw,44px),env(safe-area-inset-right,0px))}
+@media(max-width:720px){.app{padding-top:16px}}
+
+/* ---------- Readability: lift the smallest text to classroom sizes ---------- */
+.session,.tag{font-size:11px}.subtitle{font-size:15px}.hint{font-size:11.5px}.sectitle{font-size:12px}
+.vector-desc strong{font-size:13px}.vector-desc small{font-size:12px}.axislabel{font-size:12px}
+.coord{grid-template-columns:15px 1fr 58px}.coord input[type=number]{width:58px;font-size:13px;padding:6px 2px}
+.vsummary{font-size:13px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}.vsummary .vmag{color:var(--soft)}
+.preset{font-size:12px;padding:10px 8px}
+.angle-overline{font-size:10px}.angle-readout small{font-size:9.5px}.angle-range-label{font-size:11px}.angle-quick button{font-size:11.5px}.angle-help{font-size:12px}
+.mode button{font-size:13px}.smallbtn{font-size:12px}.action-primary{font-size:12px}
+.stagehint{font-size:11px}.dimension-note{font-size:11.5px}.scene-footer p{font-size:12px}
+.eyelabel{font-size:11px}.badge{font-size:10px}.result-caption{font-size:13px}.equation{font-size:14px}.equation.secondary{font-size:13px}.concept{font-size:13px}
+.lesson p{font-size:14px}.foot{font-size:11px}
+@media(max-width:470px){.mode button{font-size:12px}.dimension-note{font-size:10.5px}}
+
+/* ---------- Focus and keyboard ---------- */
+.canvas-shell:focus-visible{outline:2px solid #92c9ff;outline-offset:-3px}
+.preset[aria-pressed=true]{color:#fff;border-color:rgba(125,215,236,.6);background:rgba(91,161,203,.18)}
+
+/* ---------- Scene footer note ---------- */
+.fit-note{display:block;color:#c7b3ea;margin-top:2px}
+.fit-note[hidden]{display:none}
+
+/* ---------- Scene key: lives below the drawing so nothing covers the vectors ---------- */
+.scene-legend{display:flex;flex-wrap:wrap;align-items:center;gap:8px 18px;padding:12px 18px;border-top:1px solid var(--edge);font-size:12px;color:#a9bdd7}
+.scene-legend span{display:inline-flex;align-items:center;gap:8px}
+.scene-legend i{width:18px;height:3px;border-radius:2px;display:block}
+.scene-legend .theta{margin-left:auto;font-family:'JetBrains Mono',ui-monospace,monospace;color:#cdb8f5}
+.scene-legend .theta b{color:#f1e8ff;font-weight:700}
+.stagehint,.dimension-note{transition:opacity .8s ease}
+.canvas-shell.quiet .stagehint,.canvas-shell.quiet .dimension-note{opacity:0}
+.smallbtn[aria-pressed=true]{color:#82e5d2;border-color:rgba(109,216,194,.35)}
+
+/* ---------- Hover card on the scene ---------- */
+.tip{position:absolute;z-index:3;pointer-events:none;min-width:150px;max-width:260px;padding:10px 12px;border-radius:12px;background:rgba(8,17,32,.93);border:1px solid rgba(170,196,233,.18);box-shadow:0 10px 30px rgba(0,0,0,.35);font-size:12px;color:#b9cbe2;line-height:1.55}
+.tip[hidden]{display:none}
+.tip b{display:block;font-size:13px;margin-bottom:3px}
+.tip code{display:block;font-family:'JetBrains Mono',ui-monospace,monospace;color:#eef5ff;font-size:12.5px}
+
+/* ---------- Top bar ---------- */
+.topright{display:flex;align-items:center;gap:8px}
+.theme-btn{background:transparent;cursor:pointer;font:inherit;font-size:11px;letter-spacing:.12em;font-weight:800}
+.theme-btn:hover{color:#fff}
+@media(max-width:470px){.topright .session:not(.theme-btn){display:none}}
+
+/* ---------- Present mode: a big scene for the projector ---------- */
+.pv{display:none;font-family:'JetBrains Mono',ui-monospace,monospace;color:var(--text);font-weight:600}
+.presenting .pv{display:inline;white-space:pre-wrap}
+.presenting .topline,.presenting .hero,.presenting .checks-card,.presenting .lesson,.presenting .foot{display:none!important}
+.presenting .app{max-width:none;padding-block:12px}
+.presenting .layout{grid-template-columns:300px minmax(0,1fr)}
+.presenting .sidebar{position:sticky;top:12px;max-height:calc(100vh - 24px);overflow:auto}
+.presenting .canvas-shell{height:calc(100vh - 275px);min-height:400px}
+.presenting .scene-legend{font-size:14.5px}
+@media(max-width:720px){.presenting .layout{grid-template-columns:minmax(0,1fr)}.presenting .sidebar{position:static;max-height:none}}
+
+/* ---------- Light theme (for bright rooms and handouts) ---------- */
+:root[data-ui=light]{color-scheme:light;--bg:#eef2f8;--panel:#fff;--panel2:#f6f8fc;--edge:rgba(40,70,110,.14);--soft:#4c5f7a;--muted:#647792;--text:#14223a;--a:#d9730d;--b:#0b8f9c;--c:#7c4dde;--dot:#b7791f}
+[data-ui=light] body{background:radial-gradient(ellipse at 74% 0%,rgba(120,160,220,.20),transparent 36%),var(--bg)}
+[data-ui=light] .surface{background:linear-gradient(148deg,#ffffff,#f7f9fd);box-shadow:0 10px 40px rgba(30,50,90,.08)}
+[data-ui=light] .angle-card{background:linear-gradient(150deg,#f6f2ff,#ffffff);border-color:rgba(124,77,222,.18)}
+[data-ui=light] .context{background:linear-gradient(148deg,#e9fbf7,#ffffff);border-color:rgba(13,148,136,.25)}
+[data-ui=light] .brand sub,[data-ui=light] .stagehint,[data-ui=light] .dimension-note,[data-ui=light] .scene-footer p,[data-ui=light] .eyelabel{color:#5a6f8c}
+[data-ui=light] .brandmark{color:#0d8a96;border-color:rgba(13,138,150,.35)}
+[data-ui=light] .session,[data-ui=light] .axislabel,[data-ui=light] .result-caption,[data-ui=light] .equation.secondary,[data-ui=light] .angle-help{color:#4c5f7a}
+[data-ui=light] .theme-btn:hover{color:#14223a}
+[data-ui=light] .eyebrow,[data-ui=light] .concept-icon{color:#0d8a96}
+[data-ui=light] .hero h1 em{background:linear-gradient(110deg,#14223a,#2b5b8f 65%,#0d8a96);-webkit-background-clip:text;background-clip:text}
+[data-ui=light] .tag,[data-ui=light] .badge{color:#0f766e;background:rgba(13,148,136,.07);border-color:rgba(13,148,136,.25)}
+[data-ui=light] .tag .pulse{background:#14b8a6;box-shadow:0 0 8px #14b8a6}
+[data-ui=light] .sectitle{color:#33465f}
+[data-ui=light] .coord input[type=range]{background:#cfd8e6}
+[data-ui=light] .coord input[type=range]::-webkit-slider-thumb{border-color:#fff}
+[data-ui=light] .coord input[type=number]{background:#f3f6fb;color:var(--text);border-color:rgba(40,70,110,.2)}
+[data-ui=light] .vsummary{color:#22324a}
+[data-ui=light] .preset{color:#33465f;background:#f5f8fc;border-color:rgba(40,70,110,.16)}
+[data-ui=light] .preset:hover,[data-ui=light] .preset:focus-visible,[data-ui=light] .preset[aria-pressed=true]{color:#0b3d66;background:#e3f0fb;border-color:rgba(43,108,176,.45)}
+[data-ui=light] .mode,[data-ui=light] .view-toggle{background:#eef2f8;border-color:rgba(40,70,110,.16)}
+[data-ui=light] .mode button,[data-ui=light] .view-toggle button{color:#4c5f7a}
+[data-ui=light] .mode button.active{background:#fff;color:#14223a;box-shadow:0 2px 8px rgba(30,50,90,.12)}
+[data-ui=light] .view-toggle button.active{background:#2b5b8f;color:#fff}
+[data-ui=light] .smallbtn{background:#f5f8fc;color:#33465f}
+[data-ui=light] .smallbtn:hover{background:#e6eef8;color:#14223a}
+[data-ui=light] .smallbtn.on,[data-ui=light] .smallbtn[aria-pressed=true]{color:#0f766e;border-color:rgba(13,148,136,.4)}
+[data-ui=light] .canvas-shell{background:#f3f6fb}
+[data-ui=light] .scene-legend{color:#33465f}
+[data-ui=light] .scene-legend .theta{color:#6a3fd0}[data-ui=light] .scene-legend .theta b{color:#3b1f8f}
+[data-ui=light] .fit-note{color:#6a3fd0}
+[data-ui=light] .result-number{color:#9a6212}[data-ui=light] .result-number.cross{color:#6a3fd0}
+[data-ui=light] .result-extra{color:#33465f}
+[data-ui=light] .equation,[data-ui=light] .work,[data-ui=light] .det .hat,[data-ui=light] .check-body b,[data-ui=light] .concept b,[data-ui=light] .context b{color:#14223a}
+[data-ui=light] .concept,[data-ui=light] .check{background:#f2f6fb;border-color:rgba(40,70,110,.1);color:#33465f}
+[data-ui=light] .det{border-color:#647792}
+[data-ui=light] .work .sym{color:#647792}[data-ui=light] .work .res{color:#6a3fd0}
+[data-ui=light] .check-body span{color:#4c5f7a}
+[data-ui=light] .check-mark{color:#0f766e;background:rgba(13,148,136,.1);border-color:rgba(13,148,136,.3)}
+[data-ui=light] .lesson p,[data-ui=light] .missions p,[data-ui=light] .context p{color:#22324a!important}
+[data-ui=light] .missions li::marker{color:#0d8a96}[data-ui=light] .missions summary{color:#0f766e}
+[data-ui=light] .missions details p{color:#4c5f7a!important}
+[data-ui=light] .predict{color:#8a6a10}
+[data-ui=light] .foot{color:#647792}
+[data-ui=light] .angle-overline{color:#5a5f8c}[data-ui=light] .angle-readout>span{color:#5b2fc0}[data-ui=light] .angle-readout small{color:#7a6fa0}[data-ui=light] .angle-glyph{color:#7c4dde}
+[data-ui=light] .angle-range-label{color:#647792}
+[data-ui=light] .angle-quick button{color:#4b3a80;background:rgba(124,77,222,.06);border-color:rgba(124,77,222,.2)}
+[data-ui=light] .angle-quick button:hover{color:#2d1a66;background:rgba(124,77,222,.14)}
+[data-ui=light] .tip{background:rgba(255,255,255,.97);border-color:rgba(40,70,110,.18);color:#4c5f7a;box-shadow:0 10px 30px rgba(30,50,90,.15)}
+[data-ui=light] .tip code{color:#14223a}
+
+/* ---------- Monospace numbers ---------- */
+.result-number,.equation,.vsummary b,.work,.check-body b,.result-extra,.coord input[type=number],.angle-range-label,.det{font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,Consolas,monospace}
+
+/* ---------- Context banner (what the example means) ---------- */
+.context{padding:15px 19px;border-color:rgba(96,224,198,.22);background:linear-gradient(148deg,rgba(18,48,58,.75),rgba(12,21,37,.94))}
+.context[hidden]{display:none}
+.context-head{all:unset;box-sizing:border-box;width:100%;display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:pointer}
+.context-head:focus-visible{outline:2px solid #92c9ff;outline-offset:4px;border-radius:6px}
+.context-head .chev{display:inline-block;transition:transform .25s ease;color:#82e5d2;margin-left:6px}
+.ctx-body{display:grid;grid-template-rows:1fr;transition:grid-template-rows .45s ease}
+.ctx-body>p{overflow:hidden;min-height:0}
+.context.collapsed .ctx-body{grid-template-rows:0fr}
+.context.collapsed .chev{transform:rotate(-90deg)}
+@keyframes ctxIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.context p{margin:0;padding-top:8px;font-size:14px;line-height:1.65;color:#c4d6ea}
+.context b{color:#fff}
+
+/* ---------- Result extras ---------- */
+.result-extra{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:13px;color:#b9c9de;margin-top:12px;line-height:1.6;overflow-wrap:anywhere}
+.det-line{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.det{display:inline-grid;grid-template-columns:repeat(3,minmax(2.6em,auto));gap:2px 12px;padding:2px 10px;border-left:2px solid #9eb0c8;border-right:2px solid #9eb0c8;text-align:center;line-height:1.6}
+.det .hat{color:#edf5ff;font-weight:700}.det .ra{color:var(--a)}.det .rb{color:var(--b)}
+.work-wrap{overflow-x:auto;margin-top:12px}
+.work{border-collapse:collapse;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:13px;color:#deecff}
+.work td{padding:4px 14px 4px 0;white-space:nowrap;vertical-align:baseline}
+.work .sym{color:#93a9c6}.work .res{color:var(--c);font-weight:750}
+@media(max-width:520px){
+  .work tr{display:grid;grid-template-columns:minmax(0,1fr) auto;padding:6px 0;border-bottom:1px solid var(--edge)}
+  .work tr:last-child{border-bottom:0}.work td{padding:1px 0}.work td.sym{grid-column:1/-1}.work td.res{text-align:right;padding-left:10px}
+}
+
+/* ---------- Property checks ---------- */
+.checks-card{padding:20px 21px}
+.checks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
+@media(max-width:600px){.checks{grid-template-columns:minmax(0,1fr)}}
+.checks[hidden]{display:none}
+.check{display:flex;gap:10px;align-items:flex-start;border-radius:12px;background:rgba(65,108,150,.075);border:1px solid rgba(139,187,214,.08);padding:12px}
+.check-mark{width:22px;height:22px;flex:none;display:grid;place-items:center;border-radius:50%;font-size:12px;font-weight:900;background:rgba(96,224,198,.12);color:#7fe3cc;border:1px solid rgba(96,224,198,.3)}
+.check.no .check-mark{background:rgba(158,176,200,.08);color:var(--muted);border-color:var(--edge)}
+.check-body{min-width:0}
+.check-body b{display:block;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:13px;color:#e3eefc;font-weight:700;overflow-wrap:anywhere}
+.check-body span{display:block;font-size:12px;color:#93a9c6;margin-top:4px;line-height:1.55}
+
+/* ---------- Missions ---------- */
+.lesson-main{min-width:0;flex:1}
+.missions{margin:12px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:12px;color:#c9d9ee}
+.missions li::marker{color:#66cad4;font-weight:800}
+.missions p{margin:0!important;color:#c9d9ee!important}
+.missions details{margin-top:4px}
+.missions summary{cursor:pointer;color:#82e5d2;font-weight:750;font-size:12px;width:max-content}
+.missions details p{margin-top:6px!important;color:#9ab1cc!important;font-size:13px!important}
+</style>
+
+<style>body{margin:0}[hidden]{display:none!important}</style>
+</head>
+<body>
+<div class="app">
+  <header class="topline"><div class="brand"><div class="brandmark" aria-hidden="true">✧</div><div><strong>ORBIT</strong><sub>INTERACTIVE PHYSICS</sub></div></div><div class="topright"><button type="button" class="session theme-btn" id="theme-btn">☀ Light</button><div class="session">IOAA · MATH TOOLKIT / 01</div></div></header>
+  <section class="hero"><div><p class="eyebrow">EXPLORE • INTERACT • UNDERSTAND</p><h1>Vector <em>Product Lab.</em></h1><p class="subtitle">Move the vectors. Rotate the universe. Watch the mathematics come alive.</p></div><div class="tag"><span class="pulse"></span> LIVE 2D / 3D SIMULATION</div></section>
+  <div class="layout">
+    <aside class="sidebar">
+      <section class="surface sidepad vector-a"><div class="sectiontop"><h2 class="sectitle">01 / Vector A</h2><span class="hint">Drag or type</span></div><div class="vector-head"><div class="vector-letter">A</div><div class="vector-desc"><strong>First vector</strong><small>Amber arrow in the scene</small></div></div><div class="coords" id="controls-a"></div><div class="vsummary"><span>A = <b id="avec">(3, 1, 0)</b></span><span class="vmag">|A| = <b id="amag">3.16</b></span></div></section>
+      <section class="surface sidepad vector-b"><div class="sectiontop"><h2 class="sectitle">02 / Vector B</h2><span class="hint">Drag or type</span></div><div class="vector-head"><div class="vector-letter">B</div><div class="vector-desc"><strong>Second vector</strong><small>Cyan arrow in the scene</small></div></div><div class="coords" id="controls-b"></div><div class="vsummary"><span>B = <b id="bvec">(1, 3, 1)</b></span><span class="vmag">|B| = <b id="bmag">3.32</b></span></div></section>
+      <section class="surface sidepad angle-card" aria-label="Angle between vectors">
+        <div class="sectiontop"><h2 class="sectitle">03 / Angle studio</h2><span class="hint">Rotate B · Keep its length</span></div>
+        <div class="angle-meter"><div><span class="angle-overline">BETWEEN A &amp; B</span><div class="angle-readout"><span id="angle-display">—</span><small>DEGREES</small></div></div><div class="angle-glyph" aria-hidden="true">∠</div></div>
+        <label class="sr-only" for="angle-slider">Adjust the angle between vectors A and B in degrees</label>
+        <input id="angle-slider" class="angle-slider" type="range" min="0" max="180" step="1" value="0">
+        <div class="angle-range-label"><span>0°</span><span>90°</span><span>180°</span></div>
+        <div class="angle-quick" aria-label="Preset angle buttons"><button data-angle="0">0°</button><button data-angle="30">30°</button><button data-angle="45">45°</button><button data-angle="60">60°</button><button data-angle="90">90°</button><button data-angle="120">120°</button><button data-angle="180">180°</button></div>
+        <p class="angle-help" id="angle-help">Slide to rotate B around A while keeping |B| fixed.</p>
+      </section>
+      <section class="surface sidepad presets-card"><div class="sectiontop"><h2 class="sectitle">04 / Experiments</h2><span class="hint">Quick setups</span></div><div class="presets">
+        <button class="preset" data-preset="perpendicular">⊥ Perpendicular</button>
+        <button class="preset" data-preset="parallel">∥ Parallel</button>
+        <button class="preset" data-preset="opposite">↔ Opposite</button>
+        <button class="preset" data-preset="unit">î × ĵ = k̂</button>
+        <button class="preset" data-preset="orbit">◈ Orbit: h = r × v</button>
+        <button class="preset" data-preset="swap">⇄ Swap A and B</button>
+        <button class="preset" data-preset="random">⤨ Randomize</button>
+        <button class="preset" data-preset="reset">↺ Starting setup</button>
+      </div></section>
+    </aside>
+    <main class="maincol">
+      <section class="surface visual" aria-label="Interactive vector visualization"><div class="visualheader"><div class="mode" role="group" aria-label="Choose vector product"><button id="dot-mode" class="active" aria-pressed="true">A · B &nbsp; Dot product</button><button id="cross-mode" aria-pressed="false">A × B &nbsp; Cross product</button></div><div class="headtools"><div class="view-toggle" role="group" aria-label="Select coordinate view"><button id="view-3d" class="active" aria-pressed="true">3D</button><button id="view-2d" aria-pressed="false">2D</button></div><button id="predict-btn" class="smallbtn" aria-pressed="false" title="Hide answers and quiz the class">◉ Predict mode</button><button id="present-btn" class="smallbtn" aria-pressed="false" title="Large scene for a projector">⛶ Present</button><button id="values-btn" class="smallbtn" aria-pressed="false" title="Keep coordinate labels on screen instead of fading them">⌗ Values</button><button id="spin-btn" class="smallbtn" aria-pressed="false" title="Slowly rotate the three-dimensional view">↻ Auto orbit</button></div></div>
+        <div class="canvas-shell" id="stage" tabindex="0" aria-label="Vector scene. Drag or use the arrow keys to rotate, plus and minus to zoom."><canvas id="scene" role="img" aria-label="Coordinate system showing vector A, vector B and the selected product"></canvas><div class="canvas-overlays"><div class="tip" id="tip" hidden></div><div class="stagehint" id="stagehint">3D SPACE <span style="opacity:.5">/</span> X · Y · Z</div><div class="dimension-note" id="dimension-note" hidden>Drag the arrow tips to move vectors · XY plane</div></div></div>
+        <div class="scene-legend"><span><i style="background:var(--a)"></i>Vector A</span><span><i style="background:var(--b)"></i>Vector B</span><span id="legend-result"><i style="background:var(--dot)"></i>Projection of B on A</span><span class="pv" id="pv"></span><button type="button" id="orbit-btn" class="smallbtn" aria-pressed="true" hidden>◌ Hide orbit path</button><span class="theta">θ = <b id="angle-hud">—</b></span></div>
+        <div class="scene-footer"><p><span id="gesture-hint">✥ Drag to orbit · Hover an arrow for details · Ctrl/⌘ + scroll to zoom · Double-click to reset</span><span class="fit-note" id="fit-note" hidden>The A × B arrow is drawn shorter so it fits. Its exact value is in the results below.</span></p><div class="actions"><button id="zoom-out" class="smallbtn zoom-btn" title="Zoom out" aria-label="Zoom out">−</button><button id="zoom-in" class="smallbtn zoom-btn" title="Zoom in" aria-label="Zoom in">+</button><button id="reset-view" class="smallbtn">Reset view</button><button id="animate" class="action-primary">▶ Animate result</button></div></div>
+      </section>
+
+      <section class="surface context" id="context" hidden aria-live="polite"><button type="button" class="context-head" id="context-toggle" aria-expanded="true"><span class="eyelabel">ⓘ What this example means<span class="chev" aria-hidden="true">▾</span></span><span class="badge" id="context-title"></span></button><div class="ctx-body"><p id="context-text"></p></div></section>
+
+      <div class="results" aria-live="polite">
+        <section class="surface result-card"><div class="intro"><span class="eyelabel" id="result-title">Scalar output</span><span class="badge" id="result-type">DOT PRODUCT</span></div><div id="answer"><div class="result-number" id="result-number">—</div><div class="result-caption" id="result-caption">A single number, not a vector.</div><div class="result-extra" id="result-extra"></div></div><div class="predict" id="predict-placeholder" hidden>Can you predict the answer? Turn off Predict mode to reveal it.</div></section>
+        <section class="surface result-card"><div class="intro"><span class="eyelabel">Live calculation</span><span class="hint">Real-time arithmetic</span></div><div id="calculation"><div class="equation" id="equation">—</div><div class="equation secondary" id="extra-equation"></div><div class="concept"><span class="concept-icon">✦</span><span id="concept-text"></span></div></div><div class="predict" id="calc-placeholder" hidden>Discuss the formula with the class before showing the solution.</div></section>
+      </div>
+
+      <section class="surface checks-card" aria-live="polite"><div class="intro" style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span class="eyelabel">Check the properties</span><span class="hint">Each line is computed separately</span></div><div class="checks" id="checks"></div><div class="predict" id="checks-placeholder" hidden>Which of these properties will hold? Decide before you reveal them.</div></section>
+
+      <section class="surface lesson"><div class="lesson-main"><h3 class="sectitle">YOUR MISSION / THINK LIKE A PHYSICIST</h3><ol class="missions" id="missions"></ol></div><span class="badge">CLASSROOM ACTIVITY</span></section>
+    </main>
+  </div>
+  <footer class="foot"><span>ORBIT VECTOR LAB · Built for astronomy &amp; physics learners</span><span>Values shown to 2 decimal places · Calculations use full precision · Works offline</span></footer>
+</div>
+<script>
+(function(){
+'use strict';
+if(window.CanvasRenderingContext2D&&!CanvasRenderingContext2D.prototype.roundRect){
+  CanvasRenderingContext2D.prototype.roundRect=function(x,y,w,h,r){r=Math.min(r,w/2,h/2);this.moveTo(x+r,y);this.arcTo(x+w,y,x+w,y+h,r);this.arcTo(x+w,y+h,x,y+h,r);this.arcTo(x,y+h,x,y,r);this.arcTo(x,y,x+w,y,r);this.closePath();return this;};
+}
+const VIEW={yaw:-.68,pitch:.62,zoom:.93};
+const state={
+  a:[3,1,0], b:[1,3,1], mode:'dot', view:'3d', yaw:VIEW.yaw, pitch:VIEW.pitch,
+  zoom:VIEW.zoom, spin:false, predict:false, animStart:performance.now()-1500,
+  drag:false, dragTarget:null, prevX:0, prevY:0, angleBasis:null,
+  preset:'reset', edited:false, valuesPinned:false, detailUntil:performance.now()+2600, tween:null, camTween:null, showOrbit:true, hover:null, pointer:null, tipUntil:0, downX:0, downY:0
+};
+const $ = id => document.getElementById(id);
+const stage=$('stage'), canvas=$('scene'), ctx=canvas.getContext('2d',{alpha:false});
+if (!ctx){stage.innerHTML='<p style="padding:2rem">HTML Canvas support is needed.</p>';return;}
+let width=0,height=0,lastFrame=performance.now(),lastFit=null,quietTimer=0,contextTimer=0;
+const EPS=1e-8;
+const dot=(a,b)=>a.reduce((s,n,i)=>s+n*b[i],0);
+const cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+const mag=a=>Math.sqrt(dot(a,a));
+const mul=(v,k)=>v.map(n=>n*k);
+const add=(a,b)=>a.map((n,i)=>n+b[i]);
+const sub=(a,b)=>a.map((n,i)=>n-b[i]);
+const unit=a=>mag(a)<EPS?[0,0,0]:mul(a,1/mag(a));
+const clamp=(n,lo,hi)=>Math.max(lo,Math.min(hi,n));
+const round2=n=>Math.round(n*100)/100;
+// Display only: 2 decimal places, no float noise, a true minus sign.
+const fmt=n=>Math.abs(n)<1e-8?'0':Number(n.toFixed(2)).toString().replace('-','−');
+const par=n=>'('+fmt(n)+')';
+const vec=v=>'('+v.map(fmt).join(', ')+')';
+const effective=v=>state.view==='2d'?[v[0],v[1],0]:v.slice();
+const pair=()=>({a:effective(state.a),b:effective(state.b)});
+const coordText=v=>state.view==='2d'?'('+v.slice(0,2).map(fmt).join(', ')+')':vec(v);
+const rng=(name,idx,val)=>`<label class="coord" id="coord-${name}-${idx}"><span class="axislabel">${'XYZ'[idx]}</span><input type="range" min="-4" max="4" step="0.1" value="${val}" data-who="${name}" data-index="${idx}" aria-label="Vector ${name.toUpperCase()} ${'XYZ'[idx]} slider"><input type="number" min="-4" max="4" step="0.1" value="${val}" data-who="${name}" data-index="${idx}" aria-label="Vector ${name.toUpperCase()} ${'XYZ'[idx]} coordinate"></label>`;
+
+// ---------- Experiments ----------
+const presets={
+  perpendicular:{a:[3,0,0],b:[0,3,0],title:'Perpendicular',note:()=>'θ = 90°, so A · B = 0 and |A × B| = |A||B|, the largest it can be for these lengths.'},
+  parallel:{a:[2,1,0],b:[4,2,0],title:'Parallel',note:()=>'B = 2A, so θ = 0°. A · B = |A||B| and A × B = 0: the parallelogram is flat.'},
+  opposite:{a:[3,1,0],b:[-3,-1,0],title:'Opposite',note:()=>'B = −A, so θ = 180°. A · B = −|A||B| and A × B = 0.'},
+  unit:{a:[1,0,0],b:[0,1,0],title:'î × ĵ = k̂',note:()=>'A and B are the unit vectors along x and y. Their cross product is k̂ = (0, 0, 1). This is what makes x, y, z a right-handed system. Swap them and you get −k̂.'},
+  orbit:{a:[3,1,2],b:[-1,3,1],title:'Orbit: h = r × v',keep:true,note:orbitNote},
+  reset:{a:[3,1,0],b:[1,3,1]}
+};
+function orbitNote(){
+  const {a,b}=pair(),h=cross(a,b),hm=mag(h),rv=dot(a,b),hide=state.predict;
+  let inc;
+  if(hm<EPS)inc='Here h = 0: r and v are parallel, so the motion is purely radial and there is no orbital plane.';
+  else{
+    const i=Math.acos(clamp(h[2]/hm,-1,1))*180/Math.PI;
+    const kind=Math.abs(i-90)<1e-6?'polar':i>90?'retrograde':'prograde';
+    inc='Inclination i = arccos(h<sub>z</sub> / |h|) = <b>'+(hide?'?':fmt(i)+'°')+'</b>'+(hide?'.':' ('+kind+').');
+  }
+  const radial=hide?'Is r · v positive or negative, and what does that tell you?':
+    rv>EPS?'r · v = '+fmt(rv)+' &gt; 0, so the distance from the central body is increasing.':
+    rv<-EPS?'r · v = '+fmt(rv)+' &lt; 0, so the distance from the central body is decreasing.':
+    'r · v = 0, so the distance is momentarily constant: the body is at periapsis or apoapsis (or the orbit is circular).';
+  return 'Read A as the position <b>r</b> and B as the velocity <b>v</b> (any consistent units). Then A × B = <b>h</b>, the specific angular momentum. h is perpendicular to the orbital plane. '+inc+' '+radial+' The teal ring is a circular orbit of radius |r| in the plane perpendicular to h, drawn for illustration.';
+}
+function markEdited(){
+  if(!state.preset)return;
+  const pr=presets[state.preset];
+  if(pr&&pr.keep)state.edited=true;else{state.preset=null;state.edited=false;}
+}
+
+// ---------- Missions ----------
+const missions={
+  dot:[
+    ['Use the angle slider to set 0°, 90° and 180°. What happens to A · B?','A · B = |A||B| cos θ. It is +|A||B| at 0°, zero at 90° and −|A||B| at 180°.'],
+    ['Without using the 90° button, find a B that makes A · B = 0 when A = (3, 1, 0).','Any B perpendicular to A works, for example B = (−1, 3, z) for any z: (3)(−1) + (1)(3) + (0)(z) = 0.'],
+    ['Load ◈ Orbit. Is the body moving away from the central mass or toward it?','Look at the sign of r · v. The rate of change of distance is d|r|/dt = (r · v) / |r|. Here r · v = 2 &gt; 0, so it is moving away.']
+  ],
+  cross:[
+    ['Set θ = 90°, then θ = 0°. How does the parallelogram area change?','Area = |A × B| = |A||B| sin θ. It is largest at 90° and zero at 0°.'],
+    ['Press ⇄ Swap A and B. What happens to A × B? Check it with your right hand.','B × A = −(A × B). The length is the same and the direction flips.'],
+    ['Switch to 2D. Why does A × B become ⊙ or ⊗ instead of an arrow in the plane?','Both vectors lie in the XY plane, so A × B must be perpendicular to it, along ±Z. Only C<sub>z</sub> = A<sub>x</sub>B<sub>y</sub> − A<sub>y</sub>B<sub>x</sub> survives.'],
+    ['Load ◈ Orbit, then change v so the orbit becomes retrograde (i &gt; 90°).','You need h<sub>z</sub> = r<sub>x</sub>v<sub>y</sub> − r<sub>y</sub>v<sub>x</sub> &lt; 0. Reversing v, to (1, −3, −1), flips h and gives i ≈ 144.74°.']
+  ]
+};
+function renderMissions(){
+  $('missions').innerHTML=missions[state.mode].map(([q,h])=>`<li><p>${q}</p><details><summary>Show hint</summary><p>${h}</p></details></li>`).join('');
+}
+
+// ---------- Controls ----------
+function buildControls(){
+  for(const key of ['a','b']) $('controls-'+key).innerHTML=state[key].map((v,i)=>rng(key,i,v)).join('');
+  document.querySelectorAll('.coord input').forEach(input=>{
+    input.addEventListener('input',e=>{
+      if(e.target.value==='')return;
+      const n=Number(e.target.value);if(!Number.isFinite(n))return;
+      const val=clamp(n,-4,4),who=e.target.dataset.who,idx=+e.target.dataset.index;
+      state[who][idx]=val;state.angleBasis=null;markEdited();
+      document.querySelectorAll(`.coord input[data-who="${who}"][data-index="${idx}"]`).forEach(el=>{if(el!==e.target)el.value=el.type==='number'?round2(val):val;});
+      change(false);
+    });
+    // When typing is finished, show the value actually used (clamped to ±4).
+    if(input.type==='number')input.addEventListener('change',e=>{e.target.value=round2(state[e.target.dataset.who][+e.target.dataset.index]);});
+  });
+}
+function syncControls(){document.querySelectorAll('.coord input').forEach(el=>{const v=state[el.dataset.who][+el.dataset.index];el.value=el.type==='number'?round2(v):v;});}
+function theta(){const {a,b}=pair(),ma=mag(a),mb=mag(b);return ma<EPS||mb<EPS?null:Math.acos(clamp(dot(a,b)/(ma*mb),-1,1));}
+function angleText(){const t=theta();return t===null?'undefined':fmt(t*180/Math.PI)+'°';}
+function syncAngle(){
+  const t=theta(),defined=t!==null,angle=defined?t*180/Math.PI:0;
+  $('angle-slider').disabled=!defined;
+  $('angle-slider').value=Math.round(angle);
+  $('angle-display').textContent=!defined?'—':state.predict?'?':fmt(angle)+'°';
+  $('angle-help').textContent=!defined?'Both vectors need a nonzero length in the selected plane.':state.view==='2d'?'Rotate B in the XY plane. Z values stay saved for 3D.':'Rotate B about A. The lengths of A and B stay fixed.';
+  document.querySelectorAll('[data-angle]').forEach(btn=>btn.disabled=!defined);
+}
+// Rotate B to a requested angle with A, keeping its length.
+// Use a perpendicular unit vector in the current A–B plane. At 0° or 180°,
+// keep the last perpendicular so the slider stays smooth through alignment.
+function setAngle(degrees){
+  const {a,b}=pair(),ma=mag(a),mb=mag(b);if(ma<EPS||mb<EPS)return;
+  const th=clamp(degrees,0,180)*Math.PI/180,u=unit(a);
+  let perp=sub(b,mul(u,dot(b,u))),len=mag(perp);
+  if(len>1e-5){perp=mul(perp,1/len);state.angleBasis=perp.slice();}
+  else if(state.angleBasis && Math.abs(dot(state.angleBasis,u))<.999){
+    perp=sub(state.angleBasis,mul(u,dot(state.angleBasis,u)));perp=unit(perp);
+  }else{
+    if(state.view==='2d')perp=[-u[1],u[0],0];
+    else{
+      perp=cross([0,0,1],u);
+      if(mag(perp)<1e-5)perp=cross([0,1,0],u);
+      perp=unit(perp);
+    }
+    state.angleBasis=perp.slice();
+  }
+  const rotated=mul(add(mul(u,Math.cos(th)),mul(perp,Math.sin(th))),mb);
+  if(state.view==='2d'){state.b[0]=rotated[0];state.b[1]=rotated[1];}
+  else state.b=rotated;
+  markEdited();syncControls();change(false);
+}
+$('angle-slider').addEventListener('input',e=>setAngle(Number(e.target.value)));
+document.querySelectorAll('[data-angle]').forEach(el=>el.addEventListener('click',()=>setAngle(Number(el.dataset.angle))));
+
+function change(animate=true){
+  const {a,b}=pair();
+  $('avec').textContent=coordText(state.a);$('bvec').textContent=coordText(state.b);
+  $('amag').textContent=fmt(mag(a));$('bmag').textContent=fmt(mag(b));
+  syncAngle();refresh();showDetails();if(animate)state.animStart=performance.now();
+}
+// Coordinate labels appear after a change, then fade so only the vectors remain.
+function showDetails(ms=1800){state.detailUntil=performance.now()+ms;}
+// The corner hints fade after a few seconds.
+function hintsThenQuiet(){stage.classList.remove('quiet');clearTimeout(quietTimer);quietTimer=setTimeout(()=>stage.classList.add('quiet'),3500);}
+function switchMode(mode){
+  const changed=state.mode!==mode;
+  state.mode=mode;const isdot=mode==='dot';
+  for(const id of ['dot-mode','cross-mode']){$(id).classList.toggle('active',id===(isdot?'dot-mode':'cross-mode'));$(id).setAttribute('aria-pressed',id===(isdot?'dot-mode':'cross-mode'));}
+  $('legend-result').innerHTML=isdot?'<i style="background:var(--dot)"></i>Projection of B on A':state.view==='2d'?'<i style="background:var(--c)"></i>A × B along ±Z (⊙ / ⊗)':'<i style="background:var(--c)"></i>A × B';
+  $('dimension-note').hidden=state.view!=='2d';
+  $('dimension-note').textContent=state.view==='2d'?(isdot?'Drag the arrow tips · Z values are saved for 3D':'⊙ +Z out of the screen · ⊗ −Z into the screen'):'';
+  if(changed||!$('missions').children.length)renderMissions();
+  state.animStart=performance.now();refresh();showDetails();hintsThenQuiet();
+}
+$('dot-mode').onclick=()=>switchMode('dot');$('cross-mode').onclick=()=>{switchMode('cross');frameCross();};
+function switchView(view){
+  if(state.view===view)return;
+  state.view=view;state.angleBasis=null;
+  stage.classList.toggle('is-2d',view==='2d');
+  $('view-2d').classList.toggle('active',view==='2d');$('view-3d').classList.toggle('active',view==='3d');
+  $('view-2d').setAttribute('aria-pressed',view==='2d');$('view-3d').setAttribute('aria-pressed',view==='3d');
+  $('stagehint').innerHTML=view==='2d'?'2D PLANE <span style="opacity:.5">/</span> X · Y':'3D SPACE <span style="opacity:.5">/</span> X · Y · Z';
+  $('gesture-hint').textContent=view==='2d'?'✥ Drag the arrowheads to change the vectors · Ctrl/⌘ + scroll to zoom':'✥ Drag to orbit · Ctrl/⌘ + scroll to zoom · Double-click to reset · Arrow keys rotate';
+  $('spin-btn').disabled=view==='2d';$('spin-btn').style.opacity=view==='2d'?.32:1;
+  if(view==='2d')stopSpin();
+  document.querySelectorAll('.coord').forEach(c=>{const isZ=c.id.endsWith('-2');c.classList.toggle('dimmed',view==='2d'&&isZ);c.querySelectorAll('input').forEach(x=>{x.disabled=view==='2d'&&isZ;x.title=view==='2d'&&isZ?'Z is kept for the 3D view.':''});});
+  switchMode(state.mode);change(false);
+}
+$('view-2d').onclick=()=>switchView('2d');$('view-3d').onclick=()=>switchView('3d');
+function stopSpin(){
+  state.spin=false;$('spin-btn').classList.remove('on');$('spin-btn').setAttribute('aria-pressed','false');$('spin-btn').textContent='↻ Auto orbit';
+}
+$('predict-btn').onclick=()=>{
+  state.predict=!state.predict;
+  $('predict-btn').classList.toggle('on',state.predict);
+  $('predict-btn').setAttribute('aria-pressed',state.predict);
+  $('answer').hidden=state.predict;$('calculation').hidden=state.predict;$('checks').hidden=state.predict;
+  $('predict-placeholder').hidden=!state.predict;$('calc-placeholder').hidden=!state.predict;$('checks-placeholder').hidden=!state.predict;
+  syncAngle();refresh();
+};
+$('spin-btn').onclick=()=>{
+  if(state.view==='2d')return;
+  state.spin=!state.spin;$('spin-btn').classList.toggle('on',state.spin);
+  $('spin-btn').setAttribute('aria-pressed',state.spin);
+  $('spin-btn').textContent=state.spin?'Ⅱ Pause orbit':'↻ Auto orbit';
+};
+$('values-btn').onclick=()=>{state.valuesPinned=!state.valuesPinned;$('values-btn').setAttribute('aria-pressed',state.valuesPinned);if(!state.valuesPinned)showDetails(900);};
+$('reset-view').onclick=()=>{state.camTween=null;state.yaw=VIEW.yaw;state.pitch=VIEW.pitch;state.zoom=VIEW.zoom;stopSpin();};
+$('zoom-out').onclick=()=>state.zoom=clamp(state.zoom*.83,.44,1.7);
+$('zoom-in').onclick=()=>state.zoom=clamp(state.zoom*1.19,.44,1.7);
+$('animate').onclick=()=>{state.animStart=performance.now();$('animate').textContent='↗ Replay animation';};
+document.querySelectorAll('[data-preset]').forEach(el=>el.onclick=()=>{
+  const key=el.dataset.preset;
+  const from=pair();state.tween={a:from.a,b:from.b,start:performance.now()};
+  if(key==='random'){
+    const random=()=>Array.from({length:3},()=>Math.floor(Math.random()*7)-3);
+    state.a=random();state.b=random();if(mag(state.a)<EPS)state.a[0]=2;if(mag(state.b)<EPS)state.b[1]=2;
+    state.preset=null;
+  }else if(key==='swap'){
+    [state.a,state.b]=[state.b,state.a];
+    state.preset=null;
+  }else{state.a=presets[key].a.slice();state.b=presets[key].b.slice();state.preset=key;if(key==='orbit')state.showOrbit=true;}
+  state.edited=false;state.angleBasis=null;syncControls();change(true);
+  openContext();frameCross();
+});
+function syncPresetButtons(){
+  document.querySelectorAll('[data-preset]').forEach(el=>el.setAttribute('aria-pressed',String(el.dataset.preset===state.preset)));
+}
+function renderContext(){
+  const pr=state.preset&&presets[state.preset],el=$('context');
+  const show=!!(pr&&pr.note);
+  if(el.hidden===show){el.hidden=!show;}
+  if(!show)return;
+  $('context-title').textContent=pr.title+(state.edited?' · EDITED':'');
+  $('context-text').innerHTML=pr.note();
+}
+function setContextOpen(open){
+  $('context').classList.toggle('collapsed',!open);$('context-toggle').setAttribute('aria-expanded',open);
+}
+// The explanation pops open when an example loads, then folds away to a one-line bar.
+function openContext(){
+  clearTimeout(contextTimer);
+  if($('context').hidden)return;
+  setContextOpen(true);
+  contextTimer=setTimeout(()=>setContextOpen(false),7000);
+}
+$('context-toggle').onclick=()=>{clearTimeout(contextTimer);setContextOpen($('context').classList.contains('collapsed'));};
+const check=(ok,title,detail)=>`<div class="check ${ok?'ok':'no'}"><span class="check-mark" aria-hidden="true">${ok?'✓':'–'}</span><div class="check-body"><b>${title}</b><span>${detail}</span></div></div>`;
+
+function refresh(){
+  const {a,b}=pair(),dp=dot(a,b),cp=cross(a,b),cm=mag(cp),ma=mag(a),mb=mag(b),t=theta();
+  const tDeg=t===null?null:t*180/Math.PI;
+  $('angle-hud').textContent=state.predict?'?':angleText();
+  let checks='';
+  if(state.mode==='dot'){
+    $('result-title').textContent='Scalar output';$('result-type').textContent='DOT PRODUCT';
+    $('result-number').className='result-number';$('result-number').textContent=fmt(dp);
+    $('result-caption').textContent='A single number · Measures how much A and B point the same way';
+    $('result-extra').textContent=ma<EPS?'Projection undefined: A has zero length.':'Scalar projection of B on A = A · B / |A| = '+fmt(dp/ma);
+    const comps=state.view==='2d'?[0,1]:[0,1,2];
+    $('equation').textContent='A · B = '+comps.map(i=>'('+fmt(a[i])+' × '+fmt(b[i])+')').join(' + ')+' = '+fmt(dp);
+    $('extra-equation').textContent=t===null?'The angle is undefined when either vector has zero length.':'|A||B| cos θ = '+fmt(ma)+' × '+fmt(mb)+' × cos('+fmt(tDeg)+'°) = '+fmt(ma*mb*Math.cos(t));
+    $('concept-text').innerHTML=dp>EPS?'<b>Positive:</b> the vectors point generally in the same direction (θ &lt; 90°).':dp< -EPS?'<b>Negative:</b> the vectors point generally in opposite directions (θ &gt; 90°).':'<b>Zero:</b> the vectors are perpendicular (unless one of them is the zero vector).';
+    const ba=dot(b,a);
+    checks=check(Math.abs(ba-dp)<=1e-9*Math.max(1,Math.abs(dp)),'B · A = '+fmt(ba),'Same as A · B. The dot product is commutative.')+
+      check(true,'A · A = '+fmt(dot(a,a)),'Equals |A|² = '+fmt(ma)+'². A vector dotted with itself gives its length squared.')+
+      check(Math.abs(dp)<=ma*mb*(1+1e-12)+1e-12,'|A · B| = '+fmt(Math.abs(dp))+' ≤ |A||B| = '+fmt(ma*mb),'The Cauchy–Schwarz inequality. Equality holds only when A and B are parallel or opposite.')+
+      (t===null?check(false,'Angle type','Undefined, because one vector has zero length.'):
+        check(true,dp>EPS?'A · B &gt; 0 → acute':dp<-EPS?'A · B &lt; 0 → obtuse':'A · B = 0 → right angle','θ = '+fmt(tDeg)+'°. The sign of A · B alone tells you whether θ is below, at or above 90°.'));
+  }else{
+    $('result-title').textContent='Vector output';$('result-type').textContent='CROSS PRODUCT';
+    $('result-number').className='result-number cross';$('result-number').textContent=vec(cp);
+    $('result-caption').textContent='Perpendicular to both A and B · |A × B| = '+fmt(cm)+' = parallelogram area';
+    $('result-extra').textContent=cm<EPS?'Unit normal undefined: A × B = 0.':'Unit normal n̂ = (A × B) / |A × B| = '+vec(mul(cp,1/cm));
+    const det='<div class="det"><span class="hat">î</span><span class="hat">ĵ</span><span class="hat">k̂</span>'+a.map(x=>'<span class="ra">'+fmt(x)+'</span>').join('')+b.map(x=>'<span class="rb">'+fmt(x)+'</span>').join('')+'</div>';
+    const rows=[
+      ['C<sub>x</sub> = A<sub>y</sub>B<sub>z</sub> − A<sub>z</sub>B<sub>y</sub>',par(a[1])+par(b[2])+' − '+par(a[2])+par(b[1]),cp[0]],
+      ['C<sub>y</sub> = −(A<sub>x</sub>B<sub>z</sub> − A<sub>z</sub>B<sub>x</sub>)','−['+par(a[0])+par(b[2])+' − '+par(a[2])+par(b[0])+']',cp[1]],
+      ['C<sub>z</sub> = A<sub>x</sub>B<sub>y</sub> − A<sub>y</sub>B<sub>x</sub>',par(a[0])+par(b[1])+' − '+par(a[1])+par(b[0]),cp[2]]
+    ];
+    $('equation').innerHTML='<div class="det-line"><span>A × B =</span>'+det+'</div><div class="work-wrap"><table class="work"><tbody>'+
+      rows.map(r=>'<tr><td class="sym">'+r[0]+'</td><td>'+r[1]+'</td><td class="res">= '+fmt(r[2])+'</td></tr>').join('')+'</tbody></table></div>';
+    $('extra-equation').textContent=t===null?'The angle is undefined when either vector has zero length.':'|A × B| = |A||B| sin θ = '+fmt(ma)+' × '+fmt(mb)+' × sin('+fmt(tDeg)+'°) = '+fmt(ma*mb*Math.sin(t));
+    $('concept-text').innerHTML=cm<EPS?'<b>Zero vector:</b> A and B are parallel, opposite, or one has zero length.':state.view==='2d'?'<b>Out-of-plane result:</b> ⊙ means +Z toward you and ⊗ means −Z away from you. The shaded area is '+fmt(cm)+'.':'<b>Right-hand rule:</b> curl the fingers of your right hand from A to B. Your thumb points along A × B. The shaded area is '+fmt(cm)+'.';
+    const ca=dot(cp,a),cb=dot(cp,b),ba=cross(b,a);
+    const tolA=1e-9*Math.max(1,cm*ma),tolB=1e-9*Math.max(1,cm*mb);
+    checks=check(Math.abs(ca)<=tolA,'(A × B) · A = '+fmt(ca),'A × B is perpendicular to A.')+
+      check(Math.abs(cb)<=tolB,'(A × B) · B = '+fmt(cb),'A × B is perpendicular to B, so it is normal to the plane that contains both.')+
+      check(ba.every((x,i)=>Math.abs(x+cp[i])<=1e-9*Math.max(1,cm)),'B × A = '+vec(ba),'Equals −(A × B). Swapping the order flips the direction.')+
+      (t===null?check(false,'|A||B| sin θ','Undefined, because one vector has zero length. |A × B| = 0.'):
+        check(Math.abs(ma*mb*Math.sin(t)-cm)<=1e-6*Math.max(1,cm),'|A||B| sin θ = '+fmt(ma*mb*Math.sin(t)),'Matches |A × B| = '+fmt(cm)+'. θ comes from the dot product, so this is an independent check.'));
+  }
+  $('checks').innerHTML=checks;
+  renderContext();syncPresetButtons();syncOrbitBtn();updatePresent();
+}
+function syncOrbitBtn(){
+  const show=state.preset==='orbit'&&state.view==='3d',btn=$('orbit-btn');
+  if(btn.hidden===show)btn.hidden=!show;
+  btn.setAttribute('aria-pressed',state.showOrbit);btn.textContent=state.showOrbit?'◌ Hide orbit path':'◌ Show orbit path';
+}
+$('orbit-btn').onclick=()=>{state.showOrbit=!state.showOrbit;syncOrbitBtn();};
+// Present mode: hide the page chrome, enlarge the scene, show the key numbers in the strip.
+const presenting=()=>document.documentElement.classList.contains('presenting');
+function updatePresent(){
+  if(!presenting())return;
+  const {a,b}=pair(),res=state.predict?'?':state.mode==='dot'?fmt(dot(a,b)):vec(cross(a,b));
+  $('pv').textContent='A = '+coordText(state.a)+'  ·  B = '+coordText(state.b)+'  ·  '+(state.mode==='dot'?'A · B = ':'A × B = ')+res;
+}
+function setPresent(on){
+  document.documentElement.classList.toggle('presenting',on);
+  $('present-btn').setAttribute('aria-pressed',on);$('present-btn').textContent=on?'✕ Exit present':'⛶ Present';
+  try{
+    if(on&&document.fullscreenEnabled&&!document.fullscreenElement)document.documentElement.requestFullscreen().catch(()=>{});
+    else if(!on&&document.fullscreenElement)document.exitFullscreen().catch(()=>{});
+  }catch(e){}
+  updatePresent();window.scrollTo({top:0});
+}
+$('present-btn').onclick=()=>setPresent(!presenting());
+document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&presenting())setPresent(false);});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&presenting())setPresent(false);});
+
+// ---------- Canvas ----------
+const PALETTES={
+  dark:{bg:'#091323',glow:'rgba(34,74,118,.30)',vig:'9,19,35',star:'#84aad2',starA:1,grid:'#355070',gridA:.17,gridBold:'#6385af',gridBoldA:.42,axis:'#8aa3c4',axisLabel:'#9fb6d3',tick:'#7793b5',
+    halo:'rgba(9,19,35,.92)',chipBg:'rgba(8,17,32,.88)',chipText:'#d6e4f6',a:'#ffb15c',b:'#54d4df',c:'#bb95ff',cTag:'#c9a9ff',dot:'#ffdb8a',projLine:'#f4d78f',
+    arc:'#d4e4f9',arcText:'#e5f0ff',area:'173,136,255',edge:'#c5a6ff',marker:'#caa8ff',markerBg:'rgba(34,22,58,.93)',markerText:'#dcc5ff',origin:'#edf5ff',
+    shadow:'rgba(0,0,0,.38)',glowBlur:10,hi:.38,orbit:'#5fe0c8',body:'#eafff9'},
+  light:{bg:'#f3f6fb',glow:'rgba(120,160,210,.16)',vig:'243,246,251',star:'#9fb3cc',starA:0,grid:'#8fa2bb',gridA:.32,gridBold:'#5f7797',gridBoldA:.55,axis:'#5d7392',axisLabel:'#3d5170',tick:'#5d7392',
+    halo:'rgba(243,246,251,.95)',chipBg:'rgba(255,255,255,.96)',chipText:'#1d2b40',a:'#d9730d',b:'#0b8f9c',c:'#7c4dde',cTag:'#6a3fd0',dot:'#b7791f',projLine:'#b7791f',
+    arc:'#4a5f7e',arcText:'#24344d',area:'124,77,222',edge:'#8e6be0',marker:'#7c4dde',markerBg:'rgba(240,233,255,.96)',markerText:'#5b2fc0',origin:'#1d2b40',
+    shadow:'rgba(30,50,80,.16)',glowBlur:4,hi:.5,orbit:'#0d9488',body:'#0f766e'}
+};
+let PAL=PALETTES.dark;
+function resize(){
+  const r=stage.getBoundingClientRect(),dpr=Math.min(window.devicePixelRatio||1,2);
+  width=r.width;height=r.height;canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+}
+window.addEventListener('resize',resize);
+if('ResizeObserver' in window)new ResizeObserver(resize).observe(stage);
+resize();
+// An orthographic camera keeps arrow lengths consistent. (right, up, toward-viewer) is right-handed,
+// so the right-hand rule looks correct on screen. 2D shows the exact XY plane.
+function camera(){
+  const yaw=state.yaw,p=state.pitch,right=[Math.cos(yaw),Math.sin(yaw),0],up=[-Math.sin(p)*Math.sin(yaw),Math.sin(p)*Math.cos(yaw),Math.cos(p)];
+  return{right,up,out:cross(right,up)};
+}
+// A fixed scale: the grid never zooms by itself while the vectors change.
+function scale(){
+  if(state.view==='2d')return Math.min(width/11,height/10.6)*state.zoom*1.05;
+  return Math.min(width/11.5,height/10.2)*state.zoom;
+}
+function pt(v,cam,sc){return state.view==='2d'?{x:width*.5+v[0]*sc,y:height*.53-v[1]*sc}:{x:width*.5+dot(v,cam.right)*sc,y:height*.53-dot(v,cam.up)*sc};}
+function pathLine(p1,p2,stroke,w,dash=[],opacity=1){ctx.save();ctx.globalAlpha=opacity;ctx.strokeStyle=stroke;ctx.lineWidth=w;ctx.lineCap='round';ctx.setLineDash(dash);ctx.beginPath();ctx.moveTo(p1.x,p1.y);ctx.lineTo(p2.x,p2.y);ctx.stroke();ctx.restore();}
+function circle(p,r,color,alpha=1){ctx.save();ctx.globalAlpha=alpha;ctx.fillStyle=color;ctx.beginPath();ctx.arc(p.x,p.y,r,0,Math.PI*2);ctx.fill();ctx.restore();}
+const rgba=(hex,a)=>{const n=parseInt(hex.slice(1),16);return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`;};
+// Dashes appear to crawl while the view rotates, so they are only used in the still 2D view.
+const dash=d=>state.view==='2d'?d:[];
+// A shaded, tube-like arrow. In 3D, arrows toward the viewer are a little thicker and brighter,
+// and an arrow below the floor grid (z < 0, seen from above) is dimmed.
+function arrow(start,end,color,w=3.5,alpha=1,v=null,cam=null){
+  const dx=end.x-start.x,dy=end.y-start.y,len=Math.hypot(dx,dy);if(len<1.5)return;
+  if(v&&cam&&state.view==='3d'){
+    const m=mag(v);if(m>EPS){const depth=dot(v,cam.out)/m;w*=1+.16*depth;alpha*=.86+.14*depth;}
+    if(v[2]<-.05&&state.pitch>.05)alpha*=.5;
+  }
+  const ux=dx/len,uy=dy/len,nx=-uy,ny=ux;
+  const head=Math.min(clamp(w*3.8,13,19),len*.55),hw=head*.62;
+  const base={x:end.x-ux*head*.8,y:end.y-uy*head*.8};
+  const L={x:end.x-ux*head+nx*hw/2,y:end.y-uy*head+ny*hw/2},R={x:end.x-ux*head-nx*hw/2,y:end.y-uy*head-ny*hw/2},N={x:end.x-ux*head*.72,y:end.y-uy*head*.72};
+  ctx.save();ctx.globalAlpha=alpha;ctx.lineCap='round';
+  const g=ctx.createLinearGradient(start.x,start.y,end.x,end.y);g.addColorStop(0,rgba(color,.3));g.addColorStop(1,color);
+  ctx.shadowColor=rgba(color,.55);ctx.shadowBlur=PAL.glowBlur;
+  ctx.strokeStyle=g;ctx.lineWidth=w;ctx.beginPath();ctx.moveTo(start.x,start.y);ctx.lineTo(base.x,base.y);ctx.stroke();
+  ctx.fillStyle=color;ctx.beginPath();ctx.moveTo(end.x,end.y);ctx.lineTo(L.x,L.y);ctx.lineTo(N.x,N.y);ctx.lineTo(R.x,R.y);ctx.closePath();ctx.fill();
+  ctx.shadowBlur=0;
+  // highlight along one side of the shaft and on one face of the head
+  const hg=ctx.createLinearGradient(start.x,start.y,end.x,end.y);hg.addColorStop(0,'rgba(255,255,255,0)');hg.addColorStop(1,`rgba(255,255,255,${PAL.hi})`);
+  ctx.strokeStyle=hg;ctx.lineWidth=Math.max(1,w*.3);
+  ctx.beginPath();ctx.moveTo(start.x+nx*w*.2,start.y+ny*w*.2);ctx.lineTo(base.x+nx*w*.2,base.y+ny*w*.2);ctx.stroke();
+  ctx.fillStyle=`rgba(255,255,255,${PAL.hi*.6})`;ctx.beginPath();ctx.moveTo(end.x,end.y);ctx.lineTo(L.x,L.y);ctx.lineTo(N.x,N.y);ctx.closePath();ctx.fill();
+  ctx.restore();
+}
+// Name tags sit just beyond the arrow tip. Their direction is smoothed between frames and
+// eases to a fixed spot when the arrow points at the camera, so they never swing around.
+const tagDir={};
+function tag(tip,origin,text,color,away){
+  let dx=tip.x-origin.x,dy=tip.y-origin.y,d=Math.hypot(dx,dy),ux,uy;
+  if(away){
+    ux=d>EPS?-dy/d:0;uy=d>EPS?dx/d:-1;
+    if(ux*(away.x-tip.x)+uy*(away.y-tip.y)>0){ux=-ux;uy=-uy;}
+  }else{
+    const wgt=clamp((d-18)/50,0,1);
+    ux=(d>EPS?dx/d:0)*wgt+.72*(1-wgt);uy=(d>EPS?dy/d:0)*wgt-.69*(1-wgt);
+  }
+  const prev=tagDir[text];
+  if(prev){ux=prev.ux*.82+ux*.18;uy=prev.uy*.82+uy*.18;}
+  const n=Math.hypot(ux,uy)||1;ux/=n;uy/=n;tagDir[text]={ux,uy};
+  ctx.save();ctx.font='700 15px Inter, system-ui, sans-serif';
+  const w=ctx.measureText(text).width,h=16;
+  const ext=Math.abs(ux)*w/2+Math.abs(uy)*h/2;
+  const cx=clamp(tip.x+ux*(12+ext),w/2+6,width-w/2-6),cy=clamp(tip.y+uy*(12+ext),h/2+6,height-h/2-6);
+  ctx.textAlign='center';ctx.textBaseline='middle';ctx.lineJoin='round';
+  ctx.lineWidth=5;ctx.strokeStyle=PAL.halo;ctx.strokeText(text,cx,cy);
+  ctx.fillStyle=color;ctx.fillText(text,cx,cy);ctx.restore();
+  return {cx,cy,ux,uy,ext};
+}
+// A coordinate chip further out along the same line. It fades away after a change.
+function chip(t,text,color,alpha){
+  if(alpha<=0.01)return;
+  ctx.save();ctx.font='600 11.5px "JetBrains Mono", ui-monospace, monospace';
+  const w=ctx.measureText(text).width+16,h=22;
+  const ext=Math.abs(t.ux)*w/2+Math.abs(t.uy)*h/2;
+  const cx=clamp(t.cx+t.ux*(t.ext+6+ext),w/2+6,width-w/2-6),cy=clamp(t.cy+t.uy*(t.ext+6+ext),h/2+6,height-h/2-6);
+  ctx.globalAlpha=alpha;
+  ctx.fillStyle=PAL.chipBg;ctx.beginPath();ctx.roundRect(cx-w/2,cy-h/2,w,h,7);ctx.fill();
+  ctx.strokeStyle=rgba(color,.45);ctx.lineWidth=1;ctx.stroke();
+  ctx.fillStyle=PAL.chipText;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(text,cx,cy+.5);
+  ctx.restore();
+}
+function drawGrid(P){
+  for(let i=-5;i<=5;i++){
+    const bold=i===0;
+    pathLine(P([-5,i,0]),P([5,i,0]),bold?PAL.gridBold:PAL.grid,bold?1.2:.7,[],bold?PAL.gridBoldA:PAL.gridA);
+    pathLine(P([i,-5,0]),P([i,5,0]),bold?PAL.gridBold:PAL.grid,bold?1.2:.7,[],bold?PAL.gridBoldA:PAL.gridA);
+  }
+  ctx.save();ctx.textAlign='center';ctx.textBaseline='middle';
+  if(state.view==='2d'){
+    ctx.fillStyle=PAL.tick;ctx.font='11px "JetBrains Mono", ui-monospace, monospace';
+    for(let i=-4;i<=4;i++){if(i===0)continue;const x=P([i,0,0]),y=P([0,i,0]);ctx.fillText(String(i),x.x,x.y+13);ctx.fillText(String(i),y.x-13,y.y);}
+    const px=P([5.4,0,0]),py=P([0,5.4,0]);ctx.font='600 13px Inter, system-ui, sans-serif';ctx.fillStyle=PAL.axisLabel;ctx.fillText('x',px.x,px.y);ctx.fillText('y',py.x,py.y);
+  }else{
+    [[[1,0,0],'x'],[[0,1,0],'y'],[[0,0,1],'z']].forEach(([basis,name])=>{
+      pathLine(P(mul(basis,-5)),P([0,0,0]),PAL.axis,1,[],.22);
+      pathLine(P([0,0,0]),P(mul(basis,5.4)),PAL.axis,1.2,[],.55);
+      const lab=P(mul(basis,5.85));
+      ctx.font='600 13px Inter, system-ui, sans-serif';ctx.fillStyle=PAL.axisLabel;ctx.fillText(name,lab.x,lab.y);
+    });
+  }
+  ctx.restore();
+}
+// A soft shadow on the floor plus a thin line down from the tip make the 3D position readable.
+function floorCue(P,v,color){
+  if(state.view!=='3d')return;
+  const foot=[v[0],v[1],0];
+  if(state.pitch>.05&&mag(foot)>.05)pathLine(P([0,0,0]),P(foot),PAL.shadow,6);
+  if(Math.abs(v[2])>.05){pathLine(P(v),P(foot),color,1,[],.4);circle(P(foot),2.4,color,.6);}
+}
+function crossDepthMarker(p,sign,opacity){
+  const positive=sign>=0,rad=18;
+  ctx.save();ctx.globalAlpha=opacity;ctx.shadowColor=PAL.marker;ctx.shadowBlur=PAL.glowBlur*1.6;ctx.fillStyle=PAL.markerBg;ctx.strokeStyle=PAL.marker;ctx.lineWidth=2.3;
+  ctx.beginPath();ctx.arc(p.x,p.y,rad,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.shadowBlur=0;
+  if(positive){circle(p,5,PAL.marker);}
+  else{pathLine({x:p.x-7,y:p.y-7},{x:p.x+7,y:p.y+7},PAL.marker,2.5);pathLine({x:p.x+7,y:p.y-7},{x:p.x-7,y:p.y+7},PAL.marker,2.5);}
+  ctx.restore();
+}
+function slerpPts(P,u1,u2,radius,steps=40){
+  const ang=Math.acos(clamp(dot(u1,u2),-1,1)),s=Math.sin(ang),pts=[];
+  for(let i=0;i<=steps;i++){const t=i/steps*ang;pts.push(P(mul(add(mul(u1,Math.sin(ang-t)/s),mul(u2,Math.sin(t)/s)),radius)));}
+  return pts;
+}
+function arcLabel(P,pts,text,color,font){
+  const mid=pts[Math.floor(pts.length/2)],o=P([0,0,0]),dx=mid.x-o.x,dy=mid.y-o.y,d=Math.hypot(dx,dy)||1;
+  ctx.save();ctx.font=font;ctx.textAlign='center';ctx.textBaseline='middle';ctx.lineJoin='round';
+  ctx.lineWidth=4;ctx.strokeStyle=PAL.halo;ctx.strokeText(text,mid.x+dx/d*12,mid.y+dy/d*12);
+  ctx.fillStyle=color;ctx.fillText(text,mid.x+dx/d*12,mid.y+dy/d*12);ctx.restore();
+}
+function strokePts(pts,color,w,alpha){ctx.save();ctx.globalAlpha=alpha;ctx.strokeStyle=color;ctx.lineWidth=w;ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.stroke();ctx.restore();}
+function drawAngle(P,a,b){
+  const ma=mag(a),mb=mag(b);if(ma<EPS||mb<EPS)return;
+  const angle=Math.acos(clamp(dot(a,b)/(ma*mb),-1,1));if(angle<.04||angle>Math.PI-.04)return;
+  const pts=slerpPts(P,unit(a),unit(b),Math.min(1.1,ma*.32,mb*.32));
+  strokePts(pts,PAL.arc,1.3,.75);arcLabel(P,pts,'θ',PAL.arcText,'italic 15px Georgia, serif');
+}
+// A small square at the origin shows that A × B meets A at 90°.
+function rightAngle(P,c,a,alpha){
+  const s=.42,uc=mul(unit(c),s),ua=mul(unit(a),s);
+  strokePts([P(uc),P(add(uc,ua)),P(ua)],PAL.edge,1.1,alpha);
+}
+// Orbit example: a circular orbit of radius |r| in the plane perpendicular to h, a body moving
+// in the direction of v, and the inclination i between h and the z axis.
+function drawOrbitRing(P,cam,a,b){
+  const h=cross(a,b),r=mag(a);if(mag(h)<EPS||r<EPS)return null;
+  const u=unit(a),w=unit(cross(h,a)),N=120,ring=[];
+  for(let i=0;i<=N;i++){const t=i/N*Math.PI*2;ring.push(add(mul(u,r*Math.cos(t)),mul(w,r*Math.sin(t))));}
+  ctx.save();ctx.lineCap='round';
+  for(let i=0;i<N;i++){
+    const front=dot(add(ring[i],ring[i+1]),cam.out)>=0,p1=P(ring[i]),p2=P(ring[i+1]);
+    ctx.globalAlpha=front?.8:.28;ctx.strokeStyle=PAL.orbit;ctx.lineWidth=front?1.8:1.2;
+    ctx.beginPath();ctx.moveTo(p1.x,p1.y);ctx.lineTo(p2.x,p2.y);ctx.stroke();
+  }
+  ctx.restore();
+  if(state.mode==='cross'&&!state.predict){
+    const hu=unit(h),ang=Math.acos(clamp(hu[2],-1,1));
+    if(ang>.06&&ang<Math.PI-.06){const pts=slerpPts(P,[0,0,1],hu,1.6);strokePts(pts,PAL.orbit,1.4,.85);arcLabel(P,pts,'i',PAL.orbit,'italic 700 15px Georgia, serif');}
+  }
+  return {u,w,r};
+}
+function drawOrbitBody(P,o,now){
+  const ph=now/1000*.9,pos=t=>add(mul(o.u,o.r*Math.cos(t)),mul(o.w,o.r*Math.sin(t)));
+  for(let k=14;k>=1;k--)circle(P(pos(ph-k*.045)),3.2*(1-k/16),PAL.orbit,.5*(1-k/15));
+  const p=P(pos(ph));
+  ctx.save();ctx.shadowColor=PAL.orbit;ctx.shadowBlur=14;circle(p,5.2,PAL.body,1);ctx.restore();
+  return p;
+}
+// If A × B points almost straight at the camera it looks like a dot.
+// Glide the camera to the nearest view where A × B and the parallelogram both read well.
+function frameCross(){
+  if(state.mode!=='cross'||state.view!=='3d')return;
+  const {a,b}=pair(),c=cross(a,b);if(mag(c)<EPS)return;
+  const u=unit(c),facing=(yaw,p)=>Math.abs(Math.sin(yaw)*Math.cos(p)*u[0]-Math.cos(yaw)*Math.cos(p)*u[1]+Math.sin(p)*u[2]);
+  if(facing(state.yaw,state.pitch)<=.75)return;
+  const pitch=clamp(state.pitch,.35,.8);
+  for(let k=1;k<=36;k++)for(const sgn of [1,-1]){
+    const yaw=state.yaw+sgn*k*Math.PI/36,f=facing(yaw,pitch);
+    if(f>=.3&&f<=.6){state.camTween={fy:state.yaw,ty:yaw,fp:state.pitch,tp:pitch,start:performance.now()};return;}
+  }
+}
+function applyCamTween(now){
+  const t=state.camTween;if(!t)return;
+  const k=clamp((now-t.start)/750,0,1),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
+  state.yaw=t.fy+(t.ty-t.fy)*e;state.pitch=t.fp+(t.tp-t.fp)*e;
+  if(k>=1)state.camTween=null;
+}
+// During a preset change the arrows glide to their new positions.
+function displayPair(now){
+  const {a,b}=pair(),tw=state.tween;if(!tw)return{a,b};
+  const k=clamp((now-tw.start)/480,0,1);if(k>=1){state.tween=null;return{a,b};}
+  const e=1-Math.pow(1-k,3),lerp=(f,t)=>f.map((x,i)=>x+(t[i]-x)*e);
+  return{a:lerp(tw.a,a),b:lerp(tw.b,b)};
+}
+const STARS=Array.from({length:80},(_,i)=>({x:((i*1789+113)%997)/997,y:((i*401+739)%991)/991,r:i%14===0?1.3:.6,o:i%9===0?.24:.1}));
+const segDist=(p,a,b)=>{const vx=b.x-a.x,vy=b.y-a.y,l2=vx*vx+vy*vy,t=l2?clamp(((p.x-a.x)*vx+(p.y-a.y)*vy)/l2,0,1):0;return Math.hypot(p.x-(a.x+vx*t),p.y-(a.y+vy*t));};
+let tipKey='';
+function updateTip(hits){
+  const tip=$('tip');
+  if(state.pointer&&state.pointer.touch&&performance.now()>state.tipUntil)state.pointer=null;
+  let best=null,bd=state.pointer&&state.pointer.touch?24:12;
+  if(state.pointer&&!state.drag)hits.forEach(h=>{const d=segDist(state.pointer,h.p0,h.p1)-(h.pad||0);if(d<bd){bd=d;best=h;}});
+  state.hover=best?best.name:null;
+  if(!best){if(!tip.hidden)tip.hidden=true;tipKey='';return;}
+  const key=best.name+best.lines.join('|');
+  if(key!==tipKey){tipKey=key;tip.innerHTML='<b style="color:'+best.color+'">'+best.title+'</b>'+best.lines.map((l,i)=>i===0?'<code>'+l+'</code>':'<div>'+l+'</div>').join('');}
+  tip.hidden=false;
+  const tw=tip.offsetWidth,th=tip.offsetHeight;
+  let x=state.pointer.x+16,y=state.pointer.y+16;
+  if(x+tw>width-8)x=state.pointer.x-tw-16;if(y+th>height-8)y=state.pointer.y-th-16;
+  tip.style.left=Math.max(8,x)+'px';tip.style.top=Math.max(8,y)+'px';
+}
+function render(now){
+  const dt=Math.min(50,now-lastFrame);lastFrame=now;
+  if(state.spin&&!state.drag&&state.view==='3d')state.yaw+=dt*.00024;
+  applyCamTween(now);
+  const {a,b}=displayPair(now),cam=camera(),cp=cross(a,b),cpLen=mag(cp),sc=scale();
+  const O=pt([0,0,0],cam,sc),P=v=>pt(v,cam,sc);
+  const hits=[],hv=state.hover;
+  ctx.fillStyle=PAL.bg;ctx.fillRect(0,0,width,height);
+  const light=ctx.createRadialGradient(width*.5,height*.45,10,width*.5,height*.5,Math.max(width,height)*.62);
+  light.addColorStop(0,PAL.glow);light.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=light;ctx.fillRect(0,0,width,height);
+  if(PAL.starA)STARS.forEach(s=>circle({x:s.x*width,y:s.y*height},s.r,PAL.star,s.o));
+  drawGrid(P);
+  // Fade the grid toward the edges so the vectors stay the focus.
+  const vig=ctx.createRadialGradient(width*.5,height*.52,Math.min(width,height)*.32,width*.5,height*.52,Math.max(width,height)*.72);
+  vig.addColorStop(0,`rgba(${PAL.vig},0)`);vig.addColorStop(1,`rgba(${PAL.vig},.9)`);ctx.fillStyle=vig;ctx.fillRect(0,0,width,height);
+
+  const orbit=state.preset==='orbit'&&state.showOrbit&&state.view==='3d'?drawOrbitRing(P,cam,a,b):null;
+  const raw=clamp((now-state.animStart)/850,0,1),progress=1-Math.pow(1-raw,3);
+  const fitLimit=5.2;
+  const tags=[];
+  [a,b].forEach((v,i)=>{if(mag(v)>EPS)floorCue(P,v,i?PAL.b:PAL.a);});
+  if(state.mode==='cross' && !state.predict){
+    if(mag(a)>EPS&&mag(b)>EPS){
+      const pts=[[0,0,0],a,add(a,mul(b,progress)),mul(b,progress)].map(P);
+      ctx.save();
+      const g=ctx.createLinearGradient(pts[0].x,pts[0].y,pts[2].x,pts[2].y);g.addColorStop(0,`rgba(${PAL.area},.28)`);g.addColorStop(1,`rgba(${PAL.area},.10)`);
+      ctx.globalAlpha=progress;ctx.fillStyle=g;ctx.beginPath();pts.forEach((q,i)=>i?ctx.lineTo(q.x,q.y):ctx.moveTo(q.x,q.y));ctx.closePath();ctx.fill();ctx.restore();
+      pathLine(P(a),P(add(a,mul(b,progress))),PAL.edge,1.1,dash([4,5]),.5*progress);
+      pathLine(P(mul(b,progress)),P(add(a,mul(b,progress))),PAL.edge,1.1,dash([4,5]),.5*progress);
+    }
+    if(state.view==='2d'){
+      // In the XY plane the true result points along Z, perpendicular to the page:
+      // ⊙ for +Z, ⊗ for −Z, instead of a misleading in-plane arrow.
+      if(cpLen>EPS&&progress>.02){
+        const center=P(mul(add(a,b),.50));crossDepthMarker(center,cp[2],progress);
+        hits.push({name:'C',p0:center,p1:center,pad:12,color:PAL.cTag,title:'A × B',lines:[vec(cp),cp[2]>=0?'Points out of the screen (+Z)':'Points into the screen (−Z)','|A × B| = '+fmt(cpLen)+' = shaded area']});
+        if(progress>.88){ctx.save();ctx.globalAlpha=progress;ctx.fillStyle=PAL.markerText;ctx.font='700 12px "JetBrains Mono", ui-monospace, monospace';ctx.textBaseline='middle';ctx.fillText(cp[2]>=0?'+Z':'−Z',center.x+25,center.y);ctx.restore();}
+      }
+    }else if(cpLen>EPS&&progress>0){
+      const C=mul(cp,Math.min(cpLen,fitLimit)/cpLen),tip=P(mul(C,progress));
+      if(progress>.9&&mag(a)>EPS)rightAngle(P,cp,a,.7*progress);
+      arrow(O,tip,PAL.c,hv==='C'?5.6:4.2,progress,C,cam);
+      hits.push({name:'C',p0:O,p1:tip,color:PAL.cTag,title:'A × B',lines:[vec(cp),'|A × B| = '+fmt(cpLen)+(cpLen>fitLimit+.01?' (arrow drawn shorter)':''),'Perpendicular to both A and B']});
+      if(progress>.6)tags.push([tip,'A × B',vec(cp),PAL.cTag]);
+    }
+  }else if(state.mode==='dot' && !state.predict){
+    const m2=dot(a,a);
+    if(m2>EPS){
+      const proj=mul(a,dot(a,b)/m2),foot=P(mul(proj,progress));
+      pathLine(P(b),foot,PAL.projLine,1.4,dash([5,5]),.6*progress);
+      if(mag(proj)>EPS&&progress>.01){
+        arrow(O,foot,PAL.dot,hv==='proj'?4.8:3.4,progress*.95,proj,cam);
+        hits.push({name:'proj',p0:O,p1:foot,color:PAL.dot,title:'Projection of B on A',lines:[vec(proj),'Signed length A · B / |A| = '+fmt(dot(a,b)/Math.sqrt(m2))]});
+        if(progress>.6)tags.push([foot,'proj',vec(proj),PAL.dot,P(b)]);
+      }
+      else if(progress>.7)circle(O,6,PAL.dot,.7);
+    }
+  }
+  const main=[];
+  [[a,'A',PAL.a],[b,'B',PAL.b]].forEach(([v,name,color])=>{
+    if(mag(v)<EPS){circle(O,5,color,.95);return;}
+    const end=P(v);arrow(O,end,color,hv===name?5.2:3.8,1,v,cam);main.push([end,name,coordText(v),color]);
+    hits.push({name,p0:O,p1:end,color,title:'Vector '+name,lines:[coordText(v),'|'+name+'| = '+fmt(mag(v))]});
+  });
+  if(!state.predict)drawAngle(P,a,b);
+  circle(O,6,PAL.origin,.14);circle(O,3.4,PAL.origin,.95);
+  if(orbit){const bp=drawOrbitBody(P,orbit,now);hits.push({name:'body',p0:bp,p1:bp,pad:6,color:PAL.orbit,title:'Orbiting body',lines:['Circular orbit of radius |r| = '+fmt(orbit.r),'Moves in the plane perpendicular to h, in the direction of v']});}
+  // Name tags always; coordinate chips briefly after a change, or always when pinned.
+  const left=state.detailUntil-now,alpha=state.valuesPinned?1:clamp(left/450,0,1);
+  main.concat(tags).forEach(([tip,name,coords,color,away])=>{const t=tag(tip,O,name,color,away);chip(t,coords,color,alpha);});
+  const shortened=state.mode==='cross'&&state.view==='3d'&&!state.predict&&cpLen>fitLimit+.01;
+  if(shortened!==lastFit){lastFit=shortened;$('fit-note').hidden=!shortened;}
+  updateTip(hits);
+  requestAnimationFrame(render);
+}
+function pointerWorld(e){
+  const box=stage.getBoundingClientRect(),sc=scale();
+  return [clamp((e.clientX-box.left-width*.5)/sc,-4,4),clamp((height*.53-(e.clientY-box.top))/sc,-4,4)];
+}
+stage.addEventListener('pointerdown',e=>{
+  state.drag=true;state.camTween=null;state.prevX=state.downX=e.clientX;state.prevY=state.downY=e.clientY;
+  if(state.view==='3d'){stopSpin();}
+  else{
+    const r=stage.getBoundingClientRect(),cursor={x:e.clientX-r.left,y:e.clientY-r.top},cam=camera(),sc=scale();
+    const {a,b}=pair(),pa=pt(a,cam,sc),pb=pt(b,cam,sc);
+    const da=Math.hypot(cursor.x-pa.x,cursor.y-pa.y),db=Math.hypot(cursor.x-pb.x,cursor.y-pb.y);
+    state.dragTarget=Math.min(da,db)<32?(da<=db?'a':'b'):null;
+  }
+  stage.classList.add('grabbing');stage.setPointerCapture(e.pointerId);
+});
+stage.addEventListener('pointermove',e=>{
+  if(e.pointerType==='mouse'){const r=stage.getBoundingClientRect();state.pointer={x:e.clientX-r.left,y:e.clientY-r.top,touch:false};}
+  if(!state.drag)return;
+  if(state.view==='3d'){
+    state.yaw+=(e.clientX-state.prevX)*.009;
+    state.pitch=clamp(state.pitch+(e.clientY-state.prevY)*.009,-1.45,1.45);
+  }else if(state.dragTarget){
+    const [x,y]=pointerWorld(e),key=state.dragTarget;
+    state[key][0]=Math.round(x*10)/10;state[key][1]=Math.round(y*10)/10;
+    state.angleBasis=null;markEdited();syncControls();change(false);
+  }
+  state.prevX=e.clientX;state.prevY=e.clientY;
+});
+// On touch screens a tap (without dragging) shows the details card for a moment.
+function stopDrag(e){
+  if(state.drag&&e&&e.type==='pointerup'&&e.pointerType!=='mouse'&&Math.hypot(e.clientX-state.downX,e.clientY-state.downY)<6){
+    const r=stage.getBoundingClientRect();state.pointer={x:e.clientX-r.left,y:e.clientY-r.top,touch:true};state.tipUntil=performance.now()+2500;
+  }
+  state.drag=false;state.dragTarget=null;stage.classList.remove('grabbing');
+}
+stage.addEventListener('pointerup',stopDrag);stage.addEventListener('pointercancel',stopDrag);stage.addEventListener('lostpointercapture',stopDrag);
+stage.addEventListener('pointerleave',e=>{if(e.pointerType==='mouse')state.pointer=null;});
+// Zoom only with Ctrl/⌘ held (or a trackpad pinch), so scrolling the page past the scene still works.
+stage.addEventListener('wheel',e=>{if(!(e.ctrlKey||e.metaKey))return;e.preventDefault();state.zoom=clamp(state.zoom*(e.deltaY>0?.91:1.1),.44,1.7);},{passive:false});
+stage.addEventListener('dblclick',()=>{$('reset-view').click();});
+stage.addEventListener('keydown',e=>{
+  const s=.08;let used=true;
+  if(e.key==='+'||e.key==='=')state.zoom=clamp(state.zoom*1.19,.44,1.7);
+  else if(e.key==='-'||e.key==='_')state.zoom=clamp(state.zoom*.83,.44,1.7);
+  else if(state.view==='3d'&&e.key==='ArrowLeft'){stopSpin();state.yaw-=s;}
+  else if(state.view==='3d'&&e.key==='ArrowRight'){stopSpin();state.yaw+=s;}
+  else if(state.view==='3d'&&e.key==='ArrowUp')state.pitch=clamp(state.pitch-s,-1.45,1.45);
+  else if(state.view==='3d'&&e.key==='ArrowDown')state.pitch=clamp(state.pitch+s,-1.45,1.45);
+  else used=false;
+  if(used)e.preventDefault();
+});
+function setTheme(t){
+  PAL=PALETTES[t];document.documentElement.setAttribute('data-ui',t);
+  $('theme-btn').textContent=t==='light'?'☾ Dark':'☀ Light';$('theme-btn').setAttribute('aria-label','Switch to the '+(t==='light'?'dark':'light')+' theme');
+  try{localStorage.setItem('orbitLabTheme',t);}catch(e){}
+}
+$('theme-btn').onclick=()=>setTheme(PAL===PALETTES.light?'dark':'light');
+let savedTheme='dark';try{if(localStorage.getItem('orbitLabTheme')==='light')savedTheme='light';}catch(e){}
+setTheme(savedTheme);
+buildControls();switchMode('dot');change(false);hintsThenQuiet();requestAnimationFrame(render);
+})();
+</script>
+
+</body>
+</html>
