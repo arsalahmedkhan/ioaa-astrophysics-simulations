@@ -1,8 +1,7 @@
 # 🔭 IOAA Astrophysics Simulations & Labs
 
-Welcome! This repository hosts a collection of interactive dashboards and web-based simulators designed to help students train for the International Olympiad on Astronomy and Astrophysics (IOAA). 
+Welcome! This repository hosts a collection of interactive dashboards and web-based simulators designed to help you train for the International Olympiad on Astronomy and Astrophysics (IOAA). 
 
-All math and physics engines load instantly, full-screen, and require zero setup or software installations.
 
 ---
 
