@@ -1,0 +1,789 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Limits Lab</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="theme-color" content="#0d0f14">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&family=STIX+Two+Text:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap">
+<style>
+/* Layout: a long, quiet chalkboard. Each chapter pairs a short explanation with one live scene;
+   colour carries meaning everywhere: blue = the function, yellow = ε and L, teal = δ and a,
+   green = works, red = fails. One dark look, chosen on purpose. */
+:root{
+  color-scheme:dark;
+  --bg:#0d0f14;--bg2:#10131a;--panel:#141821;--panel2:#191e29;--edge:rgba(255,255,255,.08);--edge2:rgba(255,255,255,.15);
+  --text:#ECEFF4;--soft:#B6BFCC;--muted:#7D8797;
+  --blue:#58C4DD;--yellow:#FFE45E;--gold:#F0AC5F;--green:#83C167;--red:#FC6255;--teal:#5CD0B3;--purple:#B48EDB;
+  --serif:"STIX Two Text","Cambria Math","Times New Roman",serif;
+  --sans:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --r:16px;
+}
+*{box-sizing:border-box}
+html{background:var(--bg);scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 var(--sans)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+.page{max-width:1180px;margin:0 auto;padding-block:28px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+a{color:var(--blue)}
+.m{font-family:var(--serif);font-style:italic;font-size:1.08em;letter-spacing:.01em}
+.mu{font-family:var(--serif);font-style:normal;font-size:1.08em}
+.y{color:var(--yellow)}.t{color:var(--teal)}.b{color:var(--blue)}.g{color:var(--green)}.r{color:var(--red)}.o{color:var(--gold)}
+sub,sup{font-size:.72em}
+
+/* Top line */
+.topline{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-bottom:18px;border-bottom:1px solid var(--edge)}
+.mark{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.2em;font-size:12px;color:var(--soft)}
+.mark i{width:30px;height:30px;border-radius:9px;border:1px solid rgba(88,196,221,.35);display:grid;place-items:center;font-style:normal;color:var(--blue);font-family:var(--serif);font-size:18px;letter-spacing:0}
+.pill{font-size:11px;letter-spacing:.16em;font-weight:800;color:var(--muted);border:1px solid var(--edge);border-radius:99px;padding:8px 12px;white-space:nowrap}
+
+/* Hero */
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:32px;align-items:center;padding-block:40px 30px}
+@media(max-width:900px){.hero{grid-template-columns:minmax(0,1fr);padding-block:28px 18px}}
+.eyebrow{font-size:11px;letter-spacing:.24em;font-weight:800;text-transform:uppercase;color:var(--blue);margin:0 0 14px}
+h1{font-family:var(--serif);font-weight:600;font-size:clamp(46px,7vw,84px);line-height:1;letter-spacing:-.02em;margin:0;text-wrap:balance}
+h1 em{font-style:italic;color:var(--yellow)}
+.lede{font-size:17px;color:var(--soft);max-width:52ch;margin:18px 0 0}
+.bigformula{font-family:var(--serif);font-size:clamp(24px,3vw,32px);margin-top:26px;display:flex;align-items:baseline;gap:.25em;flex-wrap:wrap}
+.lim{display:inline-flex;flex-direction:column;align-items:center;line-height:1;margin-right:.15em}
+.lim small{font-size:.5em;font-style:italic;margin-top:.25em;white-space:nowrap}
+.hero-stage{border-radius:var(--r);overflow:hidden;border:1px solid var(--edge);background:var(--bg2)}
+.hero-stage canvas{display:block;width:100%;height:clamp(240px,30vw,340px)}
+.hero-cap{font-size:12.5px;color:var(--muted);padding:10px 14px;border-top:1px solid var(--edge)}
+
+/* Chapter nav */
+.chapters{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:rgba(13,15,20,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-block:1px solid var(--edge);margin-inline:-4px}
+.chapters ol{list-style:none;display:flex;gap:6px;margin:0;padding:10px 4px;overflow-x:auto;scrollbar-width:none}
+.chapters ol::-webkit-scrollbar{display:none}
+.chapters a{display:inline-flex;gap:8px;align-items:center;white-space:nowrap;text-decoration:none;color:var(--soft);font-size:13px;font-weight:600;padding:7px 12px;border-radius:99px;border:1px solid transparent}
+.chapters a b{font-family:var(--serif);font-weight:600;color:var(--blue);font-size:15px}
+.chapters a:hover,.chapters a[aria-current=true]{border-color:var(--edge2);color:var(--text);background:rgba(255,255,255,.03)}
+
+/* Chapters */
+.chapter{padding-block:58px 10px;scroll-margin-top:60px}
+.ch-head{display:flex;align-items:baseline;gap:16px;margin-bottom:22px}
+.ch-num{font-family:var(--serif);font-size:20px;font-weight:600;color:var(--blue);width:40px;height:40px;border-radius:50%;border:1px solid rgba(88,196,221,.4);display:grid;place-items:center;flex:none;transform:translateY(-4px)}
+h2{font-family:var(--serif);font-weight:600;font-size:clamp(28px,3.4vw,40px);line-height:1.1;margin:0;letter-spacing:-.01em;text-wrap:balance}
+.ch-grid{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:30px;align-items:start}
+@media(max-width:980px){.ch-grid{grid-template-columns:minmax(0,1fr)}}
+.ch-text{display:flex;flex-direction:column;gap:14px;min-width:0}
+.ch-text p{margin:0;color:var(--soft);font-size:16px;line-height:1.72;max-width:62ch}
+.ch-text p strong{color:var(--text);font-weight:600}
+.formula{font-family:var(--serif);font-size:20px;line-height:1.5;background:var(--panel);border:1px solid var(--edge);border-radius:12px;padding:14px 16px;overflow-x:auto}
+.formula .note{display:block;font-family:var(--sans);font-size:12.5px;color:var(--muted);margin-top:6px;line-height:1.5}
+
+/* Stage */
+.stage{background:var(--panel);border:1px solid var(--edge);border-radius:var(--r);overflow:hidden;min-width:0}
+.stage canvas{display:block;width:100%;height:clamp(320px,38vw,470px);touch-action:pan-y;background:var(--bg2)}
+.controls{display:flex;flex-direction:column;gap:12px;padding:14px 16px 16px;border-top:1px solid var(--edge)}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.ctrl{display:grid;grid-template-columns:minmax(74px,auto) minmax(0,1fr) 92px;align-items:center;gap:12px}
+.ctrl label{font-size:13px;color:var(--soft);white-space:nowrap}
+.ctrl output{font:600 13px var(--mono);text-align:right;color:var(--text);font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--blue);cursor:pointer}
+.ctrl.eps input{accent-color:var(--yellow)}.ctrl.delta input{accent-color:var(--teal)}.ctrl.lval input{accent-color:var(--yellow)}
+.btn{font:600 13px var(--sans);color:var(--text);background:transparent;border:1px solid var(--edge2);border-radius:99px;padding:8px 14px;cursor:pointer;transition:background .15s,border-color .15s}
+.btn:hover{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.28)}
+.btn.primary{background:var(--blue);border-color:var(--blue);color:#06141a}
+.btn.primary:hover{background:#7fd3e6}
+.btn[aria-pressed=true]{border-color:var(--blue);color:var(--blue);background:rgba(88,196,221,.08)}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+button:focus-visible,input:focus-visible,a:focus-visible,summary:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.seg{display:inline-flex;flex-wrap:wrap;gap:4px;padding:4px;border-radius:12px;background:var(--bg2);border:1px solid var(--edge)}
+.seg button{font:600 13px var(--sans);color:var(--soft);background:transparent;border:0;border-radius:8px;padding:7px 11px;cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--panel2);color:var(--text);box-shadow:inset 0 0 0 1px var(--edge2)}
+.seg button .m{font-size:1.05em}
+.readout{font:13px/1.75 var(--mono);color:var(--soft);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.readout b{color:var(--text);font-weight:600}
+.verdict{display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600;border-radius:10px;padding:8px 12px;line-height:1.45}
+.verdict.ok{color:var(--green);background:rgba(131,193,103,.08);border:1px solid rgba(131,193,103,.3)}
+.verdict.bad{color:var(--red);background:rgba(252,98,85,.08);border:1px solid rgba(252,98,85,.3)}
+.verdict span{color:var(--soft);font-weight:500}
+
+/* Tables and boxes */
+table.vals{border-collapse:collapse;font:13px var(--mono);width:100%;font-variant-numeric:tabular-nums}
+table.vals th{font:700 11px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:right;padding:6px 8px;border-bottom:1px solid var(--edge)}
+table.vals td{text-align:right;padding:5px 8px;color:var(--soft);border-bottom:1px solid rgba(255,255,255,.04)}
+table.vals tr.on td{color:var(--text);background:rgba(88,196,221,.07)}
+table.vals td.lx{color:var(--teal)}table.vals td.rx{color:var(--gold)}
+.tablewrap{overflow-x:auto;background:var(--panel);border:1px solid var(--edge);border-radius:12px;padding:6px 8px}
+.idea{margin-top:26px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}
+@media(max-width:800px){.idea{grid-template-columns:minmax(0,1fr)}}
+.takeaway{background:var(--panel);border:1px solid var(--edge);border-radius:14px;padding:16px 18px}
+.takeaway h3,.tries h3{margin:0 0 6px;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.takeaway p{margin:0;color:var(--soft);line-height:1.7}
+.tries{background:var(--panel);border:1px solid var(--edge);border-radius:14px;padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+.tries details{border-top:1px solid var(--edge);padding-top:10px}
+.tries details:first-of-type{border-top:0;padding-top:0}
+.tries summary{cursor:pointer;color:var(--text);font-size:14.5px;line-height:1.55;list-style:none}
+.tries summary::-webkit-details-marker{display:none}
+.tries summary::after{content:"Show answer";display:block;margin-top:4px;font-size:12px;font-weight:700;color:var(--blue)}
+.tries details[open] summary::after{content:"Hide answer"}
+.tries details p{margin:6px 0 0;color:var(--soft);font-size:14px;line-height:1.6}
+.proof{background:var(--panel);border:1px solid var(--edge);border-radius:12px;padding:12px 14px;font-size:14px;color:var(--soft);line-height:1.65}
+.proof b{color:var(--text)}
+.statement{font-family:var(--serif);font-size:19px;line-height:1.6}
+
+/* Summary */
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+@media(max-width:980px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:620px){.cards{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--panel);border:1px solid var(--edge);border-radius:14px;padding:16px 18px}
+.card h3{margin:0 0 8px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--blue)}
+.card p{margin:0;color:var(--soft);font-size:14.5px;line-height:1.65}
+.card .f{font-family:var(--serif);font-size:18px;color:var(--text);display:block;margin:4px 0}
+footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--edge);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:12px}
+@media(max-width:560px){.ctrl{grid-template-columns:minmax(0,1fr) 84px}.ctrl label{grid-column:1/-1}.statement{font-size:17px}}
+</style>
+
+</head>
+<body>
+<div class="page">
+  <header class="topline"><div class="mark"><i>ε</i>LIMITS LAB</div><div class="pill">IOAA · MATH TOOLKIT / 03</div></header>
+
+  <section class="hero">
+    <div>
+      <p class="eyebrow">From intuition to ε–δ</p>
+      <h1>Approaching <em>L</em>.</h1>
+      <p class="lede">A limit describes where a function is heading, even at a point it never reaches. Build the idea from pictures, see why calculus needs it, then make it exact with ε and δ.</p>
+      <div class="bigformula" aria-label="limit of f of x as x approaches a equals L"><span class="lim"><span class="mu">lim</span><small><span class="t">x</span> → <span class="t">a</span></small></span><span class="m b">f</span><span class="mu">(</span><span class="m t">x</span><span class="mu">)</span><span class="mu">=</span><span class="m y">L</span></div>
+    </div>
+    <figure class="hero-stage" style="margin:0"><canvas id="c0" aria-label="Animated ε–δ boxes around a point on a curve: as the yellow ε band narrows, the teal δ strip narrows with it"></canvas><figcaption class="hero-cap">However thin the <span class="y">yellow ε band</span> gets, a <span class="t">teal δ strip</span> keeps the curve inside it. That is what “the limit is <span class="m y">L</span>” means.</figcaption></figure>
+  </section>
+
+  <nav class="chapters" aria-label="Chapters"><ol>
+    <li><a href="#what"><b>1</b>What is a limit?</a></li>
+    <li><a href="#why"><b>2</b>Why we need them</a></li>
+    <li><a href="#fail"><b>3</b>When limits fail</a></li>
+    <li><a href="#epsdelta"><b>4</b>Making it exact: ε–δ</a></li>
+    <li><a href="#seq"><b>5</b>Sequences: ε–N</a></li>
+    <li><a href="#summary"><b>✦</b>Summary</a></li>
+  </ol></nav>
+
+  <!-- ===================== 1 ===================== -->
+  <section class="chapter" id="what">
+    <div class="ch-head"><span class="ch-num">1</span><h2>What is a limit?</h2></div>
+    <div class="ch-grid">
+      <div class="ch-text">
+        <p>Take <span class="m b">f</span>(<span class="m">x</span>) = (<span class="m">x</span>² − 1) / (<span class="m">x</span> − 1). At <span class="m">x</span> = 1 it is 0/0, so <span class="m">f</span>(1) does not exist. The graph has a <strong>hole</strong>.</p>
+        <p>Yet near 1 the function is perfectly calm. Step in from both sides, a distance <span class="m">h</span> away, and the outputs close in on <strong>2</strong>. Zoom in as far as you like: the hole never fills, but the curve always points at it.</p>
+        <div class="formula"><span class="lim"><span class="mu">lim</span><small>x → 1</small></span> <span class="m">f</span>(<span class="m">x</span>) = <span class="y">2</span><span class="note">Read: “as <i>x</i> approaches 1, <i>f</i>(<i>x</i>) approaches 2.” The value at 1 itself plays no part.</span></div>
+        <div class="tablewrap"><table class="vals" aria-label="Values of f near 1"><thead><tr><th>x (left)</th><th>f(x)</th><th>x (right)</th><th>f(x)</th></tr></thead><tbody id="t1"></tbody></table></div>
+      </div>
+      <div class="stage">
+        <canvas id="c1" aria-label="Graph of (x squared minus 1) over (x minus 1) with a hole at (1, 2) and two points approaching it"></canvas>
+        <div class="controls">
+          <div class="ctrl"><label for="h1">Distance <span class="m">h</span></label><input id="h1" type="range" min="0" max="1000" value="200"><output id="h1o">0.1</output></div>
+          <div class="row"><button class="btn primary" id="play1">▶ Approach</button><button class="btn" id="zoom1" aria-pressed="false">🔍 Zoom in with h</button><button class="btn" id="fill1" aria-pressed="false">Define f(1) = 3</button></div>
+          <div class="readout" id="r1"></div>
+        </div>
+      </div>
+    </div>
+    <div class="idea">
+      <div class="takeaway"><h3>The idea</h3><p>A limit asks where <span class="m">f</span>(<span class="m">x</span>) is heading as <span class="m">x</span> gets close to <span class="m">a</span>, never what happens exactly at <span class="m">a</span>. That is why it works even when <span class="m">f</span>(<span class="m">a</span>) is undefined, or defined to be something else.</p></div>
+      <div class="tries"><h3>Try it</h3>
+        <details><summary>Press “Define f(1) = 3”. Does the limit change?</summary><p>No. The limit only looks at <i>x</i> near 1, never at <i>x</i> = 1, so it is still 2. (This function is not <i>continuous</i> at 1: continuity means the limit equals the value.)</p></details>
+        <details><summary>Turn on “Zoom in with h” and press Approach. Does the hole ever close?</summary><p>No. At every scale the curve still has a hole at (1, 2). The limit is about the approach, not about filling the hole.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 2 ===================== -->
+  <section class="chapter" id="why">
+    <div class="ch-head"><span class="ch-num">2</span><h2>Why we need them</h2></div>
+    <div class="ch-grid">
+      <div class="ch-text">
+        <p>How steep is <span class="m b">f</span>(<span class="m">x</span>) = <span class="m">x</span>² at a single point <span class="m">P</span>? A slope needs two points. So take a second point <span class="m o">Q</span> a distance <span class="m">h</span> along, and measure the <strong>secant</strong> slope.</p>
+        <div class="formula">slope = <span class="r">[<span class="m">f</span>(<span class="m">a</span> + <span class="m">h</span>) − <span class="m">f</span>(<span class="m">a</span>)]</span> / <span class="g"><span class="m">h</span></span> = 2<span class="m">a</span> + <span class="m">h</span><span class="note">Setting h = 0 gives 0/0, which means nothing. Instead let h shrink toward 0: the slope approaches 2a. That limit is the derivative.</span></div>
+        <p>Every “instant” in physics hides this limit: speed at a moment, the rate a star dims during a transit. So does the small-angle rule sin <span class="m">θ</span> ≈ <span class="m">θ</span> behind parallax and angular size, which works because sin <span class="m">θ</span> / <span class="m">θ</span> → 1.</p>
+      </div>
+      <div class="stage">
+        <canvas id="c2" aria-label="Parabola with a secant line through P and Q turning into the tangent as h shrinks"></canvas>
+        <div class="controls">
+          <div class="ctrl"><label for="a2">Point <span class="m">a</span></label><input id="a2" type="range" min="0.2" max="2.3" step="0.01" value="1"><output id="a2o">1</output></div>
+          <div class="ctrl"><label for="h2">Step <span class="m">h</span></label><input id="h2" type="range" min="0" max="1000" value="0"><output id="h2o">1</output></div>
+          <div class="row"><button class="btn primary" id="play2">▶ Shrink h</button><button class="btn" id="side2" aria-pressed="false">Use h &lt; 0 (from the left)</button><button class="btn" id="zoom2" aria-pressed="false">🔍 Zoom in near P</button></div>
+          <div class="readout" id="r2"></div>
+        </div>
+      </div>
+    </div>
+    <div class="idea">
+      <div class="takeaway"><h3>The idea</h3><p>Calculus is built on 0/0 situations that only make sense as limits. The derivative <span class="m">f</span> ′(<span class="m">a</span>) = lim<sub>h→0</sub> [<span class="m">f</span>(<span class="m">a</span>+<span class="m">h</span>) − <span class="m">f</span>(<span class="m">a</span>)]/<span class="m">h</span> is the slope the secants settle on. Zoom in on any smooth curve and it straightens into its tangent.</p></div>
+      <div class="tries"><h3>Try it</h3>
+        <details><summary>Set a = 2 and shrink h. What slope do the secants approach?</summary><p>2<i>a</i> = 4. The secant slope is exactly 4 + <i>h</i>, which tends to 4.</p></details>
+        <details><summary>Switch to h &lt; 0. Is the limit the same from the left?</summary><p>Yes. 2<i>a</i> + <i>h</i> → 2<i>a</i> whichever side <i>h</i> comes from. For a curve with a corner, like |<i>x</i>| at 0, the two sides would disagree and there would be no derivative.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 3 ===================== -->
+  <section class="chapter" id="fail">
+    <div class="ch-head"><span class="ch-num">3</span><h2>When limits fail</h2></div>
+    <div class="ch-grid">
+      <div class="ch-text">
+        <p>Approach <span class="m t">a</span> = 0 from the <span class="t">left</span> and from the <span class="o">right</span> separately. These give the <strong>one-sided limits</strong>.</p>
+        <div class="formula"><span class="t">lim<sub>x→0⁻</sub></span> <span class="m">f</span>(<span class="m">x</span>) and <span class="o">lim<sub>x→0⁺</sub></span> <span class="m">f</span>(<span class="m">x</span>)<span class="note">The limit exists exactly when both one-sided limits exist and are equal.</span></div>
+        <p>Pick a function. Some behave, and some fail in one of three classic ways: the sides <strong>disagree</strong> (a jump), the values <strong>blow up</strong>, or they <strong>never settle</strong>.</p>
+        <div class="seg" role="group" aria-label="Choose a function" id="fn3"></div>
+        <div id="v3"></div>
+      </div>
+      <div class="stage">
+        <canvas id="c3" aria-label="Graph of the chosen function with points approaching 0 from both sides"></canvas>
+        <div class="controls">
+          <div class="ctrl"><label for="h3">Distance <span class="m">h</span></label><input id="h3" type="range" min="0" max="1000" value="100"><output id="h3o">0.4</output></div>
+          <div class="row"><button class="btn primary" id="play3">▶ Approach</button></div>
+          <div class="readout" id="r3"></div>
+        </div>
+      </div>
+    </div>
+    <div class="idea">
+      <div class="takeaway"><h3>The idea</h3><p>“Approaching <span class="m">L</span>” has to hold from every direction and has to settle on one finite number. A jump fails the first test. A blow-up gives no finite number. Endless wiggling, as in sin(1/<span class="m">x</span>), never settles at all.</p></div>
+      <div class="tries"><h3>Try it</h3>
+        <details><summary>For the Jump, what are the two one-sided limits?</summary><p>0.5 from the left and 1.3 from the right. Both exist, but they differ, so the two-sided limit does not.</p></details>
+        <details><summary>Both sides of 1/x² go the same way. Why is there still no limit?</summary><p>They both grow without bound. ∞ is not a real number, so there is no finite limit. We write lim = ∞ only as shorthand for “grows without bound”.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 4 ===================== -->
+  <section class="chapter" id="epsdelta">
+    <div class="ch-head"><span class="ch-num">4</span><h2>Making it exact: ε–δ</h2></div>
+    <div class="ch-grid">
+      <div class="ch-text">
+        <p>“Close” is vague. Cauchy and Weierstrass made it a <strong>challenge game</strong>. Your opponent names a tolerance <span class="m y">ε</span>, the <span class="y">yellow band</span> around <span class="m y">L</span>. You must answer with a <span class="m t">δ</span>, the <span class="t">teal strip</span> around <span class="m t">a</span>, so that the graph inside the strip stays inside the band. The point <span class="m">x</span> = <span class="m">a</span> itself is left out.</p>
+        <div class="formula statement">For every <span class="m y">ε</span> &gt; 0 there is a <span class="m t">δ</span> &gt; 0 such that<br>0 &lt; |<span class="m">x</span> − <span class="m t">a</span>| &lt; <span class="m t">δ</span> ⟹ |<span class="m b">f</span>(<span class="m">x</span>) − <span class="m y">L</span>| &lt; <span class="m y">ε</span>.<span class="note">If you can always win, however small ε is, then the limit is L. One ε you cannot beat is enough to prove L is not the limit.</span></div>
+        <div class="seg" role="group" aria-label="Choose a function" id="fn4"></div>
+        <div id="v4"></div>
+        <div class="proof" id="p4"></div>
+      </div>
+      <div class="stage">
+        <canvas id="c4" aria-label="Epsilon band and delta strip around a point on the graph"></canvas>
+        <div class="controls">
+          <div class="ctrl eps"><label for="e4">Tolerance <span class="m y">ε</span></label><input id="e4" type="range" min="0" max="1000"><output id="e4o"></output></div>
+          <div class="ctrl delta"><label for="d4">Your <span class="m t">δ</span></label><input id="d4" type="range" min="0" max="1000"><output id="d4o"></output></div>
+          <div class="ctrl lval"><label for="l4">Claimed <span class="m y">L</span></label><input id="l4" type="range" min="0" max="1000"><output id="l4o"></output></div>
+          <div class="row"><button class="btn primary" id="find4">Find δ for me</button><button class="btn" id="shrink4">▶ Shrink ε (δ follows)</button><button class="btn" id="zoom4" aria-pressed="false">🔍 Zoom with ε</button><button class="btn" id="snap4">Snap L to the true limit</button></div>
+          <div class="readout" id="r4"></div>
+        </div>
+      </div>
+    </div>
+    <div class="idea">
+      <div class="takeaway"><h3>The idea</h3><p>The definition never mentions “getting closer over time” or infinitely small numbers. It is a promise: <em>for any</em> required accuracy <span class="m y">ε</span> there is <em>some</em> allowed wiggle room <span class="m t">δ</span>. A proof is a recipe that produces δ from ε, like δ = min(1, ε/5).</p></div>
+      <div class="tries"><h3>Try it</h3>
+        <details><summary>For x² at a = 2 with ε = 0.5, find a δ by hand, then check it with the slider.</summary><p>The proof’s recipe gives δ = min(1, 0.5/5) = 0.1, which works. The largest δ that works is √4.5 − 2 ≈ 0.121.</p></details>
+        <details><summary>Set L to 4.3 for x², then shrink ε. When does the game become impossible?</summary><p>As soon as ε ≤ 0.3. Near <i>x</i> = 2 the values crowd around 4, which is 0.3 below the claimed L, so no δ can work. One unbeatable ε proves 4.3 is not the limit.</p></details>
+        <details><summary>For the Jump, which ε can never be beaten?</summary><p>Any ε ≤ 0.75, half the gap of 1.5. Whatever L you pick, one side of the jump stays at least 0.75 away from it.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 5 ===================== -->
+  <section class="chapter" id="seq">
+    <div class="ch-head"><span class="ch-num">5</span><h2>Sequences: ε–N</h2></div>
+    <div class="ch-grid">
+      <div class="ch-text">
+        <p>A sequence <span class="m">a</span><sub>1</sub>, <span class="m">a</span><sub>2</sub>, <span class="m">a</span><sub>3</sub>, … has a limit <span class="m y">L</span> when its terms eventually <strong>stay</strong> inside any band you choose. Now you answer <span class="m y">ε</span> with a starting index <span class="m t">N</span> instead of a δ.</p>
+        <div class="formula statement">For every <span class="m y">ε</span> &gt; 0 there is an <span class="m t">N</span> such that<br><span class="m">n</span> ≥ <span class="m t">N</span> ⟹ |<span class="m">a<sub>n</sub></span> − <span class="m y">L</span>| &lt; <span class="m y">ε</span>.<span class="note">The same game with x → ∞ gives limits at infinity for functions.</span></div>
+        <div class="seg" role="group" aria-label="Choose a sequence" id="fn5"></div>
+        <div id="v5"></div>
+        <div class="proof" id="p5"></div>
+      </div>
+      <div class="stage">
+        <canvas id="c5" aria-label="Terms of the sequence as dots with an epsilon band around the limit"></canvas>
+        <div class="controls">
+          <div class="ctrl eps"><label for="e5">Tolerance <span class="m y">ε</span></label><input id="e5" type="range" min="0" max="1000"><output id="e5o"></output></div>
+          <div class="row"><button class="btn primary" id="shrink5">▶ Shrink ε</button><button class="btn" id="reset5">Reset ε</button></div>
+          <div class="readout" id="r5"></div>
+        </div>
+      </div>
+    </div>
+    <div class="idea">
+      <div class="takeaway"><h3>The idea</h3><p>Early terms can do anything. Only the <em>tail</em> matters. Shrinking ε pushes <span class="m t">N</span> further out, but for a convergent sequence there is always a point after which every term behaves.</p></div>
+      <div class="tries"><h3>Try it</h3>
+        <details><summary>For 1/n with ε = 0.01, predict N before you check.</summary><p>N = 101. You need 1/<i>n</i> &lt; 0.01, so <i>n</i> &gt; 100. The term <i>a</i><sub>100</sub> = 0.01 is not strictly inside the band.</p></details>
+        <details><summary>Why does (−1)ⁿ have no limit, whatever L you try?</summary><p>Its terms are 2 apart forever. For ε ≤ 1 they cannot all lie within ε of a single L, so no N works.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== Summary ===================== -->
+  <section class="chapter" id="summary">
+    <div class="ch-head"><span class="ch-num">✦</span><h2>Summary</h2></div>
+    <div class="cards">
+      <div class="card"><h3>The intuition</h3><p><span class="f">lim<sub>x→a</sub> f(x) = L</span>f(x) can be made as close to L as we like by taking x close enough to a, but not equal to a.</p></div>
+      <div class="card"><h3>ε–δ definition</h3><p><span class="f">∀ε &gt; 0 ∃δ &gt; 0 :<br>0 &lt; |x − a| &lt; δ ⟹ |f(x) − L| &lt; ε</span>Any tolerance ε can be met by some closeness δ.</p></div>
+      <div class="card"><h3>One-sided limits</h3><p><span class="f">lim<sub>x→a</sub> f = L ⟺ lim<sub>x→a⁻</sub> f = lim<sub>x→a⁺</sub> f = L</span>Both sides must exist and agree.</p></div>
+      <div class="card"><h3>ε–N for sequences</h3><p><span class="f">∀ε &gt; 0 ∃N : n ≥ N ⟹ |aₙ − L| &lt; ε</span>Eventually every term stays within ε of L.</p></div>
+      <div class="card"><h3>Limit laws</h3><p><span class="f">lim(f ± g) = lim f ± lim g</span><span class="f">lim(f g) = lim f · lim g</span><span class="f">lim(f / g) = lim f / lim g</span>The last one only when lim g ≠ 0. Otherwise you get 0/0 and need more work.</p></div>
+      <div class="card"><h3>Famous limits</h3><p><span class="f">sin x / x → 1 &nbsp;(x → 0)</span><span class="f">(1 − cos x) / x² → ½</span><span class="f">(1 + 1/n)ⁿ → e</span>The first is the small-angle approximation used for parallax and angular sizes.</p></div>
+      <div class="card"><h3>Continuity</h3><p><span class="f">lim<sub>x→a</sub> f(x) = f(a)</span>f is continuous at a when the limit exists and equals the value there. No holes, jumps or blow-ups.</p></div>
+      <div class="card"><h3>Derivative</h3><p><span class="f">f ′(a) = lim<sub>h→0</sub> [f(a + h) − f(a)] / h</span>The slope the secants settle on: speed, rates, gradients.</p></div>
+      <div class="card"><h3>Common traps</h3><p>The limit can exist where f(a) does not. A value at a can differ from the limit. “Plugging in” only works when f is continuous at a.</p></div>
+    </div>
+  </section>
+
+  <footer><span>LIMITS LAB · Built for astronomy &amp; physics learners</span><span>All graphs are computed live · Works offline</span></footer>
+</div>
+
+<script>
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+const C={bg:'#10131a',grid:'rgba(88,196,221,.16)',gridMinor:'rgba(88,196,221,.06)',axis:'rgba(236,239,244,.55)',tick:'#8a94a4',text:'#ECEFF4',soft:'#B6BFCC',
+  blue:'#58C4DD',yellow:'#FFE45E',gold:'#F0AC5F',green:'#83C167',red:'#FC6255',teal:'#5CD0B3',purple:'#B48EDB',halo:'rgba(16,19,26,.92)'};
+const MATH='italic 17px "STIX Two Text", "Times New Roman", serif';
+const clamp=(n,lo,hi)=>Math.max(lo,Math.min(hi,n));
+const lerp=(a,b,t)=>a+(b-a)*t;
+const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+// Display numbers: a real minus sign, no float noise, ∞ for blow-ups.
+function num(n,d=3){
+  if(!Number.isFinite(n))return Number.isNaN(n)?'undefined':n>0?'∞':'−∞';
+  let r=Number(n.toFixed(d));if(Object.is(r,-0))r=0;
+  return r.toString().replace('-','−');
+}
+const decFor=h=>clamp(Math.ceil(-Math.log10(Math.abs(h)||1))+1,2,7);
+const rgba=(hex,a)=>{const n=parseInt(hex.slice(1),16);return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`;};
+
+// ---------- Animation engine ----------
+const tweens=new Set(),runners=new Set();
+function tween(obj,key,to,ms=700,easing=ease){
+  for(const t of tweens)if(t.obj===obj&&t.key===key)tweens.delete(t);
+  if(ms<=0||reduce){obj[key]=to;return;}
+  tweens.add({obj,key,from:obj[key],to,start:performance.now(),ms,easing});
+}
+function run(ms,fn,done){const r={start:performance.now(),ms,fn,done};runners.add(r);return r;}
+const stop=r=>{if(r)runners.delete(r);};
+
+// ---------- A plot: world ↔ screen, grid, curves, bands, labels ----------
+class Plot{
+  constructor(canvas,view,opt={}){
+    this.c=canvas;this.ctx=canvas.getContext('2d');this.view={...view};this.home={...view};
+    this.pad=Object.assign({l:10,r:14,t:14,b:28},opt.pad||{});this.labels=opt.labels!==false;
+    this.resize();if('ResizeObserver' in window)new ResizeObserver(()=>{this.resize();this.dirty=true;}).observe(canvas);
+  }
+  resize(){const r=this.c.getBoundingClientRect(),dpr=Math.min(window.devicePixelRatio||1,2);this.W=r.width||600;this.H=r.height||360;this.c.width=Math.round(this.W*dpr);this.c.height=Math.round(this.H*dpr);this.ctx.setTransform(dpr,0,0,dpr,0,0);}
+  setView(v,ms=750){for(const k of ['xmin','xmax','ymin','ymax'])tween(this.view,k,v[k],ms);}
+  // Smoothly follow a moving target view; returns true while still moving.
+  follow(v,k=.16){let moving=false;for(const key of ['xmin','xmax','ymin','ymax']){const d=v[key]-this.view[key],span=this.view.xmax-this.view.xmin+this.view.ymax-this.view.ymin;if(Math.abs(d)>span*1e-4){this.view[key]+=d*(reduce?1:k);moving=true;}else this.view[key]=v[key];}return moving;}
+  get L(){return this.pad.l}get R(){return this.W-this.pad.r}get T(){return this.pad.t}get B(){return this.H-this.pad.b}
+  X(x){const v=this.view;return this.L+(x-v.xmin)/(v.xmax-v.xmin)*(this.R-this.L);}
+  Y(y){const v=this.view;return this.B-(y-v.ymin)/(v.ymax-v.ymin)*(this.B-this.T);}
+  begin(){const c=this.ctx;c.setLineDash([]);c.globalAlpha=1;c.fillStyle=C.bg;c.fillRect(0,0,this.W,this.H);}
+  clip(){const c=this.ctx;c.save();c.beginPath();c.rect(this.L,this.T,this.R-this.L,this.B-this.T);c.clip();}
+  unclip(){this.ctx.restore();}
+  static step(span,n){const raw=span/n,p=Math.pow(10,Math.floor(Math.log10(raw))),f=raw/p;return (f<1.5?1:f<3.5?2:f<7.5?5:10)*p;}
+  grid(o={}){
+    const c=this.ctx,v=this.view,sx=o.xStep||Plot.step(v.xmax-v.xmin,o.xTicks||(this.W<480?5:8)),sy=o.yStep||Plot.step(v.ymax-v.ymin,o.yTicks||(this.H<300?4:6));
+    const line=(x1,y1,x2,y2)=>{c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke();};
+    c.save();c.lineWidth=1;
+    c.strokeStyle=C.gridMinor;
+    for(let x=Math.ceil(v.xmin/(sx/2))*(sx/2);x<=v.xmax;x+=sx/2)line(this.X(x),this.T,this.X(x),this.B);
+    for(let y=Math.ceil(v.ymin/(sy/2))*(sy/2);y<=v.ymax;y+=sy/2)line(this.L,this.Y(y),this.R,this.Y(y));
+    c.strokeStyle=C.grid;
+    for(let x=Math.ceil(v.xmin/sx)*sx;x<=v.xmax;x+=sx)line(this.X(x),this.T,this.X(x),this.B);
+    for(let y=Math.ceil(v.ymin/sy)*sy;y<=v.ymax;y+=sy)line(this.L,this.Y(y),this.R,this.Y(y));
+    const ax=v.xmin<=0&&v.xmax>=0?this.X(0):this.L,ay=v.ymin<=0&&v.ymax>=0?this.Y(0):this.B;
+    c.strokeStyle=C.axis;c.lineWidth=1.5;line(ax,this.T,ax,this.B);line(this.L,ay,this.R,ay);
+    this.ax=ax;this.ay=ay;
+    if(this.labels){
+      const dx=Math.max(0,Math.ceil(-Math.log10(sx)+1e-9)),dy=Math.max(0,Math.ceil(-Math.log10(sy)+1e-9));
+      c.font='11px "JetBrains Mono", ui-monospace, monospace';c.fillStyle=C.tick;c.textAlign='center';c.textBaseline='top';
+      const lyX=clamp(ay+6,this.T,this.H-14);
+      for(let x=Math.ceil(v.xmin/sx)*sx;x<=v.xmax+1e-12;x+=sx){const px=this.X(x);if(Math.abs(x)<sx*1e-6&&ax!==this.L)continue;if(px<this.L+10||px>this.R-10)continue;c.fillText((o.xFmt?o.xFmt(x):num(x,dx)),px,lyX);}
+      c.textBaseline='middle';c.lineJoin='round';
+      const inside=ax===this.L||ax<this.L+40,lxY=inside?this.L+6:ax-6;c.textAlign=inside?'left':'right';
+      for(let y=Math.ceil(v.ymin/sy)*sy;y<=v.ymax+1e-12;y+=sy){const py=this.Y(y);if(Math.abs(y)<sy*1e-6&&ay!==this.B)continue;if(py<this.T+8||py>this.B-8)continue;const t=num(y,dy);
+        if(inside){c.lineWidth=4;c.strokeStyle=C.halo;c.strokeText(t,lxY,py);}c.fillText(t,lxY,py);}
+    }
+    c.restore();
+  }
+  // Draw y = f(x), breaking the line at discontinuities and blow-ups.
+  // colorAt(x, y) may return a colour per sample (used to paint the ε–δ test).
+  curve(f,o={}){
+    const c=this.ctx,v=this.view,x0=Math.max(o.x0??v.xmin,v.xmin),x1=Math.min(o.x1??v.xmax,v.xmax);if(x1<=x0)return;
+    const N=o.n||Math.ceil((this.X(x1)-this.X(x0))*1.6)+2,yr=v.ymax-v.ymin,lo=v.ymin-yr*3,hi=v.ymax+yr*3,breaks=o.breaks||[],tiny=(x1-x0)*1e-7;
+    c.save();c.lineWidth=o.width||3;c.lineJoin='round';c.lineCap='round';c.globalAlpha=o.alpha??1;
+    if(o.glow!==false){c.shadowColor=rgba(o.color||C.blue,.55);c.shadowBlur=o.blur??9;}
+    let pen=false,px0=null,py0=null,col=null,prevX=null;
+    const flush=()=>{if(pen){c.stroke();}pen=false;};
+    const put=(x,y,colr)=>{
+      if(!Number.isFinite(y)){flush();return;}
+      const yy=clamp(y,lo,hi),px=this.X(x),py=this.Y(yy);
+      if(pen&&(Math.abs(py-py0)>this.H*1.5||colr!==col)){
+        if(colr!==col&&Math.abs(py-py0)<=this.H*1.5){c.lineTo(px,py);c.stroke();c.beginPath();c.moveTo(px,py);col=colr;c.strokeStyle=colr;px0=px;py0=py;return;}
+        flush();
+      }
+      if(!pen){c.beginPath();c.strokeStyle=colr;c.moveTo(px,py);pen=true;col=colr;}else c.lineTo(px,py);
+      px0=px;py0=py;
+    };
+    const colorOf=(x,y)=>o.colorAt?o.colorAt(x,y):(o.color||C.blue);
+    for(let i=0;i<=N;i++){
+      const x=x0+(x1-x0)*i/N;
+      if(prevX!==null)for(const b of breaks){if(prevX<b&&x>=b){const yl=f(b-tiny);put(b-tiny,yl,colorOf(b-tiny,yl));flush();const yr2=f(b+tiny);put(b+tiny,yr2,colorOf(b+tiny,yr2));}}
+      const y=f(x);put(x,y,colorOf(x,y));prevX=x;
+    }
+    flush();c.restore();
+  }
+  bandH(y0,y1,color,a){const c=this.ctx,t=Math.min(this.Y(y0),this.Y(y1)),b=Math.max(this.Y(y0),this.Y(y1));c.save();c.fillStyle=rgba(color,a);c.fillRect(this.L,t,this.R-this.L,b-t);c.restore();}
+  bandV(x0,x1,color,a){const c=this.ctx,l=Math.min(this.X(x0),this.X(x1)),r=Math.max(this.X(x0),this.X(x1));c.save();c.fillStyle=rgba(color,a);c.fillRect(l,this.T,r-l,this.B-this.T);c.restore();}
+  line(x1,y1,x2,y2,color,w=1.5,dash=null,a=1){const c=this.ctx;c.save();c.globalAlpha=a;c.strokeStyle=color;c.lineWidth=w;if(dash)c.setLineDash(dash);c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke();c.restore();}
+  hline(y,color,w,dash,a){this.line(this.L,this.Y(y),this.R,this.Y(y),color,w,dash,a);}
+  vline(x,color,w,dash,a){this.line(this.X(x),this.T,this.X(x),this.B,color,w,dash,a);}
+  dot(x,y,r,color,glow=true){const c=this.ctx;c.save();if(glow){c.shadowColor=color;c.shadowBlur=12;}c.fillStyle=color;c.beginPath();c.arc(this.X(x),this.Y(y),r,0,Math.PI*2);c.fill();c.restore();}
+  hole(x,y,color){const c=this.ctx;c.save();c.fillStyle=C.bg;c.strokeStyle=color;c.lineWidth=2.2;c.beginPath();c.arc(this.X(x),this.Y(y),5.5,0,Math.PI*2);c.fill();c.stroke();c.restore();}
+  text(s,px,py,o={}){const c=this.ctx;c.save();c.font=o.font||'600 12px Inter, system-ui, sans-serif';c.textAlign=o.align||'center';c.textBaseline=o.base||'middle';c.lineJoin='round';
+    if(o.halo!==false){c.lineWidth=5;c.strokeStyle=C.halo;c.strokeText(s,px,py);}c.fillStyle=o.color||C.text;c.fillText(s,px,py);c.restore();}
+  // A double-headed arrow between two screen points, for marking ε and δ.
+  span(x1,y1,x2,y2,color){
+    const c=this.ctx,dx=x2-x1,dy=y2-y1,l=Math.hypot(dx,dy);if(l<6)return;const ux=dx/l,uy=dy/l,h=Math.min(6,l/3);
+    c.save();c.strokeStyle=color;c.fillStyle=color;c.lineWidth=1.6;c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke();
+    for(const [px,py,s] of [[x1,y1,1],[x2,y2,-1]]){c.beginPath();c.moveTo(px,py);c.lineTo(px+s*ux*h-uy*h*.6,py+s*uy*h+ux*h*.6);c.lineTo(px+s*ux*h+uy*h*.6,py+s*uy*h-ux*h*.6);c.closePath();c.fill();}
+    c.restore();
+  }
+}
+
+// ---------- Scenes and the frame loop ----------
+const scenes=[];
+function scene(canvasId,draw){const s={el:$(canvasId),draw,dirty:true,visible:true};scenes.push(s);return s;}
+function frame(now){
+  const active=tweens.size>0||runners.size>0;
+  for(const t of tweens){const k=clamp((now-t.start)/t.ms,0,1);t.obj[t.key]=t.from+(t.to-t.from)*t.easing(k);if(k>=1)tweens.delete(t);}
+  for(const r of runners){const k=clamp((now-r.start)/r.ms,0,1);r.fn(k);if(k>=1){runners.delete(r);r.done&&r.done();}}
+  for(const s of scenes){if(s.visible&&(active||s.dirty||s.loop||(s.plot&&s.plot.dirty))){s.dirty=false;if(s.plot)s.plot.dirty=false;s.draw(now);}}
+  requestAnimationFrame(frame);
+}
+if('IntersectionObserver' in window){
+  const io=new IntersectionObserver(es=>es.forEach(e=>{const s=scenes.find(s=>s.el===e.target);if(s){s.visible=e.isIntersecting;if(s.visible)s.dirty=true;}}),{rootMargin:'120px'});
+  setTimeout(()=>scenes.forEach(s=>io.observe(s.el)),0);
+}
+// A log-scale slider: position 0..1000 maps to a value from `a` to `b`.
+function logSlider(el,a,b){
+  return{get:()=>a*Math.pow(b/a,Number(el.value)/1000),set:v=>{el.value=1000*Math.log(clamp(v,Math.min(a,b),Math.max(a,b))/a)/Math.log(b/a);}};
+}
+function segment(boxId,items,current,onPick){
+  const box=$(boxId);
+  box.innerHTML=items.map(([k,label])=>`<button type="button" data-k="${k}" aria-pressed="${k===current}">${label}</button>`).join('');
+  box.querySelectorAll('button').forEach(b=>b.onclick=()=>{box.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));onPick(b.dataset.k);});
+}
+// Largest δ with |f(x) − L| < ε for every x with 0 < |x − a| < δ (0 if none works).
+function deltaMax(f,a,L,eps,span){
+  const bad=x=>{const y=f(x);return !Number.isFinite(y)||Math.abs(y-L)>=eps;};
+  const lo=1e-7,N=1800;let ok=0;
+  for(let i=0;i<=N;i++){
+    const d=lo*Math.pow(span/lo,i/N);
+    if(bad(a-d)||bad(a+d)){
+      if(i===0)return 0;
+      let g=ok,b=d;for(let k=0;k<40;k++){const m=(g+b)/2;if(bad(a-m)||bad(a+m))b=m;else g=m;}
+      return g;
+    }
+    ok=d;
+  }
+  return span;
+}
+
+// =================== Hero: an ambient ε–δ loop ===================
+{
+  const p=new Plot($('c0'),{xmin:-.15,xmax:2.35,ymin:-.15,ymax:2.6},{labels:false,pad:{l:8,r:8,t:8,b:8}});
+  const f=x=>.6*x*x+.4,a=1,L=1;let t0=performance.now();
+  const s=scene('c0',now=>{
+    const t=reduce?0:(now-t0)/1000,eps=.12+.5*(.5+.5*Math.cos(t*.9)),dl=.92*deltaMax(f,a,L,eps,2);
+    p.begin();p.grid({xStep:.5,yStep:.5});p.clip();
+    p.bandH(L-eps,L+eps,C.yellow,.10);p.bandV(a-dl,a+dl,C.teal,.10);
+    p.hline(L-eps,C.yellow,1.2,null,.75);p.hline(L+eps,C.yellow,1.2,null,.75);p.vline(a-dl,C.teal,1.2,null,.75);p.vline(a+dl,C.teal,1.2,null,.75);
+    p.curve(f,{colorAt:(x)=>Math.abs(x-a)<dl?C.green:C.blue,width:3.2});
+    const c=p.ctx;c.save();c.strokeStyle=C.green;c.lineWidth=2;c.strokeRect(p.X(a-dl),p.Y(L+eps),p.X(a+dl)-p.X(a-dl),p.Y(L-eps)-p.Y(L+eps));c.restore();
+    p.hole(a,L,C.blue);p.unclip();
+    p.span(p.X(a+dl)+14,p.Y(L),p.X(a+dl)+14,p.Y(L+eps),C.yellow);p.text('ε',p.X(a+dl)+26,p.Y(L+eps/2),{font:MATH,color:C.yellow});
+    p.span(p.X(a),p.Y(L-eps)+14,p.X(a+dl),p.Y(L-eps)+14,C.teal);p.text('δ',p.X(a+dl/2),p.Y(L-eps)+28,{font:MATH,color:C.teal});
+  });
+  s.plot=p;s.loop=!reduce;
+}
+
+// =================== 1. What is a limit? ===================
+{
+  const f=x=>(x*x-1)/(x-1);
+  const st={h:.1,zoom:false,filled:false,runner:null};
+  const p=new Plot($('c1'),{xmin:-.6,xmax:3.4,ymin:-.6,ymax:4.4});
+  const hs=logSlider($('h1'),1,1e-5);hs.set(st.h);
+  const rows=[1,2,3,4,5].map(k=>{const h=Math.pow(10,-k);return{h,k};});
+  function table(){
+    let best=0,bd=1e9;rows.forEach((r,i)=>{const d=Math.abs(Math.log10(r.h)-Math.log10(st.h));if(d<bd){bd=d;best=i;}});
+    $('t1').innerHTML=rows.map((r,i)=>`<tr class="${i===best?'on':''}"><td class="lx">${(1-r.h).toFixed(r.k)}</td><td>${f(1-r.h).toFixed(r.k)}</td><td class="rx">${(1+r.h).toFixed(r.k)}</td><td>${f(1+r.h).toFixed(r.k)}</td></tr>`).join('');
+  }
+  function ui(){
+    const d=decFor(st.h),h=st.h;
+    $('h1o').textContent=num(h,d);
+    $('r1').innerHTML=`<span class="t">left</span>  x = 1 − h = <b>${num(1-h,d)}</b> → f(x) = <b>${num(f(1-h),d)}</b><br><span class="o">right</span> x = 1 + h = <b>${num(1+h,d)}</b> → f(x) = <b>${num(f(1+h),d)}</b><br>f(1) = <b>${st.filled?'3 (defined by hand)':'undefined (0/0)'}</b> · limit = <b style="color:var(--yellow)">2</b>`;
+    table();s.dirty=true;
+  }
+  const s=scene('c1',()=>{
+    const h=st.h;
+    if(st.zoom){const w=Math.max(h*2.6,2e-5);if(p.follow({xmin:1-w*1.5,xmax:1+w*1.5,ymin:2-w*1.15,ymax:2+w*1.15}))s.dirty=true;}
+    else if(p.follow(p.home))s.dirty=true;
+    p.begin();p.grid();p.clip();
+    p.hline(2,C.yellow,1.2,[5,5],.55);p.vline(1,C.teal,1.2,[5,5],.45);
+    p.curve(f,{breaks:[1],color:C.blue});
+    for(const [x,col] of [[1-h,C.teal],[1+h,C.gold]]){
+      const y=f(x);p.line(p.X(x),p.Y(y),p.X(x),p.ay,col,1.2,[4,4],.75);p.line(p.X(x),p.Y(y),p.ax,p.Y(y),col,1.2,[4,4],.75);
+    }
+    p.hole(1,2,C.blue);
+    if(st.filled){p.dot(1,3,5.5,C.red);}
+    p.dot(1-h,f(1-h),6,C.teal);p.dot(1+h,f(1+h),6,C.gold);
+    p.unclip();
+    p.text('L = 2',Math.max(p.ax,p.L)+30,p.Y(2)-12,{color:C.yellow,font:'italic 600 15px "STIX Two Text", serif'});
+    p.text('a = 1',p.X(1)+24,Math.min(p.ay,p.B)-12,{color:C.teal,font:'italic 600 15px "STIX Two Text", serif'});
+    if(st.filled&&p.Y(3)>p.T&&p.Y(3)<p.B)p.text('f(1) = 3',p.X(1)+42,p.Y(3),{color:C.red,font:'italic 600 15px "STIX Two Text", serif'});
+  });
+  s.plot=p;
+  $('h1').addEventListener('input',()=>{stop(st.runner);st.h=hs.get();ui();});
+  $('play1').onclick=()=>{stop(st.runner);const h0=1;st.runner=run(reduce?1:4800,k=>{st.h=h0*Math.pow(1e-5/h0,ease(k));hs.set(st.h);ui();});};
+  $('zoom1').onclick=()=>{st.zoom=!st.zoom;$('zoom1').setAttribute('aria-pressed',st.zoom);s.dirty=true;};
+  $('fill1').onclick=()=>{st.filled=!st.filled;$('fill1').setAttribute('aria-pressed',st.filled);ui();};
+  ui();
+}
+
+// =================== 2. Why we need them ===================
+{
+  const f=x=>x*x;
+  const st={a:1,mag:1,neg:false,zoom:false,runner:null};
+  const p=new Plot($('c2'),{xmin:-.6,xmax:3.2,ymin:-.6,ymax:6.4});
+  const hs=logSlider($('h2'),1.2,1e-4);hs.set(st.mag);
+  const H=()=>st.neg?-st.mag:st.mag;
+  function ui(){
+    const a=st.a,h=H(),d=decFor(h),fa=f(a),fb=f(a+h),slope=(fb-fa)/h;
+    $('a2o').textContent=num(a,2);$('h2o').textContent=num(h,d);
+    $('r2').innerHTML=`slope = [f(${num(a+h,d)}) − f(${num(a,2)})] / (${num(h,d)})<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <span style="color:var(--red)">${num(fb-fa,d+1)}</span> / <span style="color:var(--green)">${num(h,d)}</span> = <b>${num(slope,d)}</b><br>as h → 0 the slope → 2a = <b style="color:var(--yellow)">${num(2*a,2)}</b>`;
+    s.dirty=true;
+  }
+  const s=scene('c2',()=>{
+    const a=st.a,h=H(),fa=f(a),fb=f(a+h),m=(fb-fa)/h;
+    if(st.zoom){const w=Math.max(Math.abs(h)*2,.004);if(p.follow({xmin:a-w*1.6,xmax:a+w*1.6,ymin:fa-w*1.6*Math.max(1,2*a)*.62,ymax:fa+w*1.6*Math.max(1,2*a)*.62}))s.dirty=true;}
+    else if(p.follow(p.home))s.dirty=true;
+    const v=p.view;
+    p.begin();p.grid();p.clip();
+    // tangent
+    p.line(p.X(v.xmin),p.Y(fa+2*a*(v.xmin-a)),p.X(v.xmax),p.Y(fa+2*a*(v.xmax-a)),C.yellow,1.6,[6,6],.7);
+    p.curve(f,{color:C.blue});
+    // secant through P and Q
+    p.line(p.X(v.xmin),p.Y(fa+m*(v.xmin-a)),p.X(v.xmax),p.Y(fa+m*(v.xmax-a)),C.gold,2.2,null,.9);
+    // rise / run
+    p.line(p.X(a),p.Y(fa),p.X(a+h),p.Y(fa),C.green,2.6);
+    p.line(p.X(a+h),p.Y(fa),p.X(a+h),p.Y(fb),C.red,2.6);
+    p.dot(a,fa,6,'#ffffff');p.dot(a+h,fb,6,C.gold);
+    p.unclip();
+    const runLab=p.Y(fa)+(h>0?16:16),riseX=p.X(a+h)+(h>0?16:-16);
+    if(Math.abs(p.X(a+h)-p.X(a))>22)p.text('h',(p.X(a)+p.X(a+h))/2,runLab,{color:C.green,font:MATH});
+    if(Math.abs(p.Y(fb)-p.Y(fa))>22)p.text('Δy',riseX+(h>0?8:-8),(p.Y(fa)+p.Y(fb))/2,{color:C.red,font:MATH});
+    p.text('P',p.X(a)-12,p.Y(fa)-14,{font:MATH});p.text('Q',p.X(a+h)+(h>0?-12:12),p.Y(fb)-16,{font:MATH,color:C.gold});
+    p.text('secant',clamp(p.X(a+h)+60,p.L+30,p.R-30),clamp(p.Y(fb+m*(60/((p.X(1)-p.X(0))||1)))-6,p.T+10,p.B-10),{color:C.gold,font:'600 12px Inter'});
+  });
+  s.plot=p;
+  $('a2').addEventListener('input',()=>{st.a=Number($('a2').value);ui();});
+  $('h2').addEventListener('input',()=>{stop(st.runner);st.mag=hs.get();ui();});
+  $('play2').onclick=()=>{stop(st.runner);const m0=1.2;st.runner=run(reduce?1:4200,k=>{st.mag=m0*Math.pow(1e-4/m0,ease(k));hs.set(st.mag);ui();});};
+  $('side2').onclick=()=>{st.neg=!st.neg;$('side2').setAttribute('aria-pressed',st.neg);ui();};
+  $('zoom2').onclick=()=>{st.zoom=!st.zoom;$('zoom2').setAttribute('aria-pressed',st.zoom);s.dirty=true;};
+  ui();
+}
+
+// =================== 3. When limits fail ===================
+{
+  const F={
+    works:{label:'sin x / x',f:x=>x===0?NaN:Math.sin(x)/x,view:{xmin:-7,xmax:7,ymin:-.5,ymax:1.6},breaks:[],kind:'ok',
+      text:'Both sides head to <b>1</b>, so the limit exists and equals 1, even though f(0) is undefined (0/0).'},
+    jump:{label:'Jump',f:x=>x<0?.15*x+.5:.15*x+1.3,view:{xmin:-3,xmax:3,ymin:-.3,ymax:2.2},breaks:[0],kind:'jump',left:.5,right:1.3,
+      text:'From the left f → <b>0.5</b>, from the right f → <b>1.3</b>. The sides disagree, so there is no limit, though each one-sided limit exists.'},
+    sign:{label:'|x| / x',f:x=>x===0?NaN:Math.abs(x)/x,view:{xmin:-3,xmax:3,ymin:-1.8,ymax:1.8},breaks:[0],kind:'jump',left:-1,right:1,
+      text:'The left side is stuck at <b>−1</b> and the right side at <b>+1</b>. They disagree, so there is no limit.'},
+    blow:{label:'1 / x²',f:x=>1/(x*x),view:{xmin:-3,xmax:3,ymin:-.5,ymax:9},breaks:[0],kind:'inf',
+      text:'f(x) grows without bound from both sides. We write lim = ∞, but there is no finite limit.'},
+    wiggle:{label:'sin(1/x)',f:x=>Math.sin(1/x),view:{xmin:-1,xmax:1,ymin:-1.6,ymax:1.6},breaks:[0],kind:'osc',
+      text:'f(x) keeps swinging between −1 and 1 however small h gets. It never settles on one value, so there is no limit.'}
+  };
+  const st={fn:'works',prev:'works',morph:1,h:.4,runner:null};
+  const p=new Plot($('c3'),F.works.view);
+  const hs=logSlider($('h3'),1,1e-4);hs.set(st.h);
+  // While switching, the curve morphs from the old function to the new one.
+  const fcur=x=>{const b=F[st.fn].f(x);if(st.morph>=1)return b;const a=F[st.prev].f(x);if(!Number.isFinite(a))return b;if(!Number.isFinite(b))return a;return lerp(a,b,ease(st.morph));};
+  function ui(){
+    const g=F[st.fn],h=st.h,d=decFor(h),yl=g.f(-h),yr=g.f(h);
+    $('h3o').textContent=num(h,d);
+    $('r3').innerHTML=`<span class="t">left</span>  f(−${num(h,d)}) = <b>${num(yl,4)}</b><br><span class="o">right</span> f(+${num(h,d)}) = <b>${num(yr,4)}</b>`;
+    const ok=g.kind==='ok';
+    const one=g.kind==='jump'?`<br><span>lim<sub>x→0⁻</sub> = ${num(g.left,2)}, lim<sub>x→0⁺</sub> = ${num(g.right,2)}</span>`:'';
+    $('v3').innerHTML=`<div class="verdict ${ok?'ok':'bad'}">${ok?'✓ Limit exists: 1':g.kind==='jump'?'✗ No limit: the sides disagree':g.kind==='inf'?'✗ No finite limit: it blows up':'✗ No limit: it never settles'}</div><p style="margin:10px 0 0;color:var(--soft);font-size:15px;line-height:1.65">${g.text}${one}</p>`;
+    s.dirty=true;
+  }
+  const s=scene('c3',()=>{
+    const g=F[st.fn],h=st.h;
+    p.begin();p.grid();p.clip();
+    p.curve(fcur,{breaks:[...new Set([...F[st.prev].breaks,...g.breaks])],color:C.blue,width:st.fn==='wiggle'?1.8:3,n:st.fn==='wiggle'?4000:undefined});
+    if(st.morph>=1){
+      if(st.fn==='works')p.hole(0,1,C.blue);
+      if(st.fn==='jump'){p.hole(0,.5,C.blue);p.dot(0,1.3,5,C.blue,false);}
+      if(st.fn==='sign'){p.hole(0,-1,C.blue);p.hole(0,1,C.blue);}
+    }
+    const pts=[[-h,C.teal],[h,C.gold]];
+    for(const [x,col] of pts){const y=fcur(x);if(!Number.isFinite(y))continue;const yy=clamp(y,p.view.ymin-1,p.view.ymax+1);
+      p.line(p.X(x),p.Y(yy),p.ax,p.Y(yy),col,1.3,[4,4],.8);p.dot(x,yy,6,col);
+      const c=p.ctx;c.save();c.fillStyle=col;c.beginPath();const ty=p.Y(yy),tx=p.ax+(x<0?-2:2);c.moveTo(tx,ty);c.lineTo(tx+(x<0?-9:9),ty-5);c.lineTo(tx+(x<0?-9:9),ty+5);c.closePath();c.fill();c.restore();}
+    p.unclip();
+  });
+  s.plot=p;
+  segment('fn3',Object.entries(F).map(([k,g])=>[k,g.label]),st.fn,k=>{
+    if(k===st.fn)return;st.prev=st.fn;st.fn=k;st.morph=0;tween(st,'morph',1,850);p.setView(F[k].view,850);ui();
+  });
+  $('h3').addEventListener('input',()=>{stop(st.runner);st.h=hs.get();ui();});
+  $('play3').onclick=()=>{stop(st.runner);const h0=1;st.runner=run(reduce?1:4500,k=>{st.h=h0*Math.pow(1e-4/h0,ease(k));hs.set(st.h);ui();});};
+  ui();
+}
+
+// =================== 4. ε–δ ===================
+{
+  const F={
+    sq:{label:'x² at a = 2',f:x=>x*x,a:2,L:4,view:{xmin:.2,xmax:3.6,ymin:-.4,ymax:9},span:3,eps:.8,delta:.3,
+      proof:e=>({d:Math.min(1,e/5),how:'|x² − 4| = |x − 2|·|x + 2|. If |x − 2| &lt; 1 then |x + 2| &lt; 5, so |x² − 4| &lt; 5|x − 2|. Choose <b>δ = min(1, ε/5)</b>.'})},
+    hole:{label:'(x² − 1)/(x − 1) at a = 1',f:x=>(x*x-1)/(x-1),a:1,L:2,hole:true,view:{xmin:-.6,xmax:3,ymin:-.4,ymax:4.2},span:3,eps:.6,delta:.9,
+      proof:e=>({d:e,how:'For x ≠ 1, f(x) = x + 1, so |f(x) − 2| = |x − 1|. Choose <b>δ = ε</b>.'})},
+    sinc:{label:'sin x / x at a = 0',f:x=>x===0?NaN:Math.sin(x)/x,a:0,L:1,hole:true,view:{xmin:-4.5,xmax:4.5,ymin:-.4,ymax:1.5},span:5,eps:.2,delta:2,
+      proof:e=>({d:Math.sqrt(6*e),how:'From sin x ≥ x − x³/6 we get 0 ≤ 1 − sin x / x ≤ x²/6. Choose <b>δ = √(6ε)</b>.'})},
+    jump:{label:'Jump at a = 0',f:x=>x<0?.2*x+1:.2*x+2.5,a:0,L:1.75,view:{xmin:-2.5,xmax:2.5,ymin:0,ymax:3.6},span:2.5,eps:.5,delta:.6,breaks:[0],noLimit:true,
+      proof:()=>({d:null,how:'Near 0 the left side is close to 1 and the right side close to 2.5, a gap of 1.5. Whatever L you claim, one side stays at least 0.75 away. So <b>no δ works when ε ≤ 0.75</b>, and there is no limit.'})}
+  };
+  const st={fn:'sq',eps:.8,delta:.3,L:4,zoom:false,runner:null};
+  const p=new Plot($('c4'),F.sq.view);
+  const es=logSlider($('e4'),.01,2),ds=logSlider($('d4'),.001,3);
+  const lsl=$('l4'),Lrange=1.5;
+  const g=()=>F[st.fn];
+  const setL=()=>{lsl.value=1000*(st.L-(g().L-Lrange))/(2*Lrange);};
+  let dmaxCache={key:'',v:0};
+  const dmax=()=>{const G=g(),key=st.fn+'|'+st.eps+'|'+st.L;if(dmaxCache.key!==key)dmaxCache={key,v:deltaMax(G.f,G.a,st.L,st.eps,G.span)};return dmaxCache.v;};
+  function ui(){
+    const G=g(),dm=dmax(),works=st.delta<=dm*(1+1e-9)&&dm>0,ds2=decFor(st.delta);
+    $('e4o').textContent=num(st.eps,3);$('d4o').textContent=num(st.delta,Math.max(3,ds2));$('l4o').textContent=num(st.L,2);
+    // find an example x that breaks the promise
+    let ex=null;if(!works){let worst=-1;for(let i=1;i<=600;i++){const x=G.a-st.delta+2*st.delta*i/601;if(Math.abs(x-G.a)<1e-12)continue;const y=G.f(x),e=Math.abs(y-st.L);if(e>worst){worst=e;ex={x,y,e};}}}
+    const aT=num(G.a,2),LT=num(st.L,2);
+    const stmt=`If 0 &lt; |x − ${aT}| &lt; <span style="color:var(--teal)">${num(st.delta,Math.max(3,ds2))}</span>, is |f(x) − ${LT}| &lt; <span style="color:var(--yellow)">${num(st.eps,3)}</span>?`;
+    $('r4').innerHTML=stmt+'<br>'+(dm>0?`Largest δ that works for this ε: <b>${num(dm,4)}</b>`:`<span style="color:var(--red)">No δ &gt; 0 works for this ε.</span>`);
+    $('v4').innerHTML=works?`<div class="verdict ok">✓ This δ wins <span>· every x in the teal strip lands in the yellow band</span></div>`
+      :`<div class="verdict bad">✗ This δ fails <span>· e.g. x = ${num(ex.x,4)} gives |f(x) − ${LT}| = ${num(ex.e,3)} ≥ ε</span></div>`;
+    const pr=G.proof(st.eps),trueL=!G.noLimit&&Math.abs(st.L-G.L)<1e-9;
+    let tail='';
+    if(G.noLimit)tail=st.eps<=.75?'<br>Right now ε = '+num(st.eps,3)+' ≤ 0.75: <span style="color:var(--red)">unbeatable</span>.':'<br>Right now ε = '+num(st.eps,3)+' is still beatable. Shrink it below 0.75.';
+    else if(!trueL)tail='<br>You claimed L = '+LT+', but the true limit is '+num(G.L,2)+'. Shrink ε below |'+LT+' − '+num(G.L,2)+'| = '+num(Math.abs(st.L-G.L),2)+' and no δ will work.';
+    else tail=`<br>For ε = ${num(st.eps,3)} the recipe gives δ = <b>${num(pr.d,4)}</b> ${pr.d<=dm*(1+1e-9)?'<span style="color:var(--green)">✓ works</span>':'<span style="color:var(--red)">✗</span>'}${dm>0?' (largest: '+num(dm,4)+')':''}.`;
+    $('p4').innerHTML='<b>The proof.</b> '+pr.how+tail;
+    $('snap4').disabled=!!G.noLimit;
+    s.dirty=true;
+  }
+  const s=scene('c4',()=>{
+    const G=g(),a=G.a,L=st.L,eps=st.eps,dl=st.delta,dm=dmax(),works=dl<=dm*(1+1e-9)&&dm>0;
+    if(st.zoom){const hy=Math.max(eps*3.2,.004),hx=Math.max(dl*3.2,.002);if(p.follow({xmin:a-hx,xmax:a+hx,ymin:L-hy,ymax:L+hy}))s.dirty=true;}
+    else if(p.follow(G.view))s.dirty=true;
+    p.begin();p.grid();p.clip();
+    p.bandH(L-eps,L+eps,C.yellow,.10);p.bandV(a-dl,a+dl,C.teal,.10);
+    p.hline(L-eps,C.yellow,1.3,null,.8);p.hline(L+eps,C.yellow,1.3,null,.8);p.hline(L,C.yellow,1,[5,5],.5);
+    p.vline(a-dl,C.teal,1.3,null,.8);p.vline(a+dl,C.teal,1.3,null,.8);p.vline(a,C.teal,1,[5,5],.45);
+    p.curve(G.f,{breaks:G.breaks||[],colorAt:(x,y)=>Math.abs(x-a)<dl?(Math.abs(y-L)<eps?C.green:C.red):C.blue,width:3.2});
+    const c=p.ctx;c.save();c.strokeStyle=works?C.green:C.red;c.lineWidth=2.2;c.shadowColor=works?C.green:C.red;c.shadowBlur=10;
+    c.strokeRect(p.X(a-dl),p.Y(L+eps),p.X(a+dl)-p.X(a-dl),p.Y(L-eps)-p.Y(L+eps));c.restore();
+    if(G.hole)p.hole(a,G.L,C.blue);else if(G.noLimit){p.hole(0,1,C.blue);p.dot(0,2.5,5,C.blue,false);}else p.dot(a,G.f(a),5,'#ffffff');
+    p.unclip();
+    // ε and δ markers
+    const bx=p.X(a+dl)+14;if(bx<p.R-16){p.span(bx,p.Y(L),bx,p.Y(L+eps),C.yellow);p.text('ε',bx+12,(p.Y(L)+p.Y(L+eps))/2,{font:MATH,color:C.yellow});}
+    const by=p.Y(L-eps)+14;if(by<p.B-6){p.span(p.X(a),by,p.X(a+dl),by,C.teal);p.text('δ',(p.X(a)+p.X(a+dl))/2,by+13,{font:MATH,color:C.teal});}
+    p.text('L',p.L+12,p.Y(L)-10,{font:MATH,color:C.yellow});
+    p.text('a',p.X(a)-10,p.B-10,{font:MATH,color:C.teal});
+  });
+  s.plot=p;
+  function load(k,first){
+    st.fn=k;const G=F[k];
+    if(first){st.eps=G.eps;st.delta=G.delta;st.L=G.L;p.view={...G.view};}
+    else{tween(st,'eps',G.eps,700);tween(st,'delta',G.delta,700);tween(st,'L',G.L,700);p.setView(G.view,800);
+      run(720,()=>{es.set(st.eps);ds.set(st.delta);setL();ui();});}
+    es.set(st.eps);ds.set(st.delta);setL();ui();
+  }
+  segment('fn4',Object.entries(F).map(([k,G])=>[k,G.label]),st.fn,k=>{stop(st.runner);load(k,false);});
+  $('e4').addEventListener('input',()=>{stop(st.runner);st.eps=es.get();ui();});
+  $('d4').addEventListener('input',()=>{stop(st.runner);st.delta=ds.get();ui();});
+  lsl.addEventListener('input',()=>{stop(st.runner);st.L=g().L-Lrange+2*Lrange*Number(lsl.value)/1000;ui();});
+  $('find4').onclick=()=>{stop(st.runner);const dm=dmax();if(dm>0){tween(st,'delta',clamp(dm*.95,.001,3),650);run(680,()=>{ds.set(st.delta);ui();});}else ui();};
+  $('snap4').onclick=()=>{stop(st.runner);tween(st,'L',g().L,600);run(640,()=>{setL();ui();});};
+  $('zoom4').onclick=()=>{st.zoom=!st.zoom;$('zoom4').setAttribute('aria-pressed',st.zoom);s.dirty=true;};
+  $('shrink4').onclick=()=>{
+    stop(st.runner);st.zoom=true;$('zoom4').setAttribute('aria-pressed','true');
+    const e0=st.eps>.05?st.eps:1,e1=.01;
+    st.runner=run(reduce?1:4200,k=>{st.eps=k>=1?e1:e0*Math.pow(e1/e0,ease(k));const dm=dmax();if(dm>0)st.delta=clamp(dm*.9,.001,3);es.set(st.eps);ds.set(st.delta);ui();});
+  };
+  load('sq',true);
+}
+
+// =================== 5. Sequences ===================
+{
+  const S={
+    inv:{label:'1/n',a:n=>1/n,L:0,view:[-.15,1.15],eps:.1,proof:e=>'|1/n − 0| &lt; ε ⟺ n &gt; 1/ε. So N = ⌊1/ε⌋ + 1'+(e?' = <b>'+(Math.floor(1/e+1e-12)+1)+'</b>':'')+'.'},
+    alt:{label:'(−1)ⁿ / n',a:n=>(n%2?-1:1)/n,L:0,view:[-1.15,.65],eps:.1,proof:e=>'|(−1)ⁿ/n| = 1/n, so the same N as for 1/n works: N = ⌊1/ε⌋ + 1'+(e?' = <b>'+(Math.floor(1/e+1e-12)+1)+'</b>':'')+'. The sign flips, but the distance shrinks.'},
+    frac:{label:'n / (n + 1)',a:n=>n/(n+1),L:1,view:[.4,1.12],eps:.08,proof:e=>'|n/(n + 1) − 1| = 1/(n + 1) &lt; ε ⟺ n &gt; 1/ε − 1.'},
+    e:{label:'(1 + 1/n)ⁿ',a:n=>Math.pow(1+1/n,n),L:Math.E,view:[1.9,2.85],eps:.1,proof:e=>'No neat formula, but the gap is about e/(2n), so N ≈ e/(2ε)'+(e?' ≈ <b>'+Math.round(Math.E/(2*e))+'</b>':'')+'. The limit is e = 2.71828…'},
+    osc:{label:'(−1)ⁿ',a:n=>n%2?-1:1,L:0,view:[-1.6,1.6],eps:1.2,noLimit:true,proof:()=>'The terms alternate between −1 and 1, which are 2 apart. For ε ≤ 1 no single L can have both within ε, so <b>no N ever works</b>.'}
+  };
+  const st={k:'inv',eps:.1,nView:30,runner:null};
+  const p=new Plot($('c5'),{xmin:0,xmax:31,ymin:-.15,ymax:1.15});
+  const es=logSlider($('e5'),.005,1.5);
+  const NMAX=200000;let cache={key:'',v:null};
+  function findN(){
+    const G=S[st.k],key=st.k+'|'+st.eps;if(cache.key===key)return cache.v;
+    let last=0;for(let n=1;n<=NMAX;n++){if(!(Math.abs(G.a(n)-G.L)<st.eps))last=n;}
+    const v=last>=NMAX-2?null:last+1;cache={key,v};return v;
+  }
+  function ui(){
+    const G=S[st.k],N=findN();
+    $('e5o').textContent=num(st.eps,3);
+    $('r5').innerHTML=N?`For ε = <b>${num(st.eps,3)}</b>: N = <b style="color:var(--teal)">${N}</b>. From a<sub>${N}</sub> on, every term is within ${num(st.eps,3)} of L = ${G.L===Math.E?'e':num(G.L,2)}.`
+      :`For ε = <b>${num(st.eps,3)}</b>: <span style="color:var(--red)">no N works</span>. The terms never stay inside the band.`;
+    $('v5').innerHTML=G.noLimit?(N?`<div class="verdict ok">✓ This ε is beatable <span>· but shrink it to 1 or below</span></div>`:`<div class="verdict bad">✗ Divergent <span>· an unbeatable ε exists, so there is no limit</span></div>`)
+      :`<div class="verdict ok">✓ Converges to ${G.L===Math.E?'e':num(G.L,2)} <span>· every ε has an N</span></div>`;
+    $('p5').innerHTML='<b>The proof.</b> '+G.proof(st.eps);
+    s.dirty=true;
+  }
+  const s=scene('c5',()=>{
+    const G=S[st.k],N=findN(),target=N?clamp(N*1.6,30,4000):40;
+    st.nView+= (target-st.nView)*(reduce?1:.14);if(Math.abs(target-st.nView)>.3)s.dirty=true;else st.nView=target;
+    const [y0,y1]=G.view;p.follow({xmin:0,xmax:st.nView+1,ymin:y0,ymax:y1},reduce?1:.2)&&(s.dirty=true);
+    const L=G.L,eps=st.eps;
+    p.begin();p.grid({xFmt:x=>num(x,0)});p.clip();
+    p.bandH(L-eps,L+eps,C.yellow,.10);p.hline(L-eps,C.yellow,1.2,null,.8);p.hline(L+eps,C.yellow,1.2,null,.8);p.hline(L,C.yellow,1,[5,5],.5);
+    if(N){p.bandV(N-.5,st.nView+2,C.teal,.06);p.vline(N-.5,C.teal,1.6,null,.9);}
+    const count=Math.floor(st.nView),step=Math.max(1,Math.ceil(count/1500)),r=clamp(5-count/60,1.6,5);
+    for(let n=1;n<=count;n+=step){const y=G.a(n),inside=Math.abs(y-L)<eps,col=N&&n>=N?C.green:inside?C.blue:C.red;p.dot(n,y,r,col,count<200);}
+    p.unclip();
+    if(N){const px=p.X(N-.5);p.text('N = '+N,clamp(px+30,p.L+30,p.R-30),p.T+14,{color:C.teal,font:'italic 600 15px "STIX Two Text", serif'});}
+    p.text('L',p.L+12,p.Y(L)-10,{font:MATH,color:C.yellow});
+    p.text('n',p.R-10,p.B-10,{font:MATH,color:C.tick});
+  });
+  s.plot=p;
+  function load(k,first){st.k=k;const G=S[k];if(first){st.eps=G.eps;}else{tween(st,'eps',G.eps,600);run(620,()=>{es.set(st.eps);ui();});}es.set(st.eps);ui();}
+  segment('fn5',Object.entries(S).map(([k,G])=>[k,G.label]),st.k,k=>{stop(st.runner);load(k,false);});
+  $('e5').addEventListener('input',()=>{stop(st.runner);st.eps=es.get();ui();});
+  $('shrink5').onclick=()=>{stop(st.runner);const e0=st.eps>.02?st.eps:S[st.k].eps,e1=st.k==='osc'?.2:.005;st.runner=run(reduce?1:4200,k=>{st.eps=k>=1?e1:e0*Math.pow(e1/e0,ease(k));es.set(st.eps);ui();});};
+  $('reset5').onclick=()=>{stop(st.runner);tween(st,'eps',S[st.k].eps,600);run(620,()=>{es.set(st.eps);ui();});};
+  load('inv',true);
+}
+
+// ---------- Chapter nav highlight ----------
+if('IntersectionObserver' in window){
+  const links=[...document.querySelectorAll('.chapters a')];
+  const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){links.forEach(l=>l.setAttribute('aria-current',String(l.getAttribute('href')==='#'+e.target.id)));}}),{rootMargin:'-45% 0px -50% 0px'});
+  document.querySelectorAll('.chapter').forEach(sec=>io.observe(sec));
+}
+requestAnimationFrame(frame);
+})();
+</script>
+
+</body>
+</html>

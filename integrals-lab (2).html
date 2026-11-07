@@ -1,0 +1,1036 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Integrals Lab</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="theme-color" content="#0d0f14">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&family=STIX+Two+Text:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap">
+<style>
+/* Layout: a long, quiet chalkboard. Each chapter pairs a short explanation with one live scene; colour carries meaning: blue = the function and area above the axis, red = area below, yellow = the newest strip and the exact value, teal and gold = the limits a and b (and under- or overestimates), green = accumulated area. One dark look, chosen on purpose. */
+:root{
+  color-scheme:dark;
+  --bg:#0d0f14;--bg2:#10131a;--panel:#141821;--panel2:#191e29;--edge:rgba(255,255,255,.08);--edge2:rgba(255,255,255,.15);
+  --text:#ECEFF4;--soft:#B6BFCC;--muted:#7D8797;
+  --blue:#58C4DD;--yellow:#FFE45E;--gold:#F0AC5F;--green:#83C167;--red:#FC6255;--teal:#5CD0B3;--purple:#B48EDB;
+  --serif:"STIX Two Text","Cambria Math","Times New Roman",serif;
+  --sans:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --r:16px;
+}
+*{box-sizing:border-box}
+html{background:var(--bg);scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 var(--sans)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+.page{max-width:1180px;margin:0 auto;padding-block:28px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+a{color:var(--blue)}
+.m{font-family:var(--serif);font-style:italic;font-size:1.08em;letter-spacing:.01em}
+.mu{font-family:var(--serif);font-style:normal;font-size:1.08em}
+.y{color:var(--yellow)}.t{color:var(--teal)}.b{color:var(--blue)}.g{color:var(--green)}.r{color:var(--red)}.o{color:var(--gold)}
+sub,sup{font-size:.72em}
+
+/* Top line */
+.topline{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-bottom:18px;border-bottom:1px solid var(--edge)}
+.mark{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.2em;font-size:12px;color:var(--soft)}
+.mark i{width:30px;height:30px;border-radius:9px;border:1px solid rgba(88,196,221,.35);display:grid;place-items:center;font-style:normal;color:var(--blue);font-family:var(--serif);font-size:18px;letter-spacing:0}
+.pill{font-size:11px;letter-spacing:.16em;font-weight:800;color:var(--muted);border:1px solid var(--edge);border-radius:99px;padding:8px 12px;white-space:nowrap}
+
+/* Hero */
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:32px;align-items:center;padding-block:40px 30px}
+@media(max-width:900px){.hero{grid-template-columns:minmax(0,1fr);padding-block:28px 18px}}
+.eyebrow{font-size:11px;letter-spacing:.24em;font-weight:800;text-transform:uppercase;color:var(--blue);margin:0 0 14px}
+h1{font-family:var(--serif);font-weight:600;font-size:clamp(46px,7vw,84px);line-height:1;letter-spacing:-.02em;margin:0;text-wrap:balance}
+h1 em{font-style:italic;color:var(--yellow)}
+.lede{font-size:17px;color:var(--soft);max-width:52ch;margin:18px 0 0}
+.bigformula{font-family:var(--serif);font-size:clamp(24px,3vw,32px);margin-top:26px;display:flex;align-items:baseline;gap:.25em;flex-wrap:wrap}
+.lim{display:inline-flex;flex-direction:column;align-items:center;line-height:1;margin-right:.15em}
+.lim small{font-size:.5em;font-style:italic;margin-top:.25em;white-space:nowrap}
+.hero-stage{border-radius:var(--r);overflow:hidden;border:1px solid var(--edge);background:var(--bg2)}
+.hero-stage canvas{display:block;width:100%;height:clamp(240px,30vw,340px)}
+.hero-cap{font-size:12.5px;color:var(--muted);padding:10px 14px;border-top:1px solid var(--edge)}
+
+/* Chapter nav */
+.chapters{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:rgba(13,15,20,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-block:1px solid var(--edge);margin-inline:-4px}
+.chapters ol{list-style:none;display:flex;gap:6px;margin:0;padding:10px 4px;overflow-x:auto;scrollbar-width:none}
+.chapters ol::-webkit-scrollbar{display:none}
+.chapters a{display:inline-flex;gap:8px;align-items:center;white-space:nowrap;text-decoration:none;color:var(--soft);font-size:13px;font-weight:600;padding:7px 12px;border-radius:99px;border:1px solid transparent}
+.chapters a b{font-family:var(--serif);font-weight:600;color:var(--blue);font-size:15px}
+.chapters a:hover,.chapters a[aria-current=true]{border-color:var(--edge2);color:var(--text);background:rgba(255,255,255,.03)}
+
+/* Chapters */
+.chapter{padding-block:58px 10px;scroll-margin-top:60px}
+.ch-head{display:flex;align-items:baseline;gap:16px;margin-bottom:22px}
+.ch-num{font-family:var(--serif);font-size:20px;font-weight:600;color:var(--blue);width:40px;height:40px;border-radius:50%;border:1px solid rgba(88,196,221,.4);display:grid;place-items:center;flex:none;transform:translateY(-4px)}
+h2{font-family:var(--serif);font-weight:600;font-size:clamp(28px,3.4vw,40px);line-height:1.1;margin:0;letter-spacing:-.01em;text-wrap:balance}
+.ch-grid{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:30px;align-items:start}
+@media(max-width:980px){.ch-grid{grid-template-columns:minmax(0,1fr)}}
+.ch-text{display:flex;flex-direction:column;gap:14px;min-width:0}
+.ch-text p{margin:0;color:var(--soft);font-size:16px;line-height:1.72;max-width:62ch}
+.ch-text p strong{color:var(--text);font-weight:600}
+.formula{font-family:var(--serif);font-size:20px;line-height:1.5;background:var(--panel);border:1px solid var(--edge);border-radius:12px;padding:14px 16px;overflow-x:auto}
+.formula .note{display:block;font-family:var(--sans);font-size:12.5px;color:var(--muted);margin-top:6px;line-height:1.5}
+
+/* Stage */
+.stage{background:var(--panel);border:1px solid var(--edge);border-radius:var(--r);overflow:hidden;min-width:0}
+.stage canvas{display:block;width:100%;height:clamp(320px,38vw,470px);touch-action:pan-y;background:var(--bg2)}
+.controls{display:flex;flex-direction:column;gap:12px;padding:14px 16px 16px;border-top:1px solid var(--edge)}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.ctrl{display:grid;grid-template-columns:minmax(74px,auto) minmax(0,1fr) 92px;align-items:center;gap:12px}
+.ctrl label{font-size:13px;color:var(--soft);white-space:nowrap}
+.ctrl output{font:600 13px var(--mono);text-align:right;color:var(--text);font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--blue);cursor:pointer}
+.ctrl.eps input{accent-color:var(--yellow)}.ctrl.delta input{accent-color:var(--teal)}.ctrl.lval input{accent-color:var(--yellow)}
+.btn{font:600 13px var(--sans);color:var(--text);background:transparent;border:1px solid var(--edge2);border-radius:99px;padding:8px 14px;cursor:pointer;transition:background .15s,border-color .15s}
+.btn:hover{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.28)}
+.btn.primary{background:var(--blue);border-color:var(--blue);color:#06141a}
+.btn.primary:hover{background:#7fd3e6}
+.btn[aria-pressed=true]{border-color:var(--blue);color:var(--blue);background:rgba(88,196,221,.08)}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+button:focus-visible,input:focus-visible,a:focus-visible,summary:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.seg{display:inline-flex;flex-wrap:wrap;gap:4px;padding:4px;border-radius:12px;background:var(--bg2);border:1px solid var(--edge)}
+.seg button{font:600 13px var(--sans);color:var(--soft);background:transparent;border:0;border-radius:8px;padding:7px 11px;cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--panel2);color:var(--text);box-shadow:inset 0 0 0 1px var(--edge2)}
+.seg button .m{font-size:1.05em}
+.readout{font:13px/1.75 var(--mono);color:var(--soft);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.readout b{color:var(--text);font-weight:600}
+.verdict{display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600;border-radius:10px;padding:8px 12px;line-height:1.45}
+.verdict.ok{color:var(--green);background:rgba(131,193,103,.08);border:1px solid rgba(131,193,103,.3)}
+.verdict.bad{color:var(--red);background:rgba(252,98,85,.08);border:1px solid rgba(252,98,85,.3)}
+.verdict span{color:var(--soft);font-weight:500}
+
+/* Tables and boxes */
+table.vals{border-collapse:collapse;font:13px var(--mono);width:100%;font-variant-numeric:tabular-nums}
+table.vals th{font:700 11px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:right;padding:6px 8px;border-bottom:1px solid var(--edge)}
+table.vals td{text-align:right;padding:5px 8px;color:var(--soft);border-bottom:1px solid rgba(255,255,255,.04)}
+table.vals tr.on td{color:var(--text);background:rgba(88,196,221,.07)}
+table.vals td.lx{color:var(--teal)}table.vals td.rx{color:var(--gold)}
+.tablewrap{overflow-x:auto;background:var(--panel);border:1px solid var(--edge);border-radius:12px;padding:6px 8px}
+.idea{margin-top:26px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}
+@media(max-width:800px){.idea{grid-template-columns:minmax(0,1fr)}}
+.takeaway{background:var(--panel);border:1px solid var(--edge);border-radius:14px;padding:16px 18px}
+.takeaway h3,.tries h3{margin:0 0 6px;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.takeaway p{margin:0;color:var(--soft);line-height:1.7}
+.tries{background:var(--panel);border:1px solid var(--edge);border-radius:14px;padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+.tries details{border-top:1px solid var(--edge);padding-top:10px}
+.tries details:first-of-type{border-top:0;padding-top:0}
+.tries summary{cursor:pointer;color:var(--text);font-size:14.5px;line-height:1.55;list-style:none}
+.tries summary::-webkit-details-marker{display:none}
+.tries summary::after{content:"Show answer";display:block;margin-top:4px;font-size:12px;font-weight:700;color:var(--blue)}
+.tries details[open] summary::after{content:"Hide answer"}
+.tries details p{margin:6px 0 0;color:var(--soft);font-size:14px;line-height:1.6}
+.proof{background:var(--panel);border:1px solid var(--edge);border-radius:12px;padding:12px 14px;font-size:14px;color:var(--soft);line-height:1.65}
+.proof b{color:var(--text)}
+.statement{font-family:var(--serif);font-size:19px;line-height:1.6}
+
+/* Summary */
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+@media(max-width:980px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:620px){.cards{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--panel);border:1px solid var(--edge);border-radius:14px;padding:16px 18px}
+.card h3{margin:0 0 8px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--blue)}
+.card p{margin:0;color:var(--soft);font-size:14.5px;line-height:1.65}
+.card .f{font-family:var(--serif);font-size:18px;color:var(--text);display:block;margin:4px 0}
+footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--edge);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:12px}
+@media(max-width:560px){.ctrl{grid-template-columns:minmax(0,1fr) 84px}.ctrl label{grid-column:1/-1}.statement{font-size:17px}}
+
+
+/* Shared extras for the Derivatives and Integrals labs */
+.stage canvas.short{height:clamp(180px,20vw,240px);border-top:1px solid var(--edge)}
+.stage canvas.track{height:clamp(110px,11vw,140px)}
+.stage canvas.mini{height:clamp(120px,11vw,150px);border-top:1px solid var(--edge)}
+.motion-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr)}
+.motion-grid>canvas{height:100%!important;min-height:330px;border-right:1px solid var(--edge)}
+.motion-grid .minis{display:flex;flex-direction:column;min-width:0}
+.motion-grid .minis canvas:first-child{border-top:0}
+@media(max-width:700px){.motion-grid{grid-template-columns:minmax(0,1fr)}.motion-grid>canvas{min-height:260px;height:260px!important;border-right:0}.motion-grid .minis canvas:first-child{border-top:1px solid var(--edge)}}
+.keyrow{display:flex;gap:6px 16px;flex-wrap:wrap;font-size:12.5px;color:var(--soft)}
+.keyrow span{display:inline-flex;align-items:center;gap:7px}
+.keyrow i{display:inline-block;width:16px;height:3px;border-radius:2px}
+.keyrow i.box{height:10px;width:14px;border-radius:3px}
+.bar{display:flex;height:14px;border-radius:7px;overflow:hidden;background:var(--bg2);border:1px solid var(--edge)}
+.bar span{display:block;height:100%;transition:width .2s}
+.slices{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:4px;align-items:end;height:64px;padding:6px 8px;background:var(--bg2);border:1px solid var(--edge);border-radius:10px}
+.slices span{display:block;border-radius:3px 3px 0 0;min-height:2px}
+.statusrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+
+.verdict{flex-wrap:wrap;row-gap:2px}
+
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="topline"><div class="mark"><i>∫</i>INTEGRALS LAB</div><div class="pill">IOAA · MATH TOOLKIT / 05</div></header>
+
+  <section class="hero">
+    <div>
+      <p class="eyebrow">The mathematics of adding up</p>
+      <h1>Infinitely many, <em>infinitely thin</em>.</h1>
+      <p class="lede">An integral adds up infinitely many tiny pieces: thin rectangles under a curve, small steps of a journey, slivers of area swept by a planet. Build it from rectangles, discover the Fundamental Theorem, and use it on orbits.</p>
+      <div class="bigformula" aria-label="integral from a to b of f of x dx equals the limit of the sum of f of x i times delta x"><span class="mu" style="font-size:1.4em">∫</span><span class="lim" style="margin-left:-.1em"><small style="margin:0 0 .3em;order:-1"><span class="o">b</span></small><small><span class="t">a</span></small></span><span class="m b">f</span><span class="mu">(</span><span class="m">x</span><span class="mu">)</span><span class="m">dx</span><span class="mu">=</span><span class="lim"><span class="mu">lim</span><small>n → ∞</small></span><span class="mu">Σ</span><span class="m b">f</span><span class="mu">(</span><span class="m">xᵢ</span><span class="mu">)</span><span class="m y">Δx</span></div>
+    </div>
+    <figure class="hero-stage" style="margin:0"><canvas id="c0" aria-label="Rectangles under a curve getting thinner and more numerous"></canvas><figcaption class="hero-cap">More and thinner rectangles: their total area closes in on the exact area under the curve. That limit is the integral.</figcaption></figure>
+  </section>
+
+  <nav class="chapters" aria-label="Chapters"><ol>
+    <li><a href="#riemann"><b>1</b>Area from rectangles</a></li>
+    <li><a href="#closeup"><b>2</b>A Riemann sum, term by term</a></li>
+    <li><a href="#signed"><b>3</b>Signed area</a></li>
+    <li><a href="#ftc"><b>4</b>Fundamental Theorem I</a></li>
+    <li><a href="#ftc2"><b>5</b>Fundamental Theorem II</a></li>
+    <li><a href="#distance"><b>6</b>Distance from speed</a></li>
+    <li><a href="#kepler"><b>7</b>Kepler’s equal areas</a></li>
+    <li><a href="#summary"><b>✦</b>Summary</a></li>
+  </ol></nav>
+
+  <!-- ===================== 1 ===================== -->
+  <section class="chapter" id="riemann">
+    <div class="ch-head"><span class="ch-num">1</span><h2>Area from rectangles</h2></div>
+    <div class="ch-grid">
+      <div class="ch-text">
+        <p>There is no formula for the area under a curve, but there is one for rectangles. Slice [<span class="m t">a</span>, <span class="m o">b</span>] into <span class="m">n</span> strips of width <span class="m y">Δx</span>, give each a height taken from the curve, and add them up. This is a <strong>Riemann sum</strong>.</p>
+        <div class="formula"><span class="m">S<sub>n</sub></span> = <span class="m">f</span>(<span class="m">x</span><sub>1</sub>)<span class="m y">Δx</span> + <span class="m">f</span>(<span class="m">x</span><sub>2</sub>)<span class="m y">Δx</span> + … + <span class="m">f</span>(<span class="m">x<sub>n</sub></span>)<span class="m y">Δx</span><span class="note">Where each height is sampled (left edge, right edge, middle) changes the estimate. As n → ∞ every choice gives the same limit: the integral.</span></div>
+        <p><span class="o">Gold</span> strips overestimate their slice and <span class="t">teal</span> strips underestimate it. Watch both kinds of error vanish as the strips get thinner.</p>
+        <p>The sample point can be anywhere in its strip, even chosen at <strong>random</strong>. For a continuous function every choice gives the same limit. That is what makes the integral well defined.</p>
+        <div class="seg" role="group" aria-label="Choose a function" id="fn1"></div>
+        <div class="seg" role="group" aria-label="Choose a method" id="m1"></div>
+        <div id="v1"></div>
+        <div class="proof" id="p1"></div>
+      </div>
+      <div class="stage">
+        <canvas id="c1" aria-label="Riemann rectangles under the chosen curve"></canvas>
+        <canvas id="c1e" class="short" aria-label="Error of the sum against the number of strips, on log scales"></canvas>
+        <div class="controls">
+          <div class="ctrl"><label for="n1">Strips <span class="m">n</span></label><input id="n1" type="range" min="0" max="1000"><output id="n1o"></output></div>
+          <div class="row"><button class="btn primary" id="play1">▶ Refine</button><button class="btn" id="reseed1" hidden>⤨ New random points</button></div>
+          <div class="readout" id="r1"></div>
+        </div>
+      </div>
+    </div>
+    <div class="idea">
+      <div class="takeaway"><h3>The idea</h3><p>An integral is the limit of sums of thin strips. Left and right sums close in like 1/<span class="m">n</span>: double <span class="m">n</span> and the error halves. Midpoint and trapezoid sums close in like 1/<span class="m">n</span>²: double <span class="m">n</span> and the error drops four times. That is why numerical methods prefer them.</p></div>
+      <div class="tries"><h3>Try it</h3>
+        <details><summary>With Left sums on x², is the estimate too big or too small? Why?</summary><p>Too small. x² rises on [0, 2], so the left edge is the lowest point of each strip and every rectangle sits below the curve. With n = 6 the sum is 2.037 against the true 8/3 ≈ 2.667.</p></details>
+        <details><summary>Use Midpoint with n = 10 on sin x. How close do you get to 2?</summary><p>2.00825, an error of only 0.008. The left sum with n = 10 is off by about 0.016, twice as much.</p></details>
+        <details><summary>On the error chart (log scales), what slope do the Left dots follow? And the Midpoint dots?</summary><p>Slope −1 for Left (error ∝ 1/n) and slope −2 for Midpoint (error ∝ 1/n²). On log scales a power law is a straight line, and its slope is the power.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 2 ===================== -->
+  <section class="chapter" id="closeup">
+    <div class="ch-head"><span class="ch-num">2</span><h2>A Riemann sum, term by term</h2></div>
+    <div class="ch-grid">
+      <div class="ch-text">
+        <p>Here is what the Σ symbol is actually doing. Every Riemann sum has three ingredients:</p>
+        <div class="formula"><span class="mu" style="font-size:1.3em">Σ</span><sub><span class="m">i</span>=1</sub><sup><span class="m">n</span></sup> <span class="b"><span class="m">f</span>(<span class="m">x<sub>i</sub></span>*)</span> · <span class="y"><span class="m">Δx</span></span><span class="note"><b style="color:var(--text)">Σ, i = 1 to n:</b> add up one term per strip. &nbsp;<b style="color:var(--blue)">f(xᵢ*):</b> the height of strip i, taken at its sample point xᵢ*. &nbsp;<b style="color:var(--yellow)">Δx = (b − a)/n:</b> the width of every strip.</span></div>
+        <p>The strips sit on a <strong>partition</strong> <span class="m">a</span> = <span class="m">x</span><sub>0</sub> &lt; <span class="m">x</span><sub>1</sub> &lt; … &lt; <span class="m">x<sub>n</sub></span> = <span class="m">b</span> with <span class="m">x<sub>i</sub></span> = <span class="m">a</span> + <span class="m">i</span>·<span class="m">Δx</span>. Press <strong>Add them up</strong> to watch each term computed and added in turn, then see how close the total lands to the exact area.</p>
+        <div class="seg" role="group" aria-label="Choose a function" id="fn6"></div>
+        <div class="seg" role="group" aria-label="Choose a method" id="m6"></div>
+        <div class="tablewrap" style="max-height:330px;overflow:auto"><table class="vals" aria-label="Each term of the Riemann sum"><thead><tr><th>i</th><th>xᵢ*</th><th>f(xᵢ*)</th><th>f(xᵢ*)·Δx</th><th>running total</th></tr></thead><tbody id="t6"></tbody></table></div>
+      </div>
+      <div class="stage">
+        <canvas id="c6" aria-label="Strips lighting up one at a time as they are added"></canvas>
+        <div class="controls">
+          <div class="keyrow"><span><i class="box" style="background:var(--yellow)"></i>being added</span><span><i class="box" style="background:rgba(88,196,221,.55)"></i>already added</span><span><i class="box" style="background:rgba(255,255,255,.12)"></i>still to come</span></div>
+          <div class="bar" id="bar6" style="height:18px;position:relative" aria-label="Running total compared with the exact area"></div>
+          <div class="ctrl"><label for="n6">Strips <span class="m">n</span></label><input id="n6" type="range" min="1" max="12" step="1" value="4"><output id="n6o"></output></div>
+          <div class="row"><button class="btn primary" id="play6">▶ Add them up</button><button class="btn" id="step6">Next term →</button><button class="btn" id="reset6">Start over</button></div>
+          <div class="readout" id="r6"></div>
+        </div>
+      </div>
+    </div>
+    <div class="idea">
+      <div class="takeaway"><h3>The idea</h3><p>A Riemann sum is ordinary arithmetic: multiply each height by the width and add. The only new idea is the limit. Make the partition finer and finer, and the total settles on one number, the definite integral.</p></div>
+      <div class="tries"><h3>Try it</h3>
+        <details><summary>With n = 4 Right sums on x², write out the four terms.</summary><p>(0.5)²·0.5 + (1)²·0.5 + (1.5)²·0.5 + (2)²·0.5 = 0.125 + 0.5 + 1.125 + 2 = 3.75. The exact area is 8/3 ≈ 2.667.</p></details>
+        <details><summary>Which strip contributes the most, and why?</summary><p>The last one. x² is largest at the right end, so that strip is the tallest. For a rising function the right sum overestimates, because every height is taken at the top of its strip.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 3 ===================== -->
+  <section class="chapter" id="signed">
+    <div class="ch-head"><span class="ch-num">3</span><h2>Signed area</h2></div>
+    <div class="ch-grid">
+      <div class="ch-text">
+        <p>Where <span class="m">f</span> dips below the axis, its strips have negative height. So the integral counts area <span class="b">above</span> the axis as positive and area <span class="r">below</span> it as negative.</p>
+        <div class="formula"><span class="mu">∫</span><sub><span class="m t">a</span></sub><sup><span class="m o">b</span></sup> <span class="m">f</span> <span class="m">dx</span> = <span class="b">(area above)</span> − <span class="r">(area below)</span><span class="note">To get the total area, add the pieces with ∫|f| dx instead. Swapping a and b flips the sign of the integral.</span></div>
+        <div class="seg" role="group" aria-label="Choose a function" id="fn2"></div>
+        <div id="v2"></div>
+      </div>
+      <div class="stage">
+        <canvas id="c2" aria-label="Area between the curve and the axis, coloured above and below"></canvas>
+        <div class="controls">
+          <div class="ctrl"><label for="a2">Lower <span class="m t">a</span></label><input id="a2" type="range" min="0" max="1000"><output id="a2o"></output></div>
+          <div class="ctrl"><label for="b2">Upper <span class="m o">b</span></label><input id="b2" type="range" min="0" max="1000"><output id="b2o"></output></div>
+          <div class="row"><button class="btn" id="swap2">⇄ Swap a and b</button></div>
+          <div class="readout" id="r2"></div>
+        </div>
+      </div>
+    </div>
+    <div class="idea">
+      <div class="takeaway"><h3>The idea</h3><p>The integral measures <em>net</em> accumulation. For a velocity, that is net displacement. Driving 5 km forward and 5 km back gives 0, even though you covered 10 km.</p></div>
+      <div class="tries"><h3>Try it</h3>
+        <details><summary>What is ∫ sin x dx from 0 to 2π? What is the total area?</summary><p>The integral is 0: the hump above cancels the hump below. The total area is 2 + 2 = 4.</p></details>
+        <details><summary>Press ⇄ Swap a and b. What happens?</summary><p>The integral changes sign: ∫ₐᵇ f = −∫ᵦᵃ f. The strips are the same, but each Δx is now negative.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 4 ===================== -->
+  <section class="chapter" id="ftc">
+    <div class="ch-head"><span class="ch-num">4</span><h2>Fundamental Theorem I: area has slope f</h2></div>
+    <div class="ch-grid">
+      <div class="ch-text">
+        <p>Let the right edge move. The area so far, <span class="m g">A</span>(<span class="m">x</span>) = ∫<sub>0</sub><sup><span class="m">x</span></sup> <span class="m">f</span>(<span class="m">t</span>) <span class="m">dt</span>, becomes a new function, the <strong>accumulation</strong> function.</p>
+        <p>Push <span class="m">x</span> on by a tiny <span class="m">dx</span>. The area grows by one thin <span class="y">strip</span> of height <span class="m">f</span>(<span class="m">x</span>), so <span class="m">dA</span> ≈ <span class="m">f</span>(<span class="m">x</span>)·<span class="m">dx</span>. In other words, the slope of <span class="m g">A</span> is <span class="m">f</span>.</p>
+        <div class="formula"><span class="m">d</span>/<span class="m">dx</span> ∫<sub>0</sub><sup><span class="m">x</span></sup> <span class="m">f</span>(<span class="m">t</span>) <span class="m">dt</span> = <span class="m">f</span>(<span class="m">x</span>)<span class="note">Integration and differentiation undo each other: the area function is an antiderivative of f. Part II (next chapter) turns this into a way to compute areas.</span></div>
+        <p>More carefully: the new strip is squeezed between rectangles of height min <span class="m">f</span> and max <span class="m">f</span> on [<span class="m">x</span>, <span class="m">x</span> + <span class="m">dx</span>]. Divide by <span class="m">dx</span>, and both bounds tend to <span class="m">f</span>(<span class="m">x</span>) because <span class="m">f</span> is continuous. That is the whole proof.</p>
+        <div class="seg" role="group" aria-label="Choose a function" id="fn3"></div>
+        <div id="v3"></div>
+      </div>
+      <div class="stage">
+        <canvas id="c3a" aria-label="The function with the area up to x shaded and a thin strip at x"></canvas>
+        <canvas id="c3b" class="short" aria-label="The accumulated area A(x), traced out, with its tangent"></canvas>
+        <div class="controls">
+          <div class="keyrow"><span><i class="box" style="background:rgba(88,196,221,.5)"></i>area so far</span><span><i class="box" style="background:var(--yellow)"></i>new strip f(x)·dx</span><span><i style="background:var(--green)"></i>A(x)</span><span>Drag on the top graph</span></div>
+          <div class="ctrl"><label for="x3">Right edge <span class="m">x</span></label><input id="x3" type="range" min="0" max="1000" value="300"><output id="x3o"></output></div>
+          <div class="ctrl"><label for="d3">Strip <span class="m">dx</span></label><input id="d3" type="range" min="0" max="1000" value="300"><output id="d3o"></output></div>
+          <div class="row"><button class="btn primary" id="play3">▶ Sweep</button></div>
+          <div class="readout" id="r3"></div>
+        </div>
+      </div>
+    </div>
+    <div class="idea">
+      <div class="takeaway"><h3>The idea</h3><p>Two ideas that look unrelated, slopes and areas, are inverse operations. Areas that would take infinitely many rectangles can be found by asking one question: which function has <span class="m">f</span> as its derivative?</p></div>
+      <div class="tries"><h3>Try it</h3>
+        <details><summary>For cos x, where is A(x) largest?</summary><p>At <i>x</i> = π/2, where cos <i>x</i> turns negative. After that each new strip subtracts area. A(π/2) = sin(π/2) = 1.</p></details>
+        <details><summary>Why does the slope of A always equal f(x)?</summary><p>Adding a strip of width dx adds about f(x)·dx of area, so ΔA/dx → f(x) as dx → 0.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 5 ===================== -->
+  <section class="chapter" id="ftc2">
+    <div class="ch-head"><span class="ch-num">5</span><h2>Fundamental Theorem II: why F(b) − F(a)</h2></div>
+    <div class="ch-grid">
+      <div class="ch-text">
+        <p>Suppose <span class="m">F</span> ′ = <span class="m">f</span>. Cut [<span class="m t">a</span>, <span class="m o">b</span>] into <span class="m">n</span> steps. Across step <span class="m">i</span>, <span class="m">F</span> rises by Δ<span class="m">F<sub>i</sub></span> = <span class="m">F</span>(<span class="m">x<sub>i</sub></span>) − <span class="m">F</span>(<span class="m">x</span><sub><span class="m">i</span>−1</sub>).</p>
+        <div class="formula">Δ<span class="m">F</span><sub>1</sub> + Δ<span class="m">F</span><sub>2</sub> + … + Δ<span class="m">F<sub>n</sub></span> = <span class="m">F</span>(<span class="m o">b</span>) − <span class="m">F</span>(<span class="m t">a</span>)<span class="note">Telescoping: every in-between value is added once and subtracted once, so only the two ends survive.</span></div>
+        <p>The <strong>mean value theorem</strong> says each rise equals slope × run at some point <span class="m">c<sub>i</sub></span> inside the step: Δ<span class="m">F<sub>i</sub></span> = <span class="m">F</span> ′(<span class="m">c<sub>i</sub></span>)·<span class="m">Δx</span> = <span class="m">f</span>(<span class="m">c<sub>i</sub></span>)·<span class="m">Δx</span>. That is exactly the area of <strong>rectangle i</strong>. So</p>
+        <div class="formula"><span class="mu">Σ</span> <span class="m">f</span>(<span class="m">c<sub>i</sub></span>)<span class="m">Δx</span> = <span class="m">F</span>(<span class="m o">b</span>) − <span class="m">F</span>(<span class="m t">a</span>) &nbsp;for every <span class="m">n</span> &nbsp;⟹&nbsp; ∫<sub><span class="m">a</span></sub><sup><span class="m">b</span></sup> <span class="m">f</span> <span class="m">dx</span> = <span class="m">F</span>(<span class="m">b</span>) − <span class="m">F</span>(<span class="m">a</span>)<span class="note">Each coloured rectangle on the top graph has the same area as the matching coloured rise on the bottom graph.</span></div>
+        <div class="seg" role="group" aria-label="Choose a function" id="fn7"></div>
+        <div id="v7"></div>
+        <div class="proof"><b>Worked examples.</b><br>∫<sub>0</sub><sup>2</sup> x² dx = [x³/3]<sub>0</sub><sup>2</sup> = 8/3<br>∫<sub>0</sub><sup>π</sup> sin x dx = [−cos x]<sub>0</sub><sup>π</sup> = 1 − (−1) = 2<br>∫<sub>1</sub><sup>e</sup> dx/x = [ln x]<sub>1</sub><sup>e</sup> = 1<br><b>Escaping a planet:</b> the work to lift mass m from radius R to infinity is ∫<sub>R</sub><sup>∞</sup> GMm/r² dr = [−GMm/r]<sub>R</sub><sup>∞</sup> = GMm/R. Setting ½mv² = GMm/R gives the escape speed v = √(2GM/R).</div>
+      </div>
+      <div class="stage">
+        <canvas id="c7a" aria-label="The function f with one rectangle per step, each in its own colour"></canvas>
+        <canvas id="c7b" class="short" aria-label="The antiderivative F with its rise over each step, in matching colours"></canvas>
+        <div class="controls">
+          <div class="ctrl"><label for="n7">Steps <span class="m">n</span></label><input id="n7" type="range" min="1" max="16" step="1" value="4"><output id="n7o"></output></div>
+          <div class="ctrl"><label for="b7">Upper <span class="m o">b</span></label><input id="b7" type="range" min="0" max="1000" value="1000"><output id="b7o"></output></div>
+          <div class="row"><div class="seg" role="group" aria-label="Sample points" id="s7"></div></div>
+          <div class="readout" id="r7"></div>
+        </div>
+      </div>
+    </div>
+    <div class="idea">
+      <div class="takeaway"><h3>The idea</h3><p>The total change of <span class="m">F</span> is the sum of its small changes, and each small change is a rate times a width. Add infinitely many and you get the integral of the rate. Part I says the area function’s slope is <span class="m">f</span>. Part II says adding up <span class="m">f</span> gives the total change of any antiderivative.</p></div>
+      <div class="tries"><h3>Try it</h3>
+        <details><summary>With mean-value points, why is the sum exact even for n = 1?</summary><p>The mean value theorem gives one point c with f(c)·(b − a) = F(b) − F(a): a single rectangle with exactly the right area. Switch to Left points and the match breaks until n is large.</p></details>
+        <details><summary>Use the theorem to find ∫₁⁴ dx/x.</summary><p>F(x) = ln x, so the integral is ln 4 − ln 1 = ln 4 ≈ 1.386. Pick 1/x and set b = 4 to check.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 6 ===================== -->
+  <section class="chapter" id="distance">
+    <div class="ch-head"><span class="ch-num">6</span><h2>Distance from speed</h2></div>
+    <div class="ch-grid">
+      <div class="ch-text">
+        <p>For a short time <span class="m">dt</span>, speed is nearly constant, so the distance covered is <span class="m">v</span>·<span class="m">dt</span>: a thin strip under the velocity graph. Add the strips and the <strong>area under v(t) is the displacement</strong>.</p>
+        <div class="formula"><span class="m">x</span>(<span class="m">t</span>) − <span class="m">x</span>(0) = ∫<sub>0</sub><sup><span class="m">t</span></sup> <span class="m">v</span>(<span class="m">s</span>) <span class="m">ds</span><span class="note">Area below the axis means moving backwards. In the same way, ∫ a dt is the change in velocity.</span></div>
+        <div class="seg" role="group" aria-label="Choose a journey" id="fn4"></div>
+        <div id="v4"></div>
+      </div>
+      <div class="stage">
+        <canvas id="c4t" class="track" aria-label="The moving object on a straight track"></canvas>
+        <canvas id="c4v" aria-label="Velocity against time with the area so far shaded"></canvas>
+        <div class="controls">
+          <div class="ctrl"><label for="t4">Time <span class="m">t</span></label><input id="t4" type="range" min="0" max="1000" value="0"><output id="t4o"></output></div>
+          <div class="row"><button class="btn primary" id="play4">❚❚ Pause</button></div>
+          <div class="readout" id="r4"></div>
+        </div>
+      </div>
+    </div>
+    <div class="idea">
+      <div class="takeaway"><h3>The idea</h3><p>Integrals turn rates into totals: speed into distance, power into energy, flow into volume. For a probe whose speed is logged over time, the integral of those readings tells you how far it has travelled.</p></div>
+      <div class="tries"><h3>Try it</h3>
+        <details><summary>For “Cruise, then brake”, how far does it travel in total?</summary><p>A rectangle plus a triangle: 12 × 4 + ½ × 12 × 3 = 48 + 18 = 66 m.</p></details>
+        <details><summary>For “Back and forth”, compare displacement and distance over one full swing (t = 0 to 2π).</summary><p>The displacement is 0: the areas above and below cancel. The distance is ∫|v| dt = 4 × 3 = 12 m.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 7 ===================== -->
+  <section class="chapter" id="kepler">
+    <div class="ch-head"><span class="ch-num">7</span><h2>Kepler’s equal areas</h2></div>
+    <div class="ch-grid">
+      <div class="ch-text">
+        <p>Kepler’s second law says a planet sweeps out <strong>equal areas in equal times</strong>. Near the star it moves fast and its slices are short and wide. Far away it moves slowly and its slices are long and thin.</p>
+        <p>Each slice is a fan of thin triangles, each with area ½<span class="m">r</span>²<span class="m">dθ</span>. The slice’s area is the integral of those triangles:</p>
+        <div class="formula"><span class="m">A</span> = ½ ∫ <span class="m">r</span>(<span class="m">θ</span>)² <span class="m">dθ</span>, &nbsp;&nbsp; <span class="m">dA</span>/<span class="m">dt</span> = ½<span class="m">r</span>²<span class="m">dθ</span>/<span class="m">dt</span> = constant<span class="note">The constant is half the angular momentum per unit mass, so the law is conservation of angular momentum in disguise.</span></div>
+        <div id="v5"></div>
+        <div class="slices" id="bars5" aria-label="Area of each slice"></div>
+      </div>
+      <div class="stage">
+        <canvas id="c5" aria-label="An elliptical orbit cut into slices of equal time, each with equal area"></canvas>
+        <div class="controls">
+          <div class="ctrl"><label for="e5">Eccentricity <span class="m">e</span></label><input id="e5" type="range" min="0" max="0.85" step="0.01" value="0.5"><output id="e5o"></output></div>
+          <div class="row"><button class="btn primary" id="play5">❚❚ Pause</button></div>
+          <div class="readout" id="r5"></div>
+        </div>
+      </div>
+    </div>
+    <div class="idea">
+      <div class="takeaway"><h3>The idea</h3><p>Integrals measure shapes that no ruler can, like the curved slices of an ellipse. Computing ½∫<span class="m">r</span>²<span class="m">dθ</span> for each month-long slice gives the same number every time: one twelfth of the ellipse’s area, πab/12.</p></div>
+      <div class="tries"><h3>Try it</h3>
+        <details><summary>Set e = 0.6. Where does the planet move fastest, and by how much?</summary><p>At perihelion. The speed ratio is (1 + e)/(1 − e) = 4, so the planet moves 4× faster at perihelion than at aphelion.</p></details>
+        <details><summary>Set e = 0. What do the slices look like?</summary><p>Twelve identical 30° wedges. For a circle, equal times mean equal angles, as you would expect.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== Summary ===================== -->
+  <section class="chapter" id="summary">
+    <div class="ch-head"><span class="ch-num">✦</span><h2>Summary</h2></div>
+    <div class="cards">
+      <div class="card"><h3>Definition</h3><p><span class="f">∫ₐᵇ f dx = lim<sub>n→∞</sub> Σ f(xᵢ) Δx</span>The limit of Riemann sums: the area of infinitely many thin strips.</p></div>
+      <div class="card"><h3>Signed area</h3><p><span class="f">above − below</span>Swapping the limits flips the sign. ∫ₐᵇ + ∫ᵦᶜ = ∫ₐᶜ.</p></div>
+      <div class="card"><h3>FTC, part 1</h3><p><span class="f">d/dx ∫ₐˣ f(t) dt = f(x)</span>The accumulated area grows at the rate f.</p></div>
+      <div class="card"><h3>FTC, part 2</h3><p><span class="f">∫ₐᵇ f dx = F(b) − F(a)</span>Here F is any antiderivative, with F ′ = f.</p></div>
+      <div class="card"><h3>Antiderivatives</h3><p><span class="f">xⁿ → xⁿ⁺¹/(n + 1) &nbsp;(n ≠ −1)</span><span class="f">1/x → ln|x|, &nbsp;eˣ → eˣ</span><span class="f">sin → −cos, &nbsp;cos → sin</span></p></div>
+      <div class="card"><h3>Linearity</h3><p><span class="f">∫(αf + βg) = α∫f + β∫g</span>Integrals split over sums and pull out constants.</p></div>
+      <div class="card"><h3>Motion</h3><p><span class="f">Δx = ∫ v dt, &nbsp;Δv = ∫ a dt</span>Area under a rate is the total change.</p></div>
+      <div class="card"><h3>Kepler’s second law</h3><p><span class="f">dA/dt = ½ r² dθ/dt = const</span>Equal areas in equal times, from conservation of angular momentum.</p></div>
+      <div class="card"><h3>Riemann sum</h3><p><span class="f">Σ f(xᵢ*) Δx, &nbsp;Δx = (b − a)/n</span>Any sample point xᵢ* in each strip gives the same limit for continuous f.</p></div>
+      <div class="card"><h3>Why FTC works</h3><p><span class="f">Σ ΔFᵢ = F(b) − F(a), &nbsp;ΔFᵢ = f(cᵢ)Δx</span>The rises telescope, and the mean value theorem matches each rise to a rectangle.</p></div>
+      <div class="card"><h3>Escape speed</h3><p><span class="f">∫<sub>R</sub><sup>∞</sup> GMm/r² dr = GMm/R</span>The work to escape gravity, which gives v = √(2GM/R).</p></div>
+      <div class="card"><h3>Numerical accuracy</h3><p>Left and right sums: error ∝ 1/n. Midpoint and trapezoid sums: error ∝ 1/n². Simpson’s rule: ∝ 1/n⁴.</p></div>
+    </div>
+  </section>
+
+  <footer><span>INTEGRALS LAB · Built for astronomy &amp; physics learners</span><span>All graphs are computed live · Works offline</span></footer>
+</div>
+
+<script>
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+const C={bg:'#10131a',grid:'rgba(88,196,221,.16)',gridMinor:'rgba(88,196,221,.06)',axis:'rgba(236,239,244,.55)',tick:'#8a94a4',text:'#ECEFF4',soft:'#B6BFCC',
+  blue:'#58C4DD',yellow:'#FFE45E',gold:'#F0AC5F',green:'#83C167',red:'#FC6255',teal:'#5CD0B3',purple:'#B48EDB',halo:'rgba(16,19,26,.92)'};
+const MATH='italic 17px "STIX Two Text", "Times New Roman", serif';
+const clamp=(n,lo,hi)=>Math.max(lo,Math.min(hi,n));
+const lerp=(a,b,t)=>a+(b-a)*t;
+const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+// Display numbers: a real minus sign, no float noise, ∞ for blow-ups.
+function num(n,d=3){
+  if(!Number.isFinite(n))return Number.isNaN(n)?'undefined':n>0?'∞':'−∞';
+  let r=Number(n.toFixed(d));if(Object.is(r,-0))r=0;
+  return r.toString().replace('-','−');
+}
+const decFor=h=>clamp(Math.ceil(-Math.log10(Math.abs(h)||1))+1,2,7);
+const rgba=(hex,a)=>{const n=parseInt(hex.slice(1),16);return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`;};
+
+// ---------- Animation engine ----------
+const tweens=new Set(),runners=new Set();
+function tween(obj,key,to,ms=700,easing=ease){
+  for(const t of tweens)if(t.obj===obj&&t.key===key)tweens.delete(t);
+  if(ms<=0||reduce){obj[key]=to;return;}
+  tweens.add({obj,key,from:obj[key],to,start:performance.now(),ms,easing});
+}
+function run(ms,fn,done){const r={start:performance.now(),ms,fn,done};runners.add(r);return r;}
+const stop=r=>{if(r)runners.delete(r);};
+
+// ---------- A plot: world ↔ screen, grid, curves, bands, labels ----------
+class Plot{
+  constructor(canvas,view,opt={}){
+    this.c=canvas;this.ctx=canvas.getContext('2d');this.view={...view};this.home={...view};
+    this.pad=Object.assign({l:10,r:14,t:14,b:28},opt.pad||{});this.labels=opt.labels!==false;
+    this.resize();if('ResizeObserver' in window)new ResizeObserver(()=>{this.resize();this.dirty=true;}).observe(canvas);
+  }
+  resize(){const r=this.c.getBoundingClientRect(),dpr=Math.min(window.devicePixelRatio||1,2);this.W=r.width||600;this.H=r.height||360;this.c.width=Math.round(this.W*dpr);this.c.height=Math.round(this.H*dpr);this.ctx.setTransform(dpr,0,0,dpr,0,0);}
+  setView(v,ms=750){for(const k of ['xmin','xmax','ymin','ymax'])tween(this.view,k,v[k],ms);}
+  // Smoothly follow a moving target view; returns true while still moving.
+  follow(v,k=.16){let moving=false;for(const key of ['xmin','xmax','ymin','ymax']){const d=v[key]-this.view[key],span=this.view.xmax-this.view.xmin+this.view.ymax-this.view.ymin;if(Math.abs(d)>span*1e-4){this.view[key]+=d*(reduce?1:k);moving=true;}else this.view[key]=v[key];}return moving;}
+  get L(){return this.pad.l}get R(){return this.W-this.pad.r}get T(){return this.pad.t}get B(){return this.H-this.pad.b}
+  iX(px){const v=this.view;return v.xmin+(px-this.L)/(this.R-this.L)*(v.xmax-v.xmin);}
+  iY(py){const v=this.view;return v.ymin+(this.B-py)/(this.B-this.T)*(v.ymax-v.ymin);}
+  X(x){const v=this.view;return this.L+(x-v.xmin)/(v.xmax-v.xmin)*(this.R-this.L);}
+  Y(y){const v=this.view;return this.B-(y-v.ymin)/(v.ymax-v.ymin)*(this.B-this.T);}
+  begin(){const c=this.ctx;c.setLineDash([]);c.globalAlpha=1;c.fillStyle=C.bg;c.fillRect(0,0,this.W,this.H);}
+  clip(){const c=this.ctx;c.save();c.beginPath();c.rect(this.L,this.T,this.R-this.L,this.B-this.T);c.clip();}
+  unclip(){this.ctx.restore();}
+  static step(span,n){const raw=span/n,p=Math.pow(10,Math.floor(Math.log10(raw))),f=raw/p;return (f<1.5?1:f<3.5?2:f<7.5?5:10)*p;}
+  grid(o={}){
+    const c=this.ctx,v=this.view,sx=o.xStep||Plot.step(v.xmax-v.xmin,o.xTicks||(this.W<480?5:8)),sy=o.yStep||Plot.step(v.ymax-v.ymin,o.yTicks||(this.H<300?4:6));
+    const line=(x1,y1,x2,y2)=>{c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke();};
+    c.save();c.lineWidth=1;
+    c.strokeStyle=C.gridMinor;
+    for(let x=Math.ceil(v.xmin/(sx/2))*(sx/2);x<=v.xmax;x+=sx/2)line(this.X(x),this.T,this.X(x),this.B);
+    for(let y=Math.ceil(v.ymin/(sy/2))*(sy/2);y<=v.ymax;y+=sy/2)line(this.L,this.Y(y),this.R,this.Y(y));
+    c.strokeStyle=C.grid;
+    for(let x=Math.ceil(v.xmin/sx)*sx;x<=v.xmax;x+=sx)line(this.X(x),this.T,this.X(x),this.B);
+    for(let y=Math.ceil(v.ymin/sy)*sy;y<=v.ymax;y+=sy)line(this.L,this.Y(y),this.R,this.Y(y));
+    const ax=v.xmin<=0&&v.xmax>=0?this.X(0):this.L,ay=v.ymin<=0&&v.ymax>=0?this.Y(0):this.B;
+    c.strokeStyle=C.axis;c.lineWidth=1.5;line(ax,this.T,ax,this.B);line(this.L,ay,this.R,ay);
+    this.ax=ax;this.ay=ay;
+    if(this.labels){
+      const dx=Math.max(0,Math.ceil(-Math.log10(sx)+1e-9)),dy=Math.max(0,Math.ceil(-Math.log10(sy)+1e-9));
+      c.font='11px "JetBrains Mono", ui-monospace, monospace';c.fillStyle=C.tick;c.textAlign='center';c.textBaseline='top';
+      const lyX=clamp(ay+6,this.T,this.H-14);
+      for(let x=Math.ceil(v.xmin/sx)*sx;x<=v.xmax+1e-12;x+=sx){const px=this.X(x);if(Math.abs(x)<sx*1e-6&&ax!==this.L)continue;if(px<this.L+10||px>this.R-10)continue;c.fillText((o.xFmt?o.xFmt(x):num(x,dx)),px,lyX);}
+      c.textBaseline='middle';c.lineJoin='round';
+      const inside=ax===this.L||ax<this.L+40,lxY=inside?this.L+6:ax-6;c.textAlign=inside?'left':'right';
+      for(let y=Math.ceil(v.ymin/sy)*sy;y<=v.ymax+1e-12;y+=sy){const py=this.Y(y);if(Math.abs(y)<sy*1e-6&&ay!==this.B)continue;if(py<this.T+8||py>this.B-8)continue;const t=o.yFmt?o.yFmt(y):num(y,dy);
+        if(inside){c.lineWidth=4;c.strokeStyle=C.halo;c.strokeText(t,lxY,py);}c.fillText(t,lxY,py);}
+    }
+    c.restore();
+  }
+  // Draw y = f(x), breaking the line at discontinuities and blow-ups.
+  // colorAt(x, y) may return a colour per sample (used to paint the ε–δ test).
+  curve(f,o={}){
+    const c=this.ctx,v=this.view,x0=Math.max(o.x0??v.xmin,v.xmin),x1=Math.min(o.x1??v.xmax,v.xmax);if(x1<=x0)return;
+    const N=o.n||Math.ceil((this.X(x1)-this.X(x0))*1.6)+2,yr=v.ymax-v.ymin,lo=v.ymin-yr*3,hi=v.ymax+yr*3,breaks=o.breaks||[],tiny=(x1-x0)*1e-7;
+    c.save();c.lineWidth=o.width||3;c.lineJoin='round';c.lineCap='round';c.globalAlpha=o.alpha??1;
+    if(o.glow!==false){c.shadowColor=rgba(o.color||C.blue,.55);c.shadowBlur=o.blur??9;}
+    let pen=false,px0=null,py0=null,col=null,prevX=null;
+    const flush=()=>{if(pen){c.stroke();}pen=false;};
+    const put=(x,y,colr)=>{
+      if(!Number.isFinite(y)){flush();return;}
+      const yy=clamp(y,lo,hi),px=this.X(x),py=this.Y(yy);
+      if(pen&&(Math.abs(py-py0)>this.H*1.5||colr!==col)){
+        if(colr!==col&&Math.abs(py-py0)<=this.H*1.5){c.lineTo(px,py);c.stroke();c.beginPath();c.moveTo(px,py);col=colr;c.strokeStyle=colr;px0=px;py0=py;return;}
+        flush();
+      }
+      if(!pen){c.beginPath();c.strokeStyle=colr;c.moveTo(px,py);pen=true;col=colr;}else c.lineTo(px,py);
+      px0=px;py0=py;
+    };
+    const colorOf=(x,y)=>o.colorAt?o.colorAt(x,y):(o.color||C.blue);
+    for(let i=0;i<=N;i++){
+      const x=x0+(x1-x0)*i/N;
+      if(prevX!==null)for(const b of breaks){if(prevX<b&&x>=b){const yl=f(b-tiny);put(b-tiny,yl,colorOf(b-tiny,yl));flush();const yr2=f(b+tiny);put(b+tiny,yr2,colorOf(b+tiny,yr2));}}
+      const y=f(x);put(x,y,colorOf(x,y));prevX=x;
+    }
+    flush();c.restore();
+  }
+  bandH(y0,y1,color,a){const c=this.ctx,t=Math.min(this.Y(y0),this.Y(y1)),b=Math.max(this.Y(y0),this.Y(y1));c.save();c.fillStyle=rgba(color,a);c.fillRect(this.L,t,this.R-this.L,b-t);c.restore();}
+  bandV(x0,x1,color,a){const c=this.ctx,l=Math.min(this.X(x0),this.X(x1)),r=Math.max(this.X(x0),this.X(x1));c.save();c.fillStyle=rgba(color,a);c.fillRect(l,this.T,r-l,this.B-this.T);c.restore();}
+  line(x1,y1,x2,y2,color,w=1.5,dash=null,a=1){const c=this.ctx;c.save();c.globalAlpha=a;c.strokeStyle=color;c.lineWidth=w;if(dash)c.setLineDash(dash);c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke();c.restore();}
+  hline(y,color,w,dash,a){this.line(this.L,this.Y(y),this.R,this.Y(y),color,w,dash,a);}
+  vline(x,color,w,dash,a){this.line(this.X(x),this.T,this.X(x),this.B,color,w,dash,a);}
+  dot(x,y,r,color,glow=true){const c=this.ctx;c.save();if(glow){c.shadowColor=color;c.shadowBlur=12;}c.fillStyle=color;c.beginPath();c.arc(this.X(x),this.Y(y),r,0,Math.PI*2);c.fill();c.restore();}
+  hole(x,y,color){const c=this.ctx;c.save();c.fillStyle=C.bg;c.strokeStyle=color;c.lineWidth=2.2;c.beginPath();c.arc(this.X(x),this.Y(y),5.5,0,Math.PI*2);c.fill();c.stroke();c.restore();}
+  text(s,px,py,o={}){const c=this.ctx;c.save();c.font=o.font||'600 12px Inter, system-ui, sans-serif';c.textAlign=o.align||'center';c.textBaseline=o.base||'middle';c.lineJoin='round';
+    if(o.halo!==false){c.lineWidth=5;c.strokeStyle=C.halo;c.strokeText(s,px,py);}c.fillStyle=o.color||C.text;c.fillText(s,px,py);c.restore();}
+  // A double-headed arrow between two screen points, for marking ε and δ.
+  span(x1,y1,x2,y2,color){
+    const c=this.ctx,dx=x2-x1,dy=y2-y1,l=Math.hypot(dx,dy);if(l<6)return;const ux=dx/l,uy=dy/l,h=Math.min(6,l/3);
+    c.save();c.strokeStyle=color;c.fillStyle=color;c.lineWidth=1.6;c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke();
+    for(const [px,py,s] of [[x1,y1,1],[x2,y2,-1]]){c.beginPath();c.moveTo(px,py);c.lineTo(px+s*ux*h-uy*h*.6,py+s*uy*h+ux*h*.6);c.lineTo(px+s*ux*h+uy*h*.6,py+s*uy*h-ux*h*.6);c.closePath();c.fill();}
+    c.restore();
+  }
+}
+
+// ---------- Scenes and the frame loop ----------
+const scenes=[];
+function scene(canvasId,draw){const s={el:$(canvasId),draw,dirty:true,visible:true};scenes.push(s);return s;}
+function frame(now){
+  const active=tweens.size>0||runners.size>0;
+  for(const t of tweens){const k=clamp((now-t.start)/t.ms,0,1);t.obj[t.key]=t.from+(t.to-t.from)*t.easing(k);if(k>=1)tweens.delete(t);}
+  for(const r of runners){const k=clamp((now-r.start)/r.ms,0,1);r.fn(k);if(k>=1){runners.delete(r);r.done&&r.done();}}
+  for(const s of scenes){if(s.visible&&(active||s.dirty||s.loop||(s.plot&&s.plot.dirty))){s.dirty=false;if(s.plot)s.plot.dirty=false;s.draw(now);}}
+  requestAnimationFrame(frame);
+}
+if('IntersectionObserver' in window){
+  const io=new IntersectionObserver(es=>es.forEach(e=>{const s=scenes.find(s=>s.el===e.target);if(s){s.visible=e.isIntersecting;if(s.visible)s.dirty=true;}}),{rootMargin:'120px'});
+  setTimeout(()=>scenes.forEach(s=>io.observe(s.el)),0);
+}
+// A log-scale slider: position 0..1000 maps to a value from `a` to `b`.
+function logSlider(el,a,b){
+  return{get:()=>a*Math.pow(b/a,Number(el.value)/1000),set:v=>{el.value=1000*Math.log(clamp(v,Math.min(a,b),Math.max(a,b))/a)/Math.log(b/a);}};
+}
+function segment(boxId,items,current,onPick){
+  const box=$(boxId);
+  box.innerHTML=items.map(([k,label])=>`<button type="button" data-k="${k}" aria-pressed="${k===current}">${label}</button>`).join('');
+  box.querySelectorAll('button').forEach(b=>b.onclick=()=>{box.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));onPick(b.dataset.k);});
+}
+// Largest δ with |f(x) − L| < ε for every x with 0 < |x − a| < δ (0 if none works).
+function deltaMax(f,a,L,eps,span){
+  const bad=x=>{const y=f(x);return !Number.isFinite(y)||Math.abs(y-L)>=eps;};
+  const lo=1e-7,N=1800;let ok=0;
+  for(let i=0;i<=N;i++){
+    const d=lo*Math.pow(span/lo,i/N);
+    if(bad(a-d)||bad(a+d)){
+      if(i===0)return 0;
+      let g=ok,b=d;for(let k=0;k<40;k++){const m=(g+b)/2;if(bad(a-m)||bad(a+m))b=m;else g=m;}
+      return g;
+    }
+    ok=d;
+  }
+  return span;
+}
+
+
+function simpson(f,a,b,n=400){if(a===b)return 0;n+=n%2;const h=(b-a)/n;let s=f(a)+f(b);for(let i=1;i<n;i++)s+=(i%2?4:2)*f(a+i*h);return s*h/3;}
+// Fill between y = f(x) and the axis, one colour above and another below.
+function shade(p,f,x0,x1,pos,neg,alpha=.32){
+  if(x1<x0)[x0,x1]=[x1,x0];
+  x0=Math.max(x0,p.view.xmin-1);x1=Math.min(x1,p.view.xmax+1);if(x1<=x0)return;
+  const N=Math.max(2,Math.ceil(p.X(x1)-p.X(x0)))+1,c=p.ctx;let poly=[],sign=0,px=null,py=null;
+  const flush=()=>{if(poly.length>1){c.beginPath();c.moveTo(p.X(poly[0][0]),p.Y(0));poly.forEach(([x,y])=>c.lineTo(p.X(x),p.Y(y)));c.lineTo(p.X(poly[poly.length-1][0]),p.Y(0));c.closePath();c.fillStyle=rgba(sign>0?pos:neg,alpha);c.fill();}poly=[];};
+  for(let i=0;i<=N;i++){
+    const x=x0+(x1-x0)*i/N,y=f(x);if(!Number.isFinite(y))continue;const sg=y>=0?1:-1;
+    if(sign!==0&&sg!==sign&&px!==null){const xr=px+(x-px)*(py/(py-y));poly.push([xr,0]);flush();poly=[[xr,0]];}
+    sign=sg;poly.push([x,y]);px=x;py=y;
+  }
+  flush();
+}
+const equalView=(p,cx,cy,hw)=>{const r=(p.B-p.T)/(p.R-p.L);return{xmin:cx-hw,xmax:cx+hw,ymin:cy-hw*r,ymax:cy+hw*r};};
+function dragOn(canvas,onMove){
+  let down=false;
+  canvas.addEventListener('pointerdown',e=>{down=true;canvas.setPointerCapture(e.pointerId);onMove(e);});
+  canvas.addEventListener('pointermove',e=>{if(down)onMove(e);});
+  const up=()=>{down=false;};canvas.addEventListener('pointerup',up);canvas.addEventListener('pointercancel',up);
+  canvas.style.cursor='ew-resize';
+}
+const localX=(p,e)=>{const r=p.c.getBoundingClientRect();return p.iX(e.clientX-r.left);};
+function segDx(p,m,px){const sx=(p.view.xmax-p.view.xmin)/(p.R-p.L),sy=(p.view.ymax-p.view.ymin)/(p.B-p.T);return px/Math.sqrt(1/(sx*sx)+(m*m)/(sy*sy));}
+function tangentSeg(p,x,y,m,color,px=90,w=2.6){const d=segDx(p,m,px);p.line(p.X(x-d),p.Y(y-m*d),p.X(x+d),p.Y(y+m*d),color,w);}
+function rectW(p,x0,y0,x1,y1,col,a,stroke=true){const c=p.ctx,X0=p.X(x0),X1=p.X(x1),Y0=p.Y(y0),Y1=p.Y(y1);c.save();c.fillStyle=rgba(col,a);c.fillRect(Math.min(X0,X1),Math.min(Y0,Y1),Math.abs(X1-X0),Math.abs(Y1-Y0));if(stroke){c.strokeStyle=rgba(col,.85);c.lineWidth=1;c.strokeRect(Math.min(X0,X1),Math.min(Y0,Y1),Math.abs(X1-X0),Math.abs(Y1-Y0));}c.restore();}
+
+// =================== Hero: rectangles refining under a curve ===================
+{
+  const f=x=>.8+.35*x+.45*Math.sin(1.6*x),a=.3,b=5.6,ex=simpson(f,a,b,2000);
+  const p=new Plot($('c0'),{xmin:0,xmax:6,ymin:-.2,ymax:3.4},{labels:false,pad:{l:8,r:8,t:8,b:8}});
+  const s=scene('c0',now=>{
+    const k=reduce?2:Math.floor(now/1600)%5,n=4*Math.pow(2,k),d=(b-a)/n;let sum=0;
+    p.begin();p.grid({xStep:1,yStep:1});p.clip();
+    for(let i=0;i<n;i++){const x=a+i*d,h=f(x+d/2);sum+=h*d;rectW(p,x,0,x+d,h,C.blue,.24,n<=32);}
+    p.curve(f,{color:C.blue,width:3.2});p.unclip();
+    p.text(`n = ${n}  ·  Σ = ${num(sum,3)}  ·  exact ${num(ex,3)}`,p.L+12,p.T+16,{align:'left',color:C.yellow,font:'600 13px "JetBrains Mono", monospace'});
+  });
+  s.plot=p;s.loop=!reduce;
+}
+
+// =================== 1. Area from rectangles ===================
+{
+  const F={
+    sq:{label:'x² on [0, 2]',f:x=>x*x,a:0,b:2,ex:8/3,exs:'8/3',v:[-.25,2.3,-.4,4.6]},
+    sin:{label:'sin x on [0, π]',f:Math.sin,a:0,b:Math.PI,ex:2,exs:'2',v:[-.3,3.5,-.25,1.35]},
+    exp:{label:'eˣ on [0, 1]',f:Math.exp,a:0,b:1,ex:Math.E-1,exs:'e − 1',v:[-.15,1.15,-.3,3]}
+  };
+  const M=[['left','Left'],['right','Right'],['mid','Midpoint'],['trap','Trapezoid'],['rand','Random']];
+  const st={fn:'sq',m:'left',n:6,seed:1,runner:null};
+  // repeatable pseudo-random sample position (0..1) inside strip i of n
+  const tag=(i,n)=>{const v=Math.sin((i+1)*12.9898+n*78.233+st.seed*37.719)*43758.5453;return v-Math.floor(v);};
+  const p=new Plot($('c1'),{xmin:-.25,xmax:2.3,ymin:-.4,ymax:4.6});
+  const ns=logSlider($('n1'),1,256);ns.set(st.n);
+  const G=()=>F[st.fn];
+  function sum(n,m){const g=G(),d=(g.b-g.a)/n;let s=0;for(let i=0;i<n;i++){const x0=g.a+i*d;s+=m==='left'?g.f(x0):m==='right'?g.f(x0+d):m==='mid'?g.f(x0+d/2):m==='rand'?g.f(x0+tag(i,n)*d):(g.f(x0)+g.f(x0+d))/2;}return s*d;}
+  function ui(){
+    const g=G(),S=sum(st.n,st.m),err=S-g.ex,e2=sum(st.n*2,st.m)-g.ex,ratio=Math.abs(err)/Math.max(Math.abs(e2),1e-15);
+    $('n1o').textContent=st.n;
+    $('r1').innerHTML=`n = <b>${st.n}</b> strips, Δx = ${num((g.b-g.a)/st.n,4)}<br>sum S<sub>n</sub> = <b>${num(S,6)}</b> · exact = ${g.exs} = <b style="color:var(--yellow)">${num(g.ex,6)}</b><br>error = <b style="color:${Math.abs(err)<1e-3?'var(--green)':'var(--red)'}">${num(err,6)}</b> · `+(st.m==='rand'?'random points: the error jumps around but still shrinks':`with 2n strips it would be ${num(ratio,2)}× smaller`);
+    proof();se.dirty=true;$('reseed1').hidden=st.m!=='rand';
+    $('v1').innerHTML=Math.abs(err)<1e-3?`<div class="verdict ok">✓ Within 0.001 of the exact area <span>· n = ${st.n}</span></div>`
+      :`<div class="verdict bad">${err<0?'Too small':'Too big'} by ${num(Math.abs(err),4)} <span>· add more strips</span></div>`;
+    s.dirty=true;
+  }
+  const s=scene('c1',()=>{
+    const g=G(),n=st.n,d=(g.b-g.a)/n;
+    if(p.follow({xmin:g.v[0],xmax:g.v[1],ymin:g.v[2],ymax:g.v[3]}))s.dirty=true;
+    p.begin();p.grid();p.clip();
+    const c=p.ctx;
+    for(let i=0;i<n;i++){
+      const x0=g.a+i*d,x1=x0+d,trueA=simpson(g.f,x0,x1,8);
+      if(st.m==='trap'){
+        const y0=g.f(x0),y1=g.f(x1),est=(y0+y1)/2*d,col=est>trueA+1e-13?C.gold:C.teal;
+        c.save();c.beginPath();c.moveTo(p.X(x0),p.Y(0));c.lineTo(p.X(x0),p.Y(y0));c.lineTo(p.X(x1),p.Y(y1));c.lineTo(p.X(x1),p.Y(0));c.closePath();c.fillStyle=rgba(col,.3);c.fill();if(n<=120){c.strokeStyle=rgba(col,.85);c.lineWidth=1;c.stroke();}c.restore();
+      }else{
+        const xs=st.m==='left'?x0:st.m==='right'?x1:st.m==='rand'?x0+tag(i,n)*d:x0+d/2,h=g.f(xs),col=h*d>trueA+1e-13?C.gold:C.teal;
+        rectW(p,x0,0,x1,h,col,.3,n<=120);
+        if(n<=40)p.dot(xs,h,3,'#ffffff',false);
+      }
+    }
+    p.curve(g.f,{color:C.blue,width:3.2});
+    p.vline(g.a,C.teal,1.2,[5,5],.6);p.vline(g.b,C.gold,1.2,[5,5],.6);
+    p.unclip();
+    p.text('a',p.X(g.a)+10,p.B-10,{font:MATH,color:C.teal});p.text('b',p.X(g.b)-10,p.B-10,{font:MATH,color:C.gold});
+  });
+  s.plot=p;
+  segment('fn1',Object.entries(F).map(([k,g])=>[k,g.label]),st.fn,k=>{stop(st.runner);st.fn=k;ui();});
+  segment('m1',M,st.m,k=>{st.m=k;ui();});
+  $('reseed1').onclick=()=>{st.seed++;ui();};
+  // A worked, exact limit for x², and the general recipe for the others
+  function proof(){
+    const n=st.n,g=G();
+    if(st.fn==='sq'){
+      const R=(4/3)*(1+1/n)*(2+1/n),L=(4/3)*(1-1/n)*(2-1/n);
+      $('p1').innerHTML=`<b>Exact limit for x².</b> With Δx = 2/n and xᵢ = 2i/n, the right sum is<br>Rₙ = Σ (2i/n)²·(2/n) = (8/n³)·Σ i² = (8/n³)·n(n + 1)(2n + 1)/6 = (4/3)(1 + 1/n)(2 + 1/n).<br>The left sum is Lₙ = (4/3)(1 − 1/n)(2 − 1/n). For n = ${n}: Rₙ = <b>${num(R,4)}</b>, Lₙ = <b>${num(L,4)}</b>. As n → ∞ both → (4/3)·1·2 = <b style="color:var(--yellow)">8/3</b>.`;
+    }else $('p1').innerHTML=`<b>The recipe.</b> Write the sum with Δx = (b − a)/n and xᵢ = a + iΔx, simplify it into a formula in n, then let n → ∞. For ${g.label} the limit is ${g.exs}${st.fn==='exp'?' (using a geometric series)':' (using a trigonometric sum identity)'}. Every sampling method gives the same limit.`;
+  }
+  // Error against n on log scales: power laws become straight lines.
+  const pe=new Plot($('c1e'),{xmin:-.3,xmax:8.3,ymin:-6,ymax:1});
+  let errCache={key:'',pts:[]};
+  const sup=n=>String(n).replace('-','⁻').replace(/\d/g,d=>'⁰¹²³⁴⁵⁶⁷⁸⁹'[d]);
+  const se=scene('c1e',()=>{
+    const g=G(),key=st.fn+'|'+st.m+'|'+st.seed;
+    if(errCache.key!==key){const pts=[];for(let n=1;n<=256;n++){const e=Math.abs(sum(n,st.m)-g.ex);if(e>1e-14)pts.push([Math.log2(n),Math.log10(e),n]);}errCache={key,pts};}
+    const pts=errCache.pts;if(!pts.length)return;
+    const ys=pts.map(p=>p[1]),lo=Math.floor(Math.min(...ys))-.3,hi=Math.ceil(Math.max(...ys))+.3;
+    if(pe.follow({xmin:-.3,xmax:8.3,ymin:lo,ymax:hi}))se.dirty=true;
+    pe.begin();pe.grid({xStep:1,yStep:1,xFmt:x=>String(Math.round(Math.pow(2,x))),yFmt:y=>'10'+sup(Math.round(y))});pe.clip();
+    const y0=pts[0][1];
+    pe.line(pe.X(0),pe.Y(y0),pe.X(8),pe.Y(y0-8*Math.log10(2)),C.teal,1.4,[6,5],.7);
+    pe.line(pe.X(0),pe.Y(y0),pe.X(8),pe.Y(y0-16*Math.log10(2)),C.gold,1.4,[6,5],.7);
+    pts.forEach(([x,y,n])=>pe.dot(x,y,n===st.n?6:2.2,n===st.n?C.yellow:C.blue,n===st.n));
+    pe.unclip();
+    pe.text('∝ 1/n',pe.X(8)-4,pe.Y(y0-8*Math.log10(2))-10,{color:C.teal,align:'right',font:'italic 600 14px "STIX Two Text", serif'});
+    pe.text('∝ 1/n²',pe.X(8)-4,pe.Y(y0-16*Math.log10(2))-10,{color:C.gold,align:'right',font:'italic 600 14px "STIX Two Text", serif'});
+    pe.text('|error| against n (log scales)',pe.L+8,pe.B-10,{color:C.soft,align:'left',font:'600 12px Inter, sans-serif'});
+  });
+  se.plot=pe;
+  $('n1').addEventListener('input',()=>{stop(st.runner);st.n=Math.max(1,Math.round(ns.get()));ui();});
+  $('play1').onclick=()=>{stop(st.runner);st.runner=run(reduce?1:5400,k=>{const n=Math.pow(2,Math.min(8,Math.floor(k*9)));if(n!==st.n){st.n=n;ns.set(n);ui();}});};
+  ui();
+}
+
+// =================== 2. Signed area ===================
+{
+  const F={
+    sin:{label:'sin x',f:Math.sin,F:x=>-Math.cos(x),Fs:'−cos x',a:0,b:4.5,v:[-.6,7,-1.5,1.5],r:[-.5,6.9]},
+    lin:{label:'x − 1',f:x=>x-1,F:x=>x*x/2-x,Fs:'x²/2 − x',a:-.5,b:2.5,v:[-1.6,3.2,-2.4,2.2],r:[-1.5,3.1]},
+    cub:{label:'x³ − 3x',f:x=>x*x*x-3*x,F:x=>x*x*x*x/4-1.5*x*x,Fs:'x⁴/4 − 3x²/2',a:-2,b:1.5,v:[-2.4,2.4,-3.2,3.2],r:[-2.3,2.3]}
+  };
+  const st={fn:'sin',a:0,b:4.5};
+  const p=new Plot($('c2'),{xmin:-.6,xmax:7,ymin:-1.5,ymax:1.5});
+  const G=()=>F[st.fn];
+  const toU=x=>{const r=G().r;return 1000*(x-r[0])/(r[1]-r[0]);},fromU=u=>{const r=G().r;return r[0]+(r[1]-r[0])*u/1000;};
+  function ui(){
+    const g=G(),lo=Math.min(st.a,st.b),hi=Math.max(st.a,st.b);
+    const Ap=simpson(x=>Math.max(g.f(x),0),lo,hi,4000),Am=simpson(x=>Math.max(-g.f(x),0),lo,hi,4000),I=g.F(st.b)-g.F(st.a);
+    $('a2o').textContent=num(st.a,2);$('b2o').textContent=num(st.b,2);$('a2').value=toU(st.a);$('b2').value=toU(st.b);
+    $('r2').innerHTML=`∫ₐᵇ f dx = F(b) − F(a) with F = ${g.Fs}<br>&nbsp;&nbsp;= ${num(g.F(st.b),4)} − (${num(g.F(st.a),4)}) = <b style="color:var(--yellow)">${num(I,4)}</b><br>area above = <b style="color:var(--blue)">${num(Ap,4)}</b> · area below = <b style="color:var(--red)">${num(Am,4)}</b> · total = <b>${num(Ap+Am,4)}</b>`;
+    $('v2').innerHTML=(st.a>st.b?`<div class="verdict bad">Bounds reversed <span>· a &gt; b, so the sign flips: ${num(I,4)} = −(${num(-I,4)})</span></div>`
+      :`<div class="verdict ok">Net ${num(I,4)} = ${num(Ap,4)} − ${num(Am,4)} <span>· above minus below</span></div>`);
+    s.dirty=true;
+  }
+  const s=scene('c2',()=>{
+    const g=G();
+    if(p.follow({xmin:g.v[0],xmax:g.v[1],ymin:g.v[2],ymax:g.v[3]}))s.dirty=true;
+    p.begin();p.grid();p.clip();
+    shade(p,g.f,st.a,st.b,C.blue,C.red,.36);
+    p.curve(g.f,{color:C.blue,width:3.2});
+    p.vline(st.a,C.teal,1.6,null,.85);p.vline(st.b,C.gold,1.6,null,.85);
+    p.unclip();
+    p.text('a',p.X(st.a)+(st.a<=st.b?-10:10),p.T+12,{font:MATH,color:C.teal});p.text('b',p.X(st.b)+(st.a<=st.b?10:-10),p.T+12,{font:MATH,color:C.gold});
+  });
+  s.plot=p;
+  segment('fn2',Object.entries(F).map(([k,g])=>[k,g.label]),st.fn,k=>{st.fn=k;tween(st,'a',F[k].a,650);tween(st,'b',F[k].b,650);run(680,ui);});
+  $('a2').addEventListener('input',()=>{st.a=fromU(Number($('a2').value));ui();});
+  $('b2').addEventListener('input',()=>{st.b=fromU(Number($('b2').value));ui();});
+  $('swap2').onclick=()=>{const a=st.a,b=st.b;tween(st,'a',b,700);tween(st,'b',a,700);run(720,ui);};
+  ui();
+}
+
+// =================== 3. The Fundamental Theorem ===================
+{
+  const F={
+    cos:{label:'cos x',f:Math.cos,A:Math.sin,As:'sin x',v:[0,7,-1.4,1.4],Av:[-1.4,1.4]},
+    lin:{label:'x',f:x=>x,A:x=>x*x/2,As:'x²/2',v:[0,3,-.3,3.2],Av:[-.3,4.8]},
+    dec:{label:'2 − x',f:x=>2-x,A:x=>2*x-x*x/2,As:'2x − x²/2',v:[0,4.2,-2.4,2.4],Av:[-1,2.6]},
+    bump:{label:'1 + sin x',f:x=>1+Math.sin(x),A:x=>x+1-Math.cos(x),As:'x + 1 − cos x',v:[0,7,-.3,2.3],Av:[-.3,9]}
+  };
+  const st={fn:'cos',u:.3,dx:.3,runner:null};
+  const G=()=>F[st.fn];
+  const top=new Plot($('c3a'),{xmin:0,xmax:7,ymin:-1.4,ymax:1.4}),bot=new Plot($('c3b'),{xmin:0,xmax:7,ymin:-1.4,ymax:1.4});
+  const dsl=logSlider($('d3'),.6,.001);dsl.set(st.dx);
+  const X=()=>{const g=G();return g.v[0]+(g.v[1]-g.v[0])*st.u*.94;};
+  function ui(){
+    const g=G(),x=X(),dA=g.A(x+st.dx)-g.A(x),fx=g.f(x),d=decFor(st.dx);
+    $('x3o').textContent=num(x,2);$('d3o').textContent=num(st.dx,d);$('x3').value=st.u*1000;
+    $('r3').innerHTML=`A(x) = ∫₀ˣ f dt = ${g.As} = <b style="color:var(--green)">${num(g.A(x),4)}</b> · f(x) = <b>${num(fx,4)}</b><br>A(x + dx) − A(x) = <b>${num(dA,d+3)}</b> ≈ f(x)·dx = <b style="color:var(--yellow)">${num(fx*st.dx,d+3)}</b><br>ΔA ÷ dx = <b>${num(dA/st.dx,4)}</b> → f(x) = ${num(fx,4)} as dx → 0`;
+    $('v3').innerHTML=fx>.02?`<div class="verdict ok">↗ A is growing <span>· f(x) &gt; 0 adds area</span></div>`:fx<-.02?`<div class="verdict bad">↘ A is shrinking <span>· f(x) &lt; 0 subtracts area</span></div>`
+      :`<div class="verdict ok" style="color:var(--yellow);border-color:rgba(255,228,94,.35);background:rgba(255,228,94,.07)">— A is flat <span>· f(x) = 0: a peak or valley of A</span></div>`;
+    s.dirty=true;s2.dirty=true;
+  }
+  const s=scene('c3a',()=>{
+    const g=G(),x=X(),fx=g.f(x);
+    top.begin();top.grid();top.clip();
+    shade(top,g.f,0,x,C.blue,C.red,.3);
+    rectW(top,x,0,x+st.dx,fx,C.yellow,.55);
+    top.curve(g.f,{color:C.blue,width:3.2});
+    top.vline(x,'#ffffff',1,[4,4],.3);top.dot(x,fx,5.5,'#ffffff');
+    top.unclip();
+    top.text('f(x)',top.L+40,top.T+12,{color:C.blue,font:'italic 600 15px "STIX Two Text", serif'});
+  });
+  s.plot=top;
+  const s2=scene('c3b',()=>{
+    const g=G(),x=X();
+    bot.begin();bot.grid({yTicks:4});bot.clip();
+    bot.hline(0,'#ffffff',1,null,.3);
+    bot.curve(g.A,{color:C.green,width:2,alpha:.22,glow:false});bot.curve(g.A,{color:C.green,width:3,x1:x});
+    tangentSeg(bot,x,g.A(x),g.f(x),C.yellow,70,2.4);
+    bot.vline(x,'#ffffff',1,[4,4],.3);bot.dot(x,g.A(x),5.5,C.green);
+    bot.unclip();
+    bot.text('A(x) · slope = f(x)',bot.L+70,bot.T+12,{color:C.green,font:'italic 600 15px "STIX Two Text", serif'});
+  });
+  s2.plot=bot;
+  function setViews(ms){const g=G();top.setView({xmin:g.v[0],xmax:g.v[1],ymin:g.v[2],ymax:g.v[3]},ms);bot.setView({xmin:g.v[0],xmax:g.v[1],ymin:g.Av[0],ymax:g.Av[1]},ms);}
+  segment('fn3',Object.entries(F).map(([k,g])=>[k,g.label]),st.fn,k=>{stop(st.runner);st.fn=k;setViews(800);run(820,ui);});
+  $('x3').addEventListener('input',()=>{stop(st.runner);st.u=Number($('x3').value)/1000;ui();});
+  $('d3').addEventListener('input',()=>{st.dx=dsl.get();ui();});
+  dragOn($('c3a'),e=>{stop(st.runner);const g=G();st.u=clamp((localX(top,e)-g.v[0])/((g.v[1]-g.v[0])*.94),0,1);ui();});
+  $('play3').onclick=()=>{stop(st.runner);st.runner=run(reduce?1:6500,k=>{st.u=k;ui();});};
+  setViews(0);ui();
+}
+
+// =================== 4. Distance from speed ===================
+{
+  const J={
+    brake:{label:'Cruise, then brake',v:t=>t<4?12:t<7?12-4*(t-4):0,T:9,vr:[-2,14]},
+    swing:{label:'Back and forth',v:t=>3*Math.cos(t),T:2*Math.PI,vr:[-3.8,3.8]},
+    fall:{label:'Falling: v = 9.8t',v:t=>9.8*t,T:3,vr:[-2,31]}
+  };
+  const st={j:'brake',t:0,playing:!reduce,last:0};
+  const tables={};
+  // cumulative displacement and distance, by the trapezoid rule on a fine grid
+  for(const [k,g] of Object.entries(J)){const N=3000,xs=[0],ds=[0];for(let i=1;i<=N;i++){const t0=(i-1)/N*g.T,t1=i/N*g.T,v0=g.v(t0),v1=g.v(t1);xs.push(xs[i-1]+(v0+v1)/2*(t1-t0));ds.push(ds[i-1]+(Math.abs(v0)+Math.abs(v1))/2*(t1-t0));}g.xs=xs;g.ds=ds;g.N=N;g.xmin=Math.min(...xs);g.xmax=Math.max(...xs);}
+  const G=()=>J[st.j];
+  const look=(arr,t)=>{const g=G(),u=clamp(t/g.T,0,1)*g.N,i=Math.floor(u),f=u-i;return i>=g.N?arr[g.N]:arr[i]+(arr[i+1]-arr[i])*f;};
+  const pt=new Plot($('c4t'),{xmin:-5,xmax:70,ymin:-1,ymax:1},{pad:{l:16,r:16,t:8,b:24}});
+  const pv=new Plot($('c4v'),{xmin:0,xmax:9,ymin:-2,ymax:14});
+  function setViews(){const g=G(),span=g.xmax-g.xmin||1;pt.view={xmin:g.xmin-span*.08,xmax:g.xmax+span*.08,ymin:-1,ymax:1};pv.view={xmin:0,xmax:g.T,ymin:g.vr[0],ymax:g.vr[1]};pt.dirty=pv.dirty=true;}
+  function ui(){
+    const g=G(),t=st.t,x=look(g.xs,t),d=look(g.ds,t);
+    $('t4o').textContent=num(t,2)+' s';$('t4').value=t/g.T*1000;
+    $('r4').innerHTML=`velocity v(t) = <b style="color:var(--blue)">${num(g.v(t),2)}</b> m/s<br>displacement = ∫₀ᵗ v ds = <b style="color:var(--yellow)">${num(x,2)}</b> m (signed area)<br>distance travelled = ∫₀ᵗ |v| ds = <b>${num(d,2)}</b> m`;
+    const v=g.v(t);
+    $('v4').innerHTML=Math.abs(v)<.05?`<div class="verdict ok" style="color:var(--yellow);border-color:rgba(255,228,94,.35);background:rgba(255,228,94,.07)">— Stopped <span>· no new area is being added</span></div>`
+      :v>0?`<div class="verdict ok">→ Moving forward <span>· area added above the axis</span></div>`:`<div class="verdict bad">← Moving back <span>· area added below the axis</span></div>`;
+  }
+  const st1=scene('c4t',now=>{
+    const g=G();
+    if(st.playing){const dt=Math.min(.05,(now-(st.last||now))/1000);st.t+=dt*(st.j==='fall'?.6:1);if(st.t>g.T)st.t=0;ui();}
+    st.last=now;
+    const t=st.t,x=look(g.xs,t),v=g.v(t);
+    pt.begin();pt.grid({yStep:100});
+    pt.hline(0,C.soft,2,null,.6);
+    for(let k=1;k<=12;k++){const tt=t-k*g.T/40;if(tt<0)break;pt.dot(look(g.xs,tt),0,3,C.blue,false);}
+    pt.ctx.save();const X0=pt.X(x),Y0=pt.Y(0);pt.ctx.shadowColor=C.blue;pt.ctx.shadowBlur=12;pt.ctx.fillStyle=C.blue;pt.ctx.beginPath();pt.ctx.roundRect(X0-11,Y0-8,22,16,5);pt.ctx.fill();pt.ctx.restore();
+    pt.dot(0,0,4,C.teal,false);pt.text('start',pt.X(0),pt.Y(0)-16,{color:C.teal,font:'600 11px Inter'});
+    if(Math.abs(v)>.05){const c=pt.ctx,x2=X0+v*(pt.W/(g.vr[1]-g.vr[0]))*.18;c.save();c.strokeStyle=C.yellow;c.fillStyle=C.yellow;c.lineWidth=2.4;c.beginPath();c.moveTo(X0,Y0-18);c.lineTo(x2,Y0-18);c.stroke();const dir=Math.sign(x2-X0);c.beginPath();c.moveTo(x2+dir*6,Y0-18);c.lineTo(x2,Y0-23);c.lineTo(x2,Y0-13);c.closePath();c.fill();c.restore();}
+  });
+  st1.plot=pt;st1.loop=true;
+  const st2=scene('c4v',()=>{
+    const g=G(),t=st.t;
+    pv.begin();pv.grid();pv.clip();
+    shade(pv,g.v,0,t,C.blue,C.red,.36);
+    pv.curve(g.v,{color:C.blue,width:3});
+    pv.vline(t,'#ffffff',1,[4,4],.3);pv.dot(t,g.v(t),5.5,'#ffffff');
+    pv.unclip();
+    pv.text('v(t)',pv.L+30,pv.T+12,{color:C.blue,font:'italic 600 15px "STIX Two Text", serif'});
+  });
+  st2.plot=pv;st2.loop=true;
+  segment('fn4',Object.entries(J).map(([k,g])=>[k,g.label]),st.j,k=>{st.j=k;st.t=0;setViews();ui();});
+  $('t4').addEventListener('input',()=>{st.t=Number($('t4').value)/1000*G().T;ui();});
+  const playBtn=()=>{$('play4').textContent=st.playing?'❚❚ Pause':'▶ Play';};
+  $('play4').onclick=()=>{st.playing=!st.playing;st.last=0;playBtn();};
+  $('t4').addEventListener('pointerdown',()=>{st.playing=false;playBtn();});
+  setViews();ui();playBtn();
+}
+
+// =================== 5. Kepler's equal areas ===================
+{
+  const st={e:.5,M:0,playing:!reduce,last:0};
+  const p=new Plot($('c5'),{xmin:-2,xmax:2,ymin:-1,ymax:1},{labels:false,pad:{l:8,r:8,t:8,b:8}});
+  const K=12;
+  const solveE=(M,e)=>{let E=M+e*Math.sin(M);for(let i=0;i<40;i++)E-=(E-e*Math.sin(E)-M)/(1-e*Math.cos(E));return E;};
+  const nuOf=(E,e)=>2*Math.atan2(Math.sqrt(1+e)*Math.sin(E/2),Math.sqrt(1-e)*Math.cos(E/2));
+  let slices=[],sliceKey=null;
+  function compute(){
+    const e=st.e;if(sliceKey===e)return;sliceKey=e;
+    const Es=[];for(let k=0;k<=K;k++)Es.push(solveE(2*Math.PI*k/K,e));
+    const r=nu=>(1-e*e)/(1+e*Math.cos(nu));
+    slices=[];for(let k=0;k<K;k++){let n0=nuOf(Es[k],e),n1=nuOf(Es[k+1],e);if(n1<=n0)n1+=2*Math.PI;slices.push({E0:Es[k],E1:Es[k+1],area:.5*simpson(nu=>r(nu)**2,n0,n1,600)});}
+  }
+  const pos=(E,e)=>[Math.cos(E)-e,Math.sqrt(1-e*e)*Math.sin(E)];
+  function ui(){
+    compute();const e=st.e,b=Math.sqrt(1-e*e),target=Math.PI*b/K,ar=slices.map(s=>s.area),mn=Math.min(...ar),mx=Math.max(...ar);
+    $('e5o').textContent=num(e,2);
+    $('bars5').innerHTML=slices.map((s,i)=>`<span title="Slice ${i+1}: ${num(s.area,5)}" style="height:${s.area/target*90}%;background:${i%2?'var(--yellow)':'var(--blue)'};opacity:.85"></span>`).join('');
+    $('v5').innerHTML=`<div class="verdict ok">✓ All ${K} slices: ½∫r²dθ = ${num(mn,4)} <span>· πab/12 = ${num(target,4)}${mx-mn>5e-5?' (spread '+num(mx-mn,5)+')':''}</span></div>`;
+  }
+  function live(){
+    const e=st.e,E=solveE(st.M,e),[x,y]=pos(E,e),r=Math.hypot(x,y),v=Math.sqrt(2/r-1),va=Math.sqrt((1-e)/(1+e));
+    $('r5').innerHTML=`distance r = <b>${num(r,3)}</b> a · speed = √(2/r − 1/a) = <b style="color:var(--yellow)">${num(v,3)}</b><br>that is ${num(v/va,2)}× the speed at aphelion · perihelion is ${num((1+e)/(1-e),2)}× aphelion`;
+  }
+  const s=scene('c5',now=>{
+    compute();const e=st.e,b=Math.sqrt(1-e*e);
+    if(st.playing){const dt=Math.min(.05,(now-(st.last||now))/1000);st.M=(st.M+dt*2*Math.PI/14)%(2*Math.PI);live();}
+    st.last=now;
+    const r=(p.B-p.T)/(p.R-p.L);p.view=equalView(p,-e,0,Math.max(1.25,1.22*b/r));
+    p.begin();p.grid({xStep:.5,yStep:.5});
+    const c=p.ctx,O=[p.X(0),p.Y(0)];
+    const k0=Math.min(K-1,Math.floor(st.M/(2*Math.PI/K)));
+    slices.forEach((sl,i)=>{
+      c.save();c.beginPath();c.moveTo(O[0],O[1]);for(let j=0;j<=28;j++){const E=sl.E0+(sl.E1-sl.E0)*j/28,[x,y]=pos(E,e);c.lineTo(p.X(x),p.Y(y));}c.closePath();
+      c.fillStyle=rgba(i%2?C.yellow:C.blue,i===k0?.08:.15);c.fill();c.strokeStyle=rgba(i%2?C.yellow:C.blue,.35);c.lineWidth=1;c.stroke();c.restore();
+    });
+    // the slice being swept right now fills in as the planet moves
+    const Enow=solveE(st.M,e);
+    if(k0>=0){const sl=slices[k0];c.save();c.beginPath();c.moveTo(O[0],O[1]);for(let j=0;j<=28;j++){const E=sl.E0+(Enow-sl.E0)*j/28,[x,y]=pos(E,e);c.lineTo(p.X(x),p.Y(y));}c.closePath();c.fillStyle=rgba(k0%2?C.yellow:C.blue,.45);c.fill();c.restore();}
+    c.save();c.strokeStyle=rgba(C.soft,.55);c.lineWidth=1.4;c.beginPath();for(let j=0;j<=200;j++){const [x,y]=pos(j/200*2*Math.PI,e);j?c.lineTo(p.X(x),p.Y(y)):c.moveTo(p.X(x),p.Y(y));}c.stroke();c.restore();
+    p.dot(0,0,9,C.gold);
+    const [px,py]=pos(Enow,e);
+    for(let k=1;k<=14;k++){const [tx,ty]=pos(solveE((st.M-k*.03+2*Math.PI)%(2*Math.PI),e),e);c.save();c.globalAlpha=.5*(1-k/15);p.dot(tx,ty,4,C.blue,false);c.restore();}
+    p.line(O[0],O[1],p.X(px),p.Y(py),'#ffffff',1.2,null,.6);
+    p.dot(px,py,6.5,'#ffffff');
+    p.text('perihelion',p.X(1-e)+8,p.Y(0)-14,{align:'left',color:C.soft,font:'600 11px Inter'});
+    p.text('aphelion',p.X(-1-e)-8,p.Y(0)-14,{align:'right',color:C.soft,font:'600 11px Inter'});
+    p.text('star',p.X(0),p.Y(0)+20,{color:C.gold,font:'600 11px Inter'});
+  });
+  s.plot=p;s.loop=true;
+  $('e5').addEventListener('input',()=>{st.e=Number($('e5').value);ui();live();s.dirty=true;});
+  const playBtn=()=>{$('play5').textContent=st.playing?'❚❚ Pause':'▶ Play';};
+  $('play5').onclick=()=>{st.playing=!st.playing;st.last=0;playBtn();};
+  ui();live();playBtn();
+}
+
+
+// =================== 2. A Riemann sum, term by term ===================
+{
+  const F={
+    sq:{label:'x² on [0, 2]',f:x=>x*x,a:0,b:2,ex:8/3,exs:'8/3',v:[-.25,2.3,-.4,4.6]},
+    sin:{label:'sin x on [0, π]',f:Math.sin,a:0,b:Math.PI,ex:2,exs:'2',v:[-.3,3.5,-.25,1.35]}
+  };
+  const st={fn:'sq',m:'right',n:4,k:4,runner:null};
+  const p=new Plot($('c6'),{xmin:-.25,xmax:2.3,ymin:-.4,ymax:4.6});
+  const G=()=>F[st.fn];
+  function terms(){const g=G(),d=(g.b-g.a)/st.n;let run=0;return Array.from({length:st.n},(_,i)=>{const x0=g.a+i*d,xs=st.m==='left'?x0:st.m==='right'?x0+d:x0+d/2,h=g.f(xs),area=h*d;run+=area;return{i:i+1,x0,x1:x0+d,xs,h,area,run};});}
+  function ui(){
+    const g=G(),T=terms(),d=(g.b-g.a)/st.n,k=st.k,total=k?T[k-1].run:0,full=T[T.length-1].run;
+    $('n6o').textContent=st.n;
+    $('t6').innerHTML=T.map((t,j)=>{const done=j<k-1||(j===k-1&&!st.runner),cur=st.runner&&j===k-1;return `<tr class="${cur?'on':''}" style="${j>=k?'opacity:.35':''}"><td>${t.i}</td><td>${num(t.xs,3)}</td><td>${num(t.h,4)}</td><td>${num(t.area,4)}</td><td style="color:${j<k?'var(--text)':''}">${j<k?num(t.run,4):'…'}</td></tr>`;}).join('');
+    const scale=Math.max(g.ex,full)*1.12,w=total/scale*100,mk=g.ex/scale*100;
+    $('bar6').innerHTML=`<span style="width:${w}%;background:linear-gradient(90deg,rgba(88,196,221,.55),var(--blue))"></span><i style="position:absolute;left:${mk}%;top:-4px;bottom:-4px;width:2px;background:var(--yellow)" title="exact area"></i>`;
+    $('r6').innerHTML=`Δx = (b − a)/n = <b>${num(d,4)}</b> · added ${k} of ${st.n} terms<br>running total = <b style="color:var(--blue)">${num(total,5)}</b> · exact area = ${g.exs} = <b style="color:var(--yellow)">${num(g.ex,5)}</b> <span style="color:var(--muted)">(yellow mark)</span>`+(k===st.n?`<br>finished: error = <b>${num(full-g.ex,5)}</b>`:'');
+    s.dirty=true;
+  }
+  const s=scene('c6',()=>{
+    const g=G(),T=terms(),k=st.k;
+    if(p.follow({xmin:g.v[0],xmax:g.v[1],ymin:g.v[2],ymax:g.v[3]}))s.dirty=true;
+    p.begin();p.grid();p.clip();
+    T.forEach((t,j)=>{
+      const cur=st.runner&&j===k-1,done=j<k&&!cur;
+      rectW(p,t.x0,0,t.x1,t.h,cur?C.yellow:done?C.blue:'#ffffff',cur?.6:done?.35:.07,true);
+      p.dot(t.xs,t.h,3.5,cur?C.yellow:'#ffffff',false);
+    });
+    p.curve(g.f,{color:C.blue,width:3.2});
+    p.unclip();
+    if(st.n<=8)T.forEach((t,j)=>{if(j<k){const px=(p.X(t.x0)+p.X(t.x1))/2,py=Math.max(p.T+10,p.Y(t.h)-12);p.text(num(t.area,3),px,py,{color:st.runner&&j===k-1?C.yellow:C.soft,font:'600 11px "JetBrains Mono", monospace'});}});
+    if(st.runner&&k>0){const t=T[k-1];p.text(`term ${t.i}: f(${num(t.xs,2)})·Δx = ${num(t.area,3)}`,p.L+12,p.T+14,{align:'left',color:C.yellow,font:'600 13px "JetBrains Mono", monospace'});}
+  });
+  s.plot=p;
+  const full=()=>{stop(st.runner);st.runner=null;st.k=st.n;ui();};
+  segment('fn6',Object.entries(F).map(([k,g])=>[k,g.label]),st.fn,k=>{st.fn=k;full();});
+  segment('m6',[['left','Left'],['right','Right'],['mid','Midpoint']],st.m,k=>{st.m=k;full();});
+  $('n6').addEventListener('input',()=>{st.n=Number($('n6').value);full();});
+  $('play6').onclick=()=>{stop(st.runner);st.k=0;const per=reduce?1:Math.max(350,3600/st.n);
+    st.runner=run(per*st.n+200,q=>{const k=Math.min(st.n,Math.floor(q*(st.n*per+200)/per)+1);if(k!==st.k){st.k=k;ui();}},()=>{st.runner=null;st.k=st.n;ui();});ui();};
+  $('step6').onclick=()=>{stop(st.runner);st.runner=null;st.k=st.k>=st.n?1:st.k+1;ui();};
+  $('reset6').onclick=()=>{stop(st.runner);st.runner=null;st.k=0;ui();};
+  ui();
+}
+
+// =================== 5. Fundamental Theorem II ===================
+{
+  const F={
+    sq:{label:'x²  (F = x³/3)',f:x=>x*x,F:x=>x*x*x/3,Fs:'x³/3',a:0,b0:2,bmin:.5,bmax:2.2,v:[-.2,2.4,-.4,5.2]},
+    cos:{label:'cos x  (F = sin x)',f:Math.cos,F:Math.sin,Fs:'sin x',a:0,b0:2.4,bmin:.5,bmax:3.1,v:[-.2,3.3,-1.2,1.25]},
+    inv:{label:'1/x  (F = ln x)',f:x=>1/x,F:Math.log,Fs:'ln x',a:1,b0:4,bmin:1.5,bmax:4.5,v:[.6,4.7,-.15,1.2]}
+  };
+  const COLS=[C.blue,C.teal,C.yellow,C.gold,C.purple,C.green,C.red];
+  const st={fn:'sq',n:4,b:2,mvt:true};
+  const G=()=>F[st.fn];
+  const top=new Plot($('c7a'),{xmin:-.2,xmax:2.4,ymin:-.4,ymax:5.2}),bot=new Plot($('c7b'),{xmin:-.2,xmax:2.4,ymin:-.4,ymax:3.2});
+  // the mean value point: where f equals the average slope of F over the step
+  function mvtPoint(g,x0,x1){
+    const m=(g.F(x1)-g.F(x0))/(x1-x0),h=x=>g.f(x)-m,N=60;let pa=x0,ha=h(x0);
+    for(let j=1;j<=N;j++){const pb=x0+(x1-x0)*j/N,hb=h(pb);if(ha===0)return pa;if(ha*hb<=0){let lo=pa,hi=pb;for(let k=0;k<50;k++){const md=(lo+hi)/2;if(h(lo)*h(md)<=0)hi=md;else lo=md;}return (lo+hi)/2;}pa=pb;ha=hb;}
+    return (x0+x1)/2;
+  }
+  function steps(){const g=G(),d=(st.b-g.a)/st.n;return Array.from({length:st.n},(_,i)=>{const x0=g.a+i*d,x1=x0+d,c=st.mvt?mvtPoint(g,x0,x1):x0,area=g.f(c)*d;return{x0,x1,c,area,rise:g.F(x1)-g.F(x0)};});}
+  function setViews(ms){
+    const g=G();let lo=Infinity,hi=-Infinity;for(let j=0;j<=200;j++){const x=g.a+(g.bmax-g.a)*j/200,y=g.F(x);lo=Math.min(lo,y);hi=Math.max(hi,y);}
+    const pad=(hi-lo)*.18+.05;
+    top.setView({xmin:g.v[0],xmax:g.v[1],ymin:g.v[2],ymax:g.v[3]},ms);bot.setView({xmin:g.v[0],xmax:g.v[1],ymin:lo-pad,ymax:hi+pad},ms);
+  }
+  function ui(){
+    const g=G(),S=steps(),sumA=S.reduce((t,s)=>t+s.area,0),dF=g.F(st.b)-g.F(g.a);
+    $('n7o').textContent=st.n;$('b7o').textContent=num(st.b,2);$('b7').value=1000*(st.b-g.bmin)/(g.bmax-g.bmin);
+    $('r7').innerHTML=`sum of rectangles Σ f(${st.mvt?'cᵢ':'xᵢ₋₁'})·Δx = <b style="color:var(--blue)">${num(sumA,6)}</b><br>sum of rises = F(b) − F(a) = ${g.Fs.replace('x',num(st.b,2))} − ${g.Fs.replace('x',num(g.a,2))} = <b style="color:var(--yellow)">${num(dF,6)}</b>`;
+    const diff=Math.abs(sumA-dF);
+    $('v7').innerHTML=st.mvt?`<div class="verdict ok">✓ Exact with n = ${st.n} <span>· each rectangle matches its rise, so the sums agree to ${diff<1e-9?'every digit':num(diff,9)}</span></div>`
+      :`<div class="verdict bad">≈ Off by ${num(diff,5)} <span>· left points don’t match the rises, but the gap → 0 as n grows</span></div>`;
+    s.dirty=true;s2.dirty=true;
+  }
+  const s=scene('c7a',()=>{
+    const g=G(),S=steps();
+    top.begin();top.grid();top.clip();
+    S.forEach((t,i)=>{rectW(top,t.x0,0,t.x1,g.f(t.c),COLS[i%COLS.length],.38,true);top.dot(t.c,g.f(t.c),3.5,'#ffffff',false);});
+    top.curve(g.f,{color:C.blue,width:3});
+    top.vline(g.a,C.teal,1.2,[5,5],.6);top.vline(st.b,C.gold,1.2,[5,5],.6);
+    top.unclip();
+    top.text('f(x)',top.L+30,top.T+12,{color:C.blue,font:'italic 600 15px "STIX Two Text", serif'});
+    top.text(st.mvt?'white dots: mean-value points cᵢ':'white dots: left endpoints',top.R-8,top.T+12,{color:C.soft,align:'right',font:'600 11.5px Inter, sans-serif'});
+  });
+  s.plot=top;
+  const s2=scene('c7b',()=>{
+    const g=G(),S=steps();
+    bot.begin();bot.grid({yTicks:4});bot.clip();
+    bot.curve(g.F,{color:C.green,width:2.4,alpha:.85});
+    let y=g.F(g.a);
+    S.forEach((t,i)=>{const col=COLS[i%COLS.length];bot.line(bot.X(t.x0),bot.Y(y),bot.X(t.x1),bot.Y(y),'#ffffff',1,[3,4],.35);bot.line(bot.X(t.x1),bot.Y(y),bot.X(t.x1),bot.Y(y+t.area),col,4);y+=t.area;bot.dot(t.x1,g.F(t.x1),3,C.green,false);});
+    bot.dot(g.a,g.F(g.a),4,C.teal,false);
+    bot.unclip();
+    const bx=Math.min(bot.R-14,bot.X(st.b)+18);
+    bot.span(bx,bot.Y(g.F(g.a)),bx,bot.Y(g.F(st.b)),C.yellow);
+    bot.text('F(b) − F(a)',bx-8,(bot.Y(g.F(g.a))+bot.Y(g.F(st.b)))/2,{color:C.yellow,align:'right',font:'italic 600 14px "STIX Two Text", serif'});
+    bot.text('F(x) = '+g.Fs,bot.L+50,bot.T+12,{color:C.green,font:'italic 600 15px "STIX Two Text", serif'});
+  });
+  s2.plot=bot;
+  segment('fn7',Object.entries(F).map(([k,g])=>[k,g.label]),st.fn,k=>{st.fn=k;st.b=F[k].b0;setViews(800);run(820,ui);});
+  segment('s7',[['mvt','Mean-value points cᵢ'],['left','Left endpoints']],'mvt',k=>{st.mvt=k==='mvt';ui();});
+  $('n7').addEventListener('input',()=>{st.n=Number($('n7').value);ui();});
+  $('b7').addEventListener('input',()=>{const g=G();st.b=g.bmin+(g.bmax-g.bmin)*Number($('b7').value)/1000;ui();});
+  setViews(0);ui();
+}
+
+// ---------- Chapter nav highlight ----------
+if('IntersectionObserver' in window){
+  const links=[...document.querySelectorAll('.chapters a')];
+  const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){links.forEach(l=>l.setAttribute('aria-current',String(l.getAttribute('href')==='#'+e.target.id)));}}),{rootMargin:'-45% 0px -50% 0px'});
+  document.querySelectorAll('.chapter').forEach(sec=>io.observe(sec));
+}
+requestAnimationFrame(frame);
+})();
+</script>
+
+</body>
+</html>

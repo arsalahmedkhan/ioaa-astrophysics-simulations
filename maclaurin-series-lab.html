@@ -1,0 +1,929 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Maclaurin Series Lab</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="theme-color" content="#0d0f14">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&family=STIX+Two+Text:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap">
+<style>
+/* Layout: a long, quiet chalkboard. Each chapter pairs a short explanation with one live scene; colour carries meaning: blue = the function, yellow = the polynomial and slopes, purple = bend (f″, x²), gold = twist (f‴, x³), teal and green = helpers. One dark look, chosen on purpose. */
+:root{
+  color-scheme:dark;
+  --bg:#0d0f14;--bg2:#10131a;--panel:#141821;--panel2:#191e29;--edge:rgba(255,255,255,.08);--edge2:rgba(255,255,255,.15);
+  --text:#ECEFF4;--soft:#B6BFCC;--muted:#7D8797;
+  --blue:#58C4DD;--yellow:#FFE45E;--gold:#F0AC5F;--green:#83C167;--red:#FC6255;--teal:#5CD0B3;--purple:#B48EDB;
+  --serif:"STIX Two Text","Cambria Math","Times New Roman",serif;
+  --sans:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --r:16px;
+}
+*{box-sizing:border-box}
+html{background:var(--bg);scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 var(--sans)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+.page{max-width:1180px;margin:0 auto;padding-block:28px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+a{color:var(--blue)}
+.m{font-family:var(--serif);font-style:italic;font-size:1.08em;letter-spacing:.01em}
+.mu{font-family:var(--serif);font-style:normal;font-size:1.08em}
+.y{color:var(--yellow)}.t{color:var(--teal)}.b{color:var(--blue)}.g{color:var(--green)}.r{color:var(--red)}.o{color:var(--gold)}
+sub,sup{font-size:.72em}
+
+/* Top line */
+.topline{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-bottom:18px;border-bottom:1px solid var(--edge)}
+.mark{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.2em;font-size:12px;color:var(--soft)}
+.mark i{width:30px;height:30px;border-radius:9px;border:1px solid rgba(88,196,221,.35);display:grid;place-items:center;font-style:normal;color:var(--blue);font-family:var(--serif);font-size:18px;letter-spacing:0}
+.pill{font-size:11px;letter-spacing:.16em;font-weight:800;color:var(--muted);border:1px solid var(--edge);border-radius:99px;padding:8px 12px;white-space:nowrap}
+
+/* Hero */
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:32px;align-items:center;padding-block:40px 30px}
+@media(max-width:900px){.hero{grid-template-columns:minmax(0,1fr);padding-block:28px 18px}}
+.eyebrow{font-size:11px;letter-spacing:.24em;font-weight:800;text-transform:uppercase;color:var(--blue);margin:0 0 14px}
+h1{font-family:var(--serif);font-weight:600;font-size:clamp(46px,7vw,84px);line-height:1;letter-spacing:-.02em;margin:0;text-wrap:balance}
+h1 em{font-style:italic;color:var(--yellow)}
+.lede{font-size:17px;color:var(--soft);max-width:52ch;margin:18px 0 0}
+.bigformula{font-family:var(--serif);font-size:clamp(24px,3vw,32px);margin-top:26px;display:flex;align-items:baseline;gap:.25em;flex-wrap:wrap}
+.lim{display:inline-flex;flex-direction:column;align-items:center;line-height:1;margin-right:.15em}
+.lim small{font-size:.5em;font-style:italic;margin-top:.25em;white-space:nowrap}
+.hero-stage{border-radius:var(--r);overflow:hidden;border:1px solid var(--edge);background:var(--bg2)}
+.hero-stage canvas{display:block;width:100%;height:clamp(240px,30vw,340px)}
+.hero-cap{font-size:12.5px;color:var(--muted);padding:10px 14px;border-top:1px solid var(--edge)}
+
+/* Chapter nav */
+.chapters{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:rgba(13,15,20,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-block:1px solid var(--edge);margin-inline:-4px}
+.chapters ol{list-style:none;display:flex;gap:6px;margin:0;padding:10px 4px;overflow-x:auto;scrollbar-width:none}
+.chapters ol::-webkit-scrollbar{display:none}
+.chapters a{display:inline-flex;gap:8px;align-items:center;white-space:nowrap;text-decoration:none;color:var(--soft);font-size:13px;font-weight:600;padding:7px 12px;border-radius:99px;border:1px solid transparent}
+.chapters a b{font-family:var(--serif);font-weight:600;color:var(--blue);font-size:15px}
+.chapters a:hover,.chapters a[aria-current=true]{border-color:var(--edge2);color:var(--text);background:rgba(255,255,255,.03)}
+
+/* Chapters */
+.chapter{padding-block:58px 10px;scroll-margin-top:60px}
+.ch-head{display:flex;align-items:baseline;gap:16px;margin-bottom:22px}
+.ch-num{font-family:var(--serif);font-size:20px;font-weight:600;color:var(--blue);width:40px;height:40px;border-radius:50%;border:1px solid rgba(88,196,221,.4);display:grid;place-items:center;flex:none;transform:translateY(-4px)}
+h2{font-family:var(--serif);font-weight:600;font-size:clamp(28px,3.4vw,40px);line-height:1.1;margin:0;letter-spacing:-.01em;text-wrap:balance}
+.ch-grid{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:30px;align-items:start}
+@media(max-width:980px){.ch-grid{grid-template-columns:minmax(0,1fr)}}
+.ch-text{display:flex;flex-direction:column;gap:14px;min-width:0}
+.ch-text p{margin:0;color:var(--soft);font-size:16px;line-height:1.72;max-width:62ch}
+.ch-text p strong{color:var(--text);font-weight:600}
+.formula{font-family:var(--serif);font-size:20px;line-height:1.5;background:var(--panel);border:1px solid var(--edge);border-radius:12px;padding:14px 16px;overflow-x:auto}
+.formula .note{display:block;font-family:var(--sans);font-size:12.5px;color:var(--muted);margin-top:6px;line-height:1.5}
+
+/* Stage */
+.stage{background:var(--panel);border:1px solid var(--edge);border-radius:var(--r);overflow:hidden;min-width:0}
+.stage canvas{display:block;width:100%;height:clamp(320px,38vw,470px);touch-action:pan-y;background:var(--bg2)}
+.controls{display:flex;flex-direction:column;gap:12px;padding:14px 16px 16px;border-top:1px solid var(--edge)}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.ctrl{display:grid;grid-template-columns:minmax(74px,auto) minmax(0,1fr) 92px;align-items:center;gap:12px}
+.ctrl label{font-size:13px;color:var(--soft);white-space:nowrap}
+.ctrl output{font:600 13px var(--mono);text-align:right;color:var(--text);font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--blue);cursor:pointer}
+.ctrl.eps input{accent-color:var(--yellow)}.ctrl.delta input{accent-color:var(--teal)}.ctrl.lval input{accent-color:var(--yellow)}
+.btn{font:600 13px var(--sans);color:var(--text);background:transparent;border:1px solid var(--edge2);border-radius:99px;padding:8px 14px;cursor:pointer;transition:background .15s,border-color .15s}
+.btn:hover{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.28)}
+.btn.primary{background:var(--blue);border-color:var(--blue);color:#06141a}
+.btn.primary:hover{background:#7fd3e6}
+.btn[aria-pressed=true]{border-color:var(--blue);color:var(--blue);background:rgba(88,196,221,.08)}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+button:focus-visible,input:focus-visible,a:focus-visible,summary:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.seg{display:inline-flex;flex-wrap:wrap;gap:4px;padding:4px;border-radius:12px;background:var(--bg2);border:1px solid var(--edge)}
+.seg button{font:600 13px var(--sans);color:var(--soft);background:transparent;border:0;border-radius:8px;padding:7px 11px;cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--panel2);color:var(--text);box-shadow:inset 0 0 0 1px var(--edge2)}
+.seg button .m{font-size:1.05em}
+.readout{font:13px/1.75 var(--mono);color:var(--soft);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.readout b{color:var(--text);font-weight:600}
+.verdict{display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600;border-radius:10px;padding:8px 12px;line-height:1.45}
+.verdict.ok{color:var(--green);background:rgba(131,193,103,.08);border:1px solid rgba(131,193,103,.3)}
+.verdict.bad{color:var(--red);background:rgba(252,98,85,.08);border:1px solid rgba(252,98,85,.3)}
+.verdict span{color:var(--soft);font-weight:500}
+
+/* Tables and boxes */
+table.vals{border-collapse:collapse;font:13px var(--mono);width:100%;font-variant-numeric:tabular-nums}
+table.vals th{font:700 11px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:right;padding:6px 8px;border-bottom:1px solid var(--edge)}
+table.vals td{text-align:right;padding:5px 8px;color:var(--soft);border-bottom:1px solid rgba(255,255,255,.04)}
+table.vals tr.on td{color:var(--text);background:rgba(88,196,221,.07)}
+table.vals td.lx{color:var(--teal)}table.vals td.rx{color:var(--gold)}
+.tablewrap{overflow-x:auto;background:var(--panel);border:1px solid var(--edge);border-radius:12px;padding:6px 8px}
+.idea{margin-top:26px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}
+@media(max-width:800px){.idea{grid-template-columns:minmax(0,1fr)}}
+.takeaway{background:var(--panel);border:1px solid var(--edge);border-radius:14px;padding:16px 18px}
+.takeaway h3,.tries h3{margin:0 0 6px;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.takeaway p{margin:0;color:var(--soft);line-height:1.7}
+.tries{background:var(--panel);border:1px solid var(--edge);border-radius:14px;padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+.tries details{border-top:1px solid var(--edge);padding-top:10px}
+.tries details:first-of-type{border-top:0;padding-top:0}
+.tries summary{cursor:pointer;color:var(--text);font-size:14.5px;line-height:1.55;list-style:none}
+.tries summary::-webkit-details-marker{display:none}
+.tries summary::after{content:"Show answer";display:block;margin-top:4px;font-size:12px;font-weight:700;color:var(--blue)}
+.tries details[open] summary::after{content:"Hide answer"}
+.tries details p{margin:6px 0 0;color:var(--soft);font-size:14px;line-height:1.6}
+.proof{background:var(--panel);border:1px solid var(--edge);border-radius:12px;padding:12px 14px;font-size:14px;color:var(--soft);line-height:1.65}
+.proof b{color:var(--text)}
+.statement{font-family:var(--serif);font-size:19px;line-height:1.6}
+
+/* Summary */
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+@media(max-width:980px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:620px){.cards{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--panel);border:1px solid var(--edge);border-radius:14px;padding:16px 18px}
+.card h3{margin:0 0 8px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--blue)}
+.card p{margin:0;color:var(--soft);font-size:14.5px;line-height:1.65}
+.card .f{font-family:var(--serif);font-size:18px;color:var(--text);display:block;margin:4px 0}
+footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--edge);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:12px}
+@media(max-width:560px){.ctrl{grid-template-columns:minmax(0,1fr) 84px}.ctrl label{grid-column:1/-1}.statement{font-size:17px}}
+
+
+/* Shared extras for the Derivatives and Integrals labs */
+.stage canvas.short{height:clamp(180px,20vw,240px);border-top:1px solid var(--edge)}
+.stage canvas.track{height:clamp(110px,11vw,140px)}
+.stage canvas.mini{height:clamp(120px,11vw,150px);border-top:1px solid var(--edge)}
+.motion-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr)}
+.motion-grid>canvas{height:100%!important;min-height:330px;border-right:1px solid var(--edge)}
+.motion-grid .minis{display:flex;flex-direction:column;min-width:0}
+.motion-grid .minis canvas:first-child{border-top:0}
+@media(max-width:700px){.motion-grid{grid-template-columns:minmax(0,1fr)}.motion-grid>canvas{min-height:260px;height:260px!important;border-right:0}.motion-grid .minis canvas:first-child{border-top:1px solid var(--edge)}}
+.keyrow{display:flex;gap:6px 16px;flex-wrap:wrap;font-size:12.5px;color:var(--soft)}
+.keyrow span{display:inline-flex;align-items:center;gap:7px}
+.keyrow i{display:inline-block;width:16px;height:3px;border-radius:2px}
+.keyrow i.box{height:10px;width:14px;border-radius:3px}
+.bar{display:flex;height:14px;border-radius:7px;overflow:hidden;background:var(--bg2);border:1px solid var(--edge)}
+.bar span{display:block;height:100%;transition:width .2s}
+.slices{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:4px;align-items:end;height:64px;padding:6px 8px;background:var(--bg2);border:1px solid var(--edge);border-radius:10px}
+.slices span{display:block;border-radius:3px 3px 0 0;min-height:2px}
+.statusrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+
+.verdict{flex-wrap:wrap;row-gap:2px}
+
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="topline"><div class="mark"><i>Σ</i>MACLAURIN SERIES LAB</div><div class="pill">IOAA · MATH TOOLKIT / 07</div></header>
+
+  <section class="hero">
+    <div>
+      <p class="eyebrow">Derivatives at zero → a whole function</p>
+      <h1>Everything from <em>one point</em>.</h1>
+      <p class="lede">Know a function’s value, slope, bend, twist, … at x = 0, and you can rebuild it everywhere with nothing but powers of x. We build that idea one derivative at a time, then put it together into the Maclaurin series.</p>
+      <div class="bigformula" aria-label="f of x equals f of 0 plus f prime of 0 times x plus f double prime of 0 over 2 factorial times x squared plus and so on"><span class="m b">f</span><span class="mu">(</span><span class="m">x</span><span class="mu">) = </span><span class="mu">f(0) + </span><span class="mu y">f ′(0)</span><span class="m">x</span><span class="mu"> + </span><span class="mu" style="color:var(--purple)">f ″(0)</span><span class="mu">/2!·</span><span class="m">x</span><span class="mu">² + </span><span class="mu o">f ‴(0)</span><span class="mu">/3!·</span><span class="m">x</span><span class="mu">³ + …</span></div>
+    </div>
+    <figure class="hero-stage" style="margin:0"><canvas id="c0" aria-label="Polynomials built from derivatives at zero, wrapping around the sine curve"></canvas><figcaption class="hero-cap">Each extra derivative copied at x = 0 lets the <span class="y">yellow polynomial</span> follow the <span class="b">blue curve</span> a little further from the origin.</figcaption></figure>
+  </section>
+
+  <nav class="chapters" aria-label="Chapters"><ol>
+    <li><a href="#what"><b>1</b>What a derivative does</a></li>
+    <li><a href="#first"><b>2</b>First derivative: slope</a></li>
+    <li><a href="#second"><b>3</b>Second derivative: bend</a></li>
+    <li><a href="#third"><b>4</b>Third derivative: twist</a></li>
+    <li><a href="#blocks"><b>5</b>Building with polynomials</a></li>
+    <li><a href="#exact"><b>6</b>Why derivatives make it exact</a></li>
+    <li><a href="#maclaurin"><b>7</b>The Maclaurin series</a></li>
+    <li><a href="#watch"><b>8</b>Watch each term</a></li>
+    <li><a href="#summary"><b>✦</b>Summary</a></li>
+  </ol></nav>
+
+  <!-- ===================== 1 ===================== -->
+  <section class="chapter" id="what">
+    <div class="ch-head"><span class="ch-num">1</span><h2>What a derivative does</h2></div>
+    <div class="ch-grid">
+      <div class="ch-text">
+        <p>A derivative answers one question: <strong>how fast is this changing, right here?</strong> Pick a point on the curve and a second point a step <span class="m">h</span> away. The slope between them is rise ÷ run. Now shrink <span class="m">h</span>. The line through the two points swings round and settles on the <span class="y">tangent</span>, and its slope settles on one number: the derivative.</p>
+        <div class="formula"><span class="m">f</span> ′(<span class="m t">x</span>) = lim<sub>h→0</sub> [<span class="m">f</span>(<span class="m">x</span> + <span class="m">h</span>) − <span class="m">f</span>(<span class="m">x</span>)] / <span class="m">h</span><span class="note">A derivative turns a curve into a new function: the slope at every point. Doing it again and again gives f ″, f ‴, … Each one carries finer information about the shape.</span></div>
+        <p>We will follow three examples all the way through: <strong>sin x</strong> (a wave), <strong>x³</strong> (a polynomial) and <strong>eˣ</strong> (growth).</p>
+        <div class="seg" role="group" aria-label="Choose a function" id="fn1"></div>
+      </div>
+      <div class="stage">
+        <canvas id="c1" aria-label="A secant line between two points turning into the tangent as the step shrinks"></canvas>
+        <div class="controls">
+          <div class="ctrl"><label for="x1">Point <span class="m t">x</span></label><input id="x1" type="range" min="0" max="1000" value="620"><output id="x1o"></output></div>
+          <div class="ctrl"><label for="h1">Step <span class="m">h</span></label><input id="h1" type="range" min="0" max="1000" value="0"><output id="h1o"></output></div>
+          <div class="row"><button class="btn primary" id="play1">▶ Shrink h</button></div>
+          <div class="readout" id="r1"></div>
+        </div>
+      </div>
+    </div>
+    <div class="idea">
+      <div class="takeaway"><h3>The idea</h3><p>The derivative is the rate of change at an instant: the slope the secant lines settle on as the step shrinks to nothing.</p></div>
+      <div class="tries"><h3>Try it</h3>
+        <details><summary>For x³ at x = 1, what slope do the secants approach?</summary><p>3x² = 3. With h = 1 the secant slope is (8 − 1)/1 = 7. With h = 0.1 it is 3.31, closing in on 3.</p></details>
+        <details><summary>For eˣ, compare the slope with the height. What do you notice?</summary><p>They are equal everywhere: the derivative of eˣ is eˣ. The steepness is always the same as the value.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 2 ===================== -->
+  <section class="chapter" id="first">
+    <div class="ch-head"><span class="ch-num">2</span><h2>First derivative: slope</h2></div>
+    <div class="ch-grid">
+      <div class="ch-text">
+        <p><span class="m y">f</span> ′(<span class="m">x</span>) tells you which way the curve is heading and how steeply. Where it is positive the curve <span class="g">rises</span>, where it is negative it <span class="r">falls</span>, and where it is zero the curve is momentarily flat.</p>
+        <div class="tablewrap"><table class="vals" aria-label="First derivatives of the three examples"><thead><tr><th style="text-align:left">f(x)</th><th style="text-align:left">f ′(x)</th><th>f ′(0)</th><th style="text-align:left">what it says at 0</th></tr></thead><tbody>
+          <tr><td style="text-align:left">sin x</td><td style="text-align:left">cos x</td><td><b>1</b></td><td style="text-align:left">rising at 45°</td></tr>
+          <tr><td style="text-align:left">x³</td><td style="text-align:left">3x²</td><td><b>0</b></td><td style="text-align:left">perfectly flat</td></tr>
+          <tr><td style="text-align:left">eˣ</td><td style="text-align:left">eˣ</td><td><b>1</b></td><td style="text-align:left">rising, as steep as it is high</td></tr>
+        </tbody></table></div>
+        <div class="formula"><span class="m">y</span> = <span class="m">f</span>(0) + <span class="y"><span class="m">f</span> ′(0)</span>·<span class="m">x</span><span class="note">The value and the first derivative at 0 give the best straight line through the origin point. The first derivative is the coefficient of x.</span></div>
+        <div class="seg" role="group" aria-label="Choose a function" id="d1fn"></div>
+        <div id="d1v"></div>
+      </div>
+      <div class="stage">
+        <canvas id="d1a" aria-label="The function coloured by whether it rises or falls, with the tangent at x"></canvas>
+        <canvas id="d1b" class="short" aria-label="The first derivative"></canvas>
+        <div class="controls">
+          <div class="ctrl"><label for="d1x">Point <span class="m t">x</span></label><input id="d1x" type="range" min="0" max="1000" value="650"><output id="d1xo"></output></div>
+          <div class="readout" id="d1r"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 3 ===================== -->
+  <section class="chapter" id="second">
+    <div class="ch-head"><span class="ch-num">3</span><h2>Second derivative: bend</h2></div>
+    <div class="ch-grid">
+      <div class="ch-text">
+        <p><span class="m" style="color:var(--purple)">f</span> ″(<span class="m">x</span>) is the slope of the slope: how fast the tangent is turning. Positive means the curve bends up like a <span class="t">cup</span>. Negative means it bends down like a <span class="o">cap</span>. Zero means it is not bending there (an inflection point).</p>
+        <div class="tablewrap"><table class="vals" aria-label="Second derivatives"><thead><tr><th style="text-align:left">f(x)</th><th style="text-align:left">f ″(x)</th><th>f ″(0)</th><th style="text-align:left">at 0</th></tr></thead><tbody>
+          <tr><td style="text-align:left">sin x</td><td style="text-align:left">−sin x</td><td><b>0</b></td><td style="text-align:left">switching from cup to cap</td></tr>
+          <tr><td style="text-align:left">x³</td><td style="text-align:left">6x</td><td><b>0</b></td><td style="text-align:left">switching from cap to cup</td></tr>
+          <tr><td style="text-align:left">eˣ</td><td style="text-align:left">eˣ</td><td><b>1</b></td><td style="text-align:left">a gentle cup</td></tr>
+        </tbody></table></div>
+        <div class="formula"><span class="m">y</span> = <span class="m">f</span>(0) + <span class="m">f</span> ′(0)<span class="m">x</span> + <span style="color:var(--purple)"><span class="m">f</span> ″(0)/2</span>·<span class="m">x</span>²<span class="note">The best parabola at 0. The bend needs x², the simplest curve that bends, and the ½ comes from (x²)″ = 2. Chapter 6 shows why.</span></div>
+        <div class="seg" role="group" aria-label="Choose a function" id="d2fn"></div>
+        <div id="d2v"></div>
+      </div>
+      <div class="stage">
+        <canvas id="d2a" aria-label="The function coloured by cup or cap, with the best-fitting parabola at x"></canvas>
+        <canvas id="d2b" class="short" aria-label="The second derivative"></canvas>
+        <div class="controls">
+          <div class="ctrl"><label for="d2x">Point <span class="m t">x</span></label><input id="d2x" type="range" min="0" max="1000" value="650"><output id="d2xo"></output></div>
+          <div class="readout" id="d2r"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 4 ===================== -->
+  <section class="chapter" id="third">
+    <div class="ch-head"><span class="ch-num">4</span><h2>Third derivative: twist</h2></div>
+    <div class="ch-grid">
+      <div class="ch-text">
+        <p><span class="m o">f</span> ‴(<span class="m">x</span>) is the slope of the bend: how fast the bending itself changes as you move along. On the lower graph it is the slope of the <span style="color:var(--purple)">f ″ curve</span>, shown by the gold tangent.</p>
+        <div class="tablewrap"><table class="vals" aria-label="Third derivatives"><thead><tr><th style="text-align:left">f(x)</th><th style="text-align:left">f ‴(x)</th><th>f ‴(0)</th><th style="text-align:left">at 0</th></tr></thead><tbody>
+          <tr><td style="text-align:left">sin x</td><td style="text-align:left">−cos x</td><td><b>−1</b></td><td style="text-align:left">the bend is decreasing: cup → cap</td></tr>
+          <tr><td style="text-align:left">x³</td><td style="text-align:left">6</td><td><b>6</b></td><td style="text-align:left">the bend grows steadily: cap → cup</td></tr>
+          <tr><td style="text-align:left">eˣ</td><td style="text-align:left">eˣ</td><td><b>1</b></td><td style="text-align:left">the bend is slowly increasing</td></tr>
+        </tbody></table></div>
+        <div class="formula">… + <span class="o"><span class="m">f</span> ‴(0)/6</span>·<span class="m">x</span>³<span class="note">The twist needs x³, and the 6 is 3! = 3·2·1 because (x³)‴ = 6. For x³ itself this gives 6/6·x³ = x³, which is exact.</span></div>
+        <p>Notice the pattern: sin x keeps cycling (sin → cos → −sin → −cos → sin), x³ runs out (6 → 0 → 0 …), and eˣ never changes.</p>
+        <div class="seg" role="group" aria-label="Choose a function" id="d3fn"></div>
+        <div id="d3v"></div>
+      </div>
+      <div class="stage">
+        <canvas id="d3a" aria-label="The function with the best-fitting cubic at x"></canvas>
+        <canvas id="d3b" class="short" aria-label="The second derivative with its tangent, and the third derivative"></canvas>
+        <div class="controls">
+          <div class="ctrl"><label for="d3x">Point <span class="m t">x</span></label><input id="d3x" type="range" min="0" max="1000" value="650"><output id="d3xo"></output></div>
+          <div class="readout" id="d3r"></div>
+        </div>
+      </div>
+    </div>
+    <div class="idea">
+      <div class="takeaway"><h3>Chapters 2–4 together</h3><p>Value, slope, bend, twist: each is the rate of change of the one before. At x = 0 each one is a single number, and each number needs exactly one power of x to carry it: 1, x, x², x³. That pairing is the whole idea of the Maclaurin series.</p></div>
+      <div class="tries"><h3>Try it</h3>
+        <details><summary>For sin x, list f(0), f ′(0), f ″(0), f ‴(0).</summary><p>0, 1, 0, −1. Then the cycle repeats: 0, 1, 0, −1, …</p></details>
+        <details><summary>Why is the twist of x³ the same everywhere?</summary><p>f ″ = 6x is a straight line, and its slope is always 6. The bend grows at a constant rate.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 5 ===================== -->
+  <section class="chapter" id="blocks">
+    <div class="ch-head"><span class="ch-num">5</span><h2>Building with polynomials</h2></div>
+    <div class="ch-grid">
+      <div class="ch-text">
+        <p>Polynomials are the simplest functions there are: just multiply and add. The plan is to build our function out of these <strong>building blocks</strong>:</p>
+        <div class="formula"><span class="m">p</span>(<span class="m">x</span>) = <span class="m">a</span><sub>0</sub> + <span class="m">a</span><sub>1</sub><span class="m">x</span> + <span class="m">a</span><sub>2</sub><span class="m">x</span>² + <span class="m">a</span><sub>3</sub><span class="m">x</span>³ + <span class="m">a</span><sub>4</sub><span class="m">x</span>⁴ + …<span class="note">The blocks 1, x, x², x³, x⁴ are fixed. The only freedom is the amounts a₀, a₁, a₂, … Choosing them well is the whole problem.</span></div>
+        <p>Try it by hand. Pick a target and tune the five amounts to make the <span class="y">yellow</span> curve match the <span class="b">blue</span> one inside the green band, −1 ≤ x ≤ 1. It is surprisingly hard to guess. The next chapter shows there is a formula that gets every amount exactly right.</p>
+        <div class="seg" role="group" aria-label="Choose a target" id="fn5"></div>
+        <div id="v5"></div>
+      </div>
+      <div class="stage">
+        <canvas id="c5" aria-label="The target curve, your polynomial, and the building blocks"></canvas>
+        <div class="controls">
+          <div class="keyrow"><span><i style="background:#ffffff"></i>1</span><span><i style="background:var(--teal)"></i>x</span><span><i style="background:var(--purple)"></i>x²</span><span><i style="background:var(--gold)"></i>x³</span><span><i style="background:var(--green)"></i>x⁴</span><span><i style="background:var(--yellow)"></i>your p(x)</span></div>
+          <div class="ctrl"><label for="a0"><span class="m">a</span>₀</label><input id="a0" type="range" min="-2" max="2" step="0.01" value="0"><output id="a0o"></output></div>
+          <div class="ctrl delta"><label for="a1"><span class="m">a</span>₁</label><input id="a1" type="range" min="-2" max="2" step="0.01" value="0"><output id="a1o"></output></div>
+          <div class="ctrl"><label for="a2"><span class="m">a</span>₂</label><input id="a2" type="range" min="-1" max="1" step="0.005" value="0" style="accent-color:var(--purple)"><output id="a2o"></output></div>
+          <div class="ctrl"><label for="a3"><span class="m">a</span>₃</label><input id="a3" type="range" min="-1" max="1" step="0.005" value="0" style="accent-color:var(--gold)"><output id="a3o"></output></div>
+          <div class="ctrl"><label for="a4"><span class="m">a</span>₄</label><input id="a4" type="range" min="-0.3" max="0.3" step="0.002" value="0" style="accent-color:var(--green)"><output id="a4o"></output></div>
+          <div class="row"><button class="btn" id="blocks5" aria-pressed="true">Show blocks</button><button class="btn" id="zero5">All zero</button><button class="btn primary" id="reveal5">Reveal the right amounts</button></div>
+          <div class="readout" id="r5"></div>
+        </div>
+      </div>
+    </div>
+    <div class="idea">
+      <div class="takeaway"><h3>The idea</h3><p>Any polynomial is a mix of powers of x. To copy a function we need the right mix. Guessing works badly, and it gets harder with every block you add. We need a rule that tells us each amount directly.</p></div>
+      <div class="tries"><h3>Try it</h3>
+        <details><summary>For eˣ, which a₀ and a₁ are easy to guess?</summary><p>a₀ = 1, because e⁰ = 1 (the curve crosses at height 1). a₁ = 1, because the slope at 0 is 1. The rest are harder: they turn out to be 1/2, 1/6, 1/24.</p></details>
+        <details><summary>For sin x, why should a₀, a₂ and a₄ all be 0?</summary><p>sin is odd: sin(−x) = −sin x. The blocks 1, x², x⁴ are even (symmetric), so any amount of them would spoil that symmetry. Only odd powers can appear.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 6 ===================== -->
+  <section class="chapter" id="exact">
+    <div class="ch-head"><span class="ch-num">6</span><h2>Why derivatives make it exact</h2></div>
+    <div class="ch-grid">
+      <div class="ch-text">
+        <p>Here is the trick. <strong>Differentiate the polynomial again and again, and look only at x = 0.</strong> Each time you differentiate, every power comes down as a multiplier and drops by one: <span class="m">x</span>³ → 3<span class="m">x</span>² → 6<span class="m">x</span> → 6. The constant at the front falls off.</p>
+        <p>Then set <span class="m">x</span> = 0. Every term that still has an <span class="m">x</span> becomes 0. <strong>Exactly one term survives on each row:</strong> the one that has just become a constant.</p>
+        <div class="formula"><span class="m">p</span><sup>(<span class="m">n</span>)</sup>(0) = <span class="m">n</span>!·<span class="m">a<sub>n</sub></span> &nbsp;⟹&nbsp; set it equal to <span class="m">f</span><sup>(<span class="m">n</span>)</sup>(0): &nbsp;<span class="y"><span class="m">a<sub>n</sub></span> = <span class="m">f</span><sup>(<span class="m">n</span>)</sup>(0) / <span class="m">n</span>!</span><span class="note">So each amount is the function’s n-th derivative at 0, divided by the n! that differentiating produced. Matching the derivatives fixes every amount exactly. No guessing.</span></div>
+        <div class="seg" role="group" aria-label="Choose a function" id="fn6"></div>
+        <div class="proof" id="p6"></div>
+      </div>
+      <div class="stage" style="padding:16px">
+        <div class="eyebrow" style="margin:0 0 10px">The derivative staircase</div>
+        <div id="stair6" aria-live="polite"></div>
+        <div class="controls" style="padding:14px 0 0;border-top:0">
+          <div class="row"><button class="btn primary" id="next6">Differentiate once more ▶</button><button class="btn" id="zero6" aria-pressed="false">Set x = 0</button><button class="btn" id="reset6">Start over</button></div>
+          <div class="readout" id="r6"></div>
+        </div>
+      </div>
+    </div>
+    <div class="idea">
+      <div class="takeaway"><h3>The idea</h3><p>Differentiating <span class="m">n</span> times and setting <span class="m">x</span> = 0 picks out one coefficient, multiplied by <span class="m">n</span>!. That is why the derivatives of <span class="m">f</span> at 0, divided by factorials, are exactly the right amounts of each building block.</p></div>
+      <div class="tries"><h3>Try it</h3>
+        <details><summary>After three steps, what survives at x = 0, and what does it equal for sin x?</summary><p>p‴(0) = 6a₃. For sin, f ‴(0) = −cos 0 = −1, so a₃ = −1/6.</p></details>
+        <details><summary>Why does a₄x⁴ give 24a₄ after four steps?</summary><p>4 → 4·3 → 4·3·2 → 4·3·2·1 = 24 = 4!. Each step brings down the current power.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 7 ===================== -->
+  <section class="chapter" id="maclaurin">
+    <div class="ch-head"><span class="ch-num">7</span><h2>The Maclaurin series</h2></div>
+    <div class="ch-grid">
+      <div class="ch-text">
+        <p>Put every amount in place and keep going forever. That is the <strong>Maclaurin series</strong>: the Taylor series centred at 0.</p>
+        <div class="formula" style="font-size:21px"><span class="m b">f</span>(<span class="m">x</span>) = <span class="m">f</span>(0) + <span class="y"><span class="m">f</span> ′(0)</span><span class="m">x</span> + <span style="color:var(--purple)"><span class="m">f</span> ″(0)</span>/2! <span class="m">x</span>² + <span class="o"><span class="m">f</span> ‴(0)</span>/3! <span class="m">x</span>³ + … = <span class="mu">Σ</span> <span class="m">f</span><sup>(<span class="m">n</span>)</sup>(0)/<span class="m">n</span>! · <span class="m">x<sup>n</sup></span></div>
+        <div class="proof"><b>Our three examples, finished:</b><br>
+          <b class="b">sin x</b> = x − x³/3! + x⁵/5! − x⁷/7! + … &nbsp;(the derivatives at 0 cycle 0, 1, 0, −1)<br>
+          <b class="b">x³</b> = 0 + 0·x + 0·x² + (6/3!)x³ = x³ &nbsp;(it stops: the series is the polynomial itself)<br>
+          <b class="b">eˣ</b> = 1 + x + x²/2! + x³/3! + x⁴/4! + … &nbsp;(every derivative at 0 is 1)</div>
+        <div class="seg" role="group" aria-label="Choose a function" id="fn7"></div>
+        <div class="tablewrap"><table class="vals" aria-label="Building the series"><thead><tr><th>n</th><th style="text-align:left">f⁽ⁿ⁾(x)</th><th>f⁽ⁿ⁾(0)</th><th>÷ n!</th><th style="text-align:left">term</th></tr></thead><tbody id="t7"></tbody></table></div>
+      </div>
+      <div class="stage">
+        <canvas id="c7" aria-label="The function and its Maclaurin polynomial of the chosen degree"></canvas>
+        <div class="controls">
+          <div class="ctrl"><label for="n7">Degree <span class="m">n</span></label><input id="n7" type="range" min="0" max="12" step="1" value="5"><output id="n7o"></output></div>
+          <div class="readout" id="r7"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 8 ===================== -->
+  <section class="chapter" id="watch">
+    <div class="ch-head"><span class="ch-num">8</span><h2>Watch each term do its job</h2></div>
+    <div class="ch-grid">
+      <div class="ch-text">
+        <p>Now watch the series being built, one term at a time. For every term:</p>
+        <div class="formula" style="font-size:17px;line-height:1.85"><b class="o">1.</b> The new term appears on its own, as a <span style="color:var(--purple)">purple curve</span>.<br><b class="o">2.</b> The <span class="y">yellow shading</span> shows the gap it is about to close.<br><b class="o">3.</b> The polynomial bends into its new shape and now matches one more derivative at 0.<span class="note">Zero terms are skipped quickly: when f⁽ⁿ⁾(0) = 0, that block is not needed.</span></div>
+        <div class="seg" role="group" aria-label="Choose a function" id="fn8"></div>
+        <div id="v8"></div>
+        <div class="readout" id="r8"></div>
+      </div>
+      <div class="stage">
+        <canvas id="c8" aria-label="The series growing term by term"></canvas>
+        <div class="controls">
+          <div class="ctrl"><label for="sp8">Speed</label><input id="sp8" type="range" min="0.4" max="2.5" step="0.1" value="1"><output>×</output></div>
+          <div class="row"><button class="btn primary" id="play8">▶ Play</button><button class="btn" id="back8">◀ Back</button><button class="btn" id="next8">Next term ▶</button><button class="btn" id="restart8">↺ Restart</button></div>
+        </div>
+      </div>
+    </div>
+    <div class="idea">
+      <div class="takeaway"><h3>The idea</h3><p>Each term is a correction. The constant fixes the height, the x term fixes the slope, the x² term fixes the bend, the x³ term fixes the twist… and every correction leaves the earlier ones untouched at x = 0. Step by step, the polynomial agrees with the function over a wider and wider stretch.</p></div>
+      <div class="tries"><h3>Try it</h3>
+        <details><summary>For x³ − 2x + 1, how many terms until it is exact?</summary><p>Four (n = 0 to 3): 1, −2x, 0·x², x³. After that every derivative is 0, so the polynomial is the function itself.</p></details>
+        <details><summary>For cos x, which terms get skipped, and why?</summary><p>All the odd ones (x, x³, x⁵, …). cos is symmetric, so its odd derivatives at 0 (−sin 0, sin 0, …) are all 0.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== Summary ===================== -->
+  <section class="chapter" id="summary">
+    <div class="ch-head"><span class="ch-num">✦</span><h2>Summary</h2></div>
+    <div class="cards">
+      <div class="card"><h3>Derivative</h3><p><span class="f">f ′(x) = lim [f(x + h) − f(x)]/h</span>The rate of change: the slope of the tangent.</p></div>
+      <div class="card"><h3>First derivative</h3><p><span class="f">slope → coefficient of x</span>Rising, falling or flat. The best line is f(0) + f ′(0)x.</p></div>
+      <div class="card"><h3>Second derivative</h3><p><span class="f">bend → coefficient of x²</span>A cup (+) or a cap (−). It contributes f ″(0)/2 · x².</p></div>
+      <div class="card"><h3>Third derivative</h3><p><span class="f">twist → coefficient of x³</span>How the bend changes. It contributes f ‴(0)/6 · x³.</p></div>
+      <div class="card"><h3>Building blocks</h3><p><span class="f">p(x) = a₀ + a₁x + a₂x² + …</span>Polynomials are just multiplying and adding. Only the amounts aₙ need choosing.</p></div>
+      <div class="card"><h3>The key step</h3><p><span class="f">p⁽ⁿ⁾(0) = n!·aₙ</span>Differentiate n times and set x = 0: exactly one term survives.</p></div>
+      <div class="card"><h3>The amounts</h3><p><span class="f">aₙ = f⁽ⁿ⁾(0) / n!</span>Matching derivatives fixes every coefficient exactly.</p></div>
+      <div class="card"><h3>Maclaurin series</h3><p><span class="f">f(x) = Σ f⁽ⁿ⁾(0)/n! · xⁿ</span>A Taylor series centred at 0.</p></div>
+      <div class="card"><h3>Our examples</h3><p><span class="f">sin x = x − x³/6 + x⁵/120 − …</span><span class="f">x³ = x³ (stops)</span><span class="f">eˣ = 1 + x + x²/2 + x³/6 + …</span></p></div>
+    </div>
+  </section>
+
+  <footer><span>MACLAURIN SERIES LAB · Built for astronomy &amp; physics learners</span><span>All graphs are computed live · Works offline</span></footer>
+</div>
+
+<script>
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+const C={bg:'#10131a',grid:'rgba(88,196,221,.16)',gridMinor:'rgba(88,196,221,.06)',axis:'rgba(236,239,244,.55)',tick:'#8a94a4',text:'#ECEFF4',soft:'#B6BFCC',
+  blue:'#58C4DD',yellow:'#FFE45E',gold:'#F0AC5F',green:'#83C167',red:'#FC6255',teal:'#5CD0B3',purple:'#B48EDB',halo:'rgba(16,19,26,.92)'};
+const MATH='italic 17px "STIX Two Text", "Times New Roman", serif';
+const clamp=(n,lo,hi)=>Math.max(lo,Math.min(hi,n));
+const lerp=(a,b,t)=>a+(b-a)*t;
+const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+// Display numbers: a real minus sign, no float noise, ∞ for blow-ups.
+function num(n,d=3){
+  if(!Number.isFinite(n))return Number.isNaN(n)?'undefined':n>0?'∞':'−∞';
+  let r=Number(n.toFixed(d));if(Object.is(r,-0))r=0;
+  return r.toString().replace('-','−');
+}
+const decFor=h=>clamp(Math.ceil(-Math.log10(Math.abs(h)||1))+1,2,7);
+const rgba=(hex,a)=>{const n=parseInt(hex.slice(1),16);return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`;};
+
+// ---------- Animation engine ----------
+const tweens=new Set(),runners=new Set();
+function tween(obj,key,to,ms=700,easing=ease){
+  for(const t of tweens)if(t.obj===obj&&t.key===key)tweens.delete(t);
+  if(ms<=0||reduce){obj[key]=to;return;}
+  tweens.add({obj,key,from:obj[key],to,start:performance.now(),ms,easing});
+}
+function run(ms,fn,done){const r={start:performance.now(),ms,fn,done};runners.add(r);return r;}
+const stop=r=>{if(r)runners.delete(r);};
+
+// ---------- A plot: world ↔ screen, grid, curves, bands, labels ----------
+class Plot{
+  constructor(canvas,view,opt={}){
+    this.c=canvas;this.ctx=canvas.getContext('2d');this.view={...view};this.home={...view};
+    this.pad=Object.assign({l:10,r:14,t:14,b:28},opt.pad||{});this.labels=opt.labels!==false;
+    this.resize();if('ResizeObserver' in window)new ResizeObserver(()=>{this.resize();this.dirty=true;}).observe(canvas);
+  }
+  resize(){const r=this.c.getBoundingClientRect(),dpr=Math.min(window.devicePixelRatio||1,2);this.W=r.width||600;this.H=r.height||360;this.c.width=Math.round(this.W*dpr);this.c.height=Math.round(this.H*dpr);this.ctx.setTransform(dpr,0,0,dpr,0,0);}
+  setView(v,ms=750){for(const k of ['xmin','xmax','ymin','ymax'])tween(this.view,k,v[k],ms);}
+  // Smoothly follow a moving target view; returns true while still moving.
+  follow(v,k=.16){let moving=false;for(const key of ['xmin','xmax','ymin','ymax']){const d=v[key]-this.view[key],span=this.view.xmax-this.view.xmin+this.view.ymax-this.view.ymin;if(Math.abs(d)>span*1e-4){this.view[key]+=d*(reduce?1:k);moving=true;}else this.view[key]=v[key];}return moving;}
+  get L(){return this.pad.l}get R(){return this.W-this.pad.r}get T(){return this.pad.t}get B(){return this.H-this.pad.b}
+  iX(px){const v=this.view;return v.xmin+(px-this.L)/(this.R-this.L)*(v.xmax-v.xmin);}
+  iY(py){const v=this.view;return v.ymin+(this.B-py)/(this.B-this.T)*(v.ymax-v.ymin);}
+  X(x){const v=this.view;return this.L+(x-v.xmin)/(v.xmax-v.xmin)*(this.R-this.L);}
+  Y(y){const v=this.view;return this.B-(y-v.ymin)/(v.ymax-v.ymin)*(this.B-this.T);}
+  begin(){const c=this.ctx;c.setLineDash([]);c.globalAlpha=1;c.fillStyle=C.bg;c.fillRect(0,0,this.W,this.H);}
+  clip(){const c=this.ctx;c.save();c.beginPath();c.rect(this.L,this.T,this.R-this.L,this.B-this.T);c.clip();}
+  unclip(){this.ctx.restore();}
+  static step(span,n){const raw=span/n,p=Math.pow(10,Math.floor(Math.log10(raw))),f=raw/p;return (f<1.5?1:f<3.5?2:f<7.5?5:10)*p;}
+  grid(o={}){
+    const c=this.ctx,v=this.view,sx=o.xStep||Plot.step(v.xmax-v.xmin,o.xTicks||(this.W<480?5:8)),sy=o.yStep||Plot.step(v.ymax-v.ymin,o.yTicks||(this.H<300?4:6));
+    const line=(x1,y1,x2,y2)=>{c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke();};
+    c.save();c.lineWidth=1;
+    c.strokeStyle=C.gridMinor;
+    for(let x=Math.ceil(v.xmin/(sx/2))*(sx/2);x<=v.xmax;x+=sx/2)line(this.X(x),this.T,this.X(x),this.B);
+    for(let y=Math.ceil(v.ymin/(sy/2))*(sy/2);y<=v.ymax;y+=sy/2)line(this.L,this.Y(y),this.R,this.Y(y));
+    c.strokeStyle=C.grid;
+    for(let x=Math.ceil(v.xmin/sx)*sx;x<=v.xmax;x+=sx)line(this.X(x),this.T,this.X(x),this.B);
+    for(let y=Math.ceil(v.ymin/sy)*sy;y<=v.ymax;y+=sy)line(this.L,this.Y(y),this.R,this.Y(y));
+    const ax=v.xmin<=0&&v.xmax>=0?this.X(0):this.L,ay=v.ymin<=0&&v.ymax>=0?this.Y(0):this.B;
+    c.strokeStyle=C.axis;c.lineWidth=1.5;line(ax,this.T,ax,this.B);line(this.L,ay,this.R,ay);
+    this.ax=ax;this.ay=ay;
+    if(this.labels){
+      const dx=Math.max(0,Math.ceil(-Math.log10(sx)+1e-9)),dy=Math.max(0,Math.ceil(-Math.log10(sy)+1e-9));
+      c.font='11px "JetBrains Mono", ui-monospace, monospace';c.fillStyle=C.tick;c.textAlign='center';c.textBaseline='top';
+      const lyX=clamp(ay+6,this.T,this.H-14);
+      for(let x=Math.ceil(v.xmin/sx)*sx;x<=v.xmax+1e-12;x+=sx){const px=this.X(x);if(Math.abs(x)<sx*1e-6&&ax!==this.L)continue;if(px<this.L+10||px>this.R-10)continue;c.fillText((o.xFmt?o.xFmt(x):num(x,dx)),px,lyX);}
+      c.textBaseline='middle';c.lineJoin='round';
+      const inside=ax===this.L||ax<this.L+40,lxY=inside?this.L+6:ax-6;c.textAlign=inside?'left':'right';
+      for(let y=Math.ceil(v.ymin/sy)*sy;y<=v.ymax+1e-12;y+=sy){const py=this.Y(y);if(Math.abs(y)<sy*1e-6&&ay!==this.B)continue;if(py<this.T+8||py>this.B-8)continue;const t=o.yFmt?o.yFmt(y):num(y,dy);
+        if(inside){c.lineWidth=4;c.strokeStyle=C.halo;c.strokeText(t,lxY,py);}c.fillText(t,lxY,py);}
+    }
+    c.restore();
+  }
+  // Draw y = f(x), breaking the line at discontinuities and blow-ups.
+  // colorAt(x, y) may return a colour per sample (used to paint the ε–δ test).
+  curve(f,o={}){
+    const c=this.ctx,v=this.view,x0=Math.max(o.x0??v.xmin,v.xmin),x1=Math.min(o.x1??v.xmax,v.xmax);if(x1<=x0)return;
+    const N=o.n||Math.ceil((this.X(x1)-this.X(x0))*1.6)+2,yr=v.ymax-v.ymin,lo=v.ymin-yr*3,hi=v.ymax+yr*3,breaks=o.breaks||[],tiny=(x1-x0)*1e-7;
+    c.save();c.lineWidth=o.width||3;c.lineJoin='round';c.lineCap='round';c.globalAlpha=o.alpha??1;
+    if(o.glow!==false){c.shadowColor=rgba(o.color||C.blue,.55);c.shadowBlur=o.blur??9;}
+    let pen=false,px0=null,py0=null,col=null,prevX=null;
+    const flush=()=>{if(pen){c.stroke();}pen=false;};
+    const put=(x,y,colr)=>{
+      if(!Number.isFinite(y)){flush();return;}
+      const yy=clamp(y,lo,hi),px=this.X(x),py=this.Y(yy);
+      if(pen&&(Math.abs(py-py0)>this.H*1.5||colr!==col)){
+        if(colr!==col&&Math.abs(py-py0)<=this.H*1.5){c.lineTo(px,py);c.stroke();c.beginPath();c.moveTo(px,py);col=colr;c.strokeStyle=colr;px0=px;py0=py;return;}
+        flush();
+      }
+      if(!pen){c.beginPath();c.strokeStyle=colr;c.moveTo(px,py);pen=true;col=colr;}else c.lineTo(px,py);
+      px0=px;py0=py;
+    };
+    const colorOf=(x,y)=>o.colorAt?o.colorAt(x,y):(o.color||C.blue);
+    for(let i=0;i<=N;i++){
+      const x=x0+(x1-x0)*i/N;
+      if(prevX!==null)for(const b of breaks){if(prevX<b&&x>=b){const yl=f(b-tiny);put(b-tiny,yl,colorOf(b-tiny,yl));flush();const yr2=f(b+tiny);put(b+tiny,yr2,colorOf(b+tiny,yr2));}}
+      const y=f(x);put(x,y,colorOf(x,y));prevX=x;
+    }
+    flush();c.restore();
+  }
+  bandH(y0,y1,color,a){const c=this.ctx,t=Math.min(this.Y(y0),this.Y(y1)),b=Math.max(this.Y(y0),this.Y(y1));c.save();c.fillStyle=rgba(color,a);c.fillRect(this.L,t,this.R-this.L,b-t);c.restore();}
+  bandV(x0,x1,color,a){const c=this.ctx,l=Math.min(this.X(x0),this.X(x1)),r=Math.max(this.X(x0),this.X(x1));c.save();c.fillStyle=rgba(color,a);c.fillRect(l,this.T,r-l,this.B-this.T);c.restore();}
+  line(x1,y1,x2,y2,color,w=1.5,dash=null,a=1){const c=this.ctx;c.save();c.globalAlpha=a;c.strokeStyle=color;c.lineWidth=w;if(dash)c.setLineDash(dash);c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke();c.restore();}
+  hline(y,color,w,dash,a){this.line(this.L,this.Y(y),this.R,this.Y(y),color,w,dash,a);}
+  vline(x,color,w,dash,a){this.line(this.X(x),this.T,this.X(x),this.B,color,w,dash,a);}
+  dot(x,y,r,color,glow=true){const c=this.ctx;c.save();if(glow){c.shadowColor=color;c.shadowBlur=12;}c.fillStyle=color;c.beginPath();c.arc(this.X(x),this.Y(y),r,0,Math.PI*2);c.fill();c.restore();}
+  hole(x,y,color){const c=this.ctx;c.save();c.fillStyle=C.bg;c.strokeStyle=color;c.lineWidth=2.2;c.beginPath();c.arc(this.X(x),this.Y(y),5.5,0,Math.PI*2);c.fill();c.stroke();c.restore();}
+  text(s,px,py,o={}){const c=this.ctx;c.save();c.font=o.font||'600 12px Inter, system-ui, sans-serif';c.textAlign=o.align||'center';c.textBaseline=o.base||'middle';c.lineJoin='round';
+    if(o.halo!==false){c.lineWidth=5;c.strokeStyle=C.halo;c.strokeText(s,px,py);}c.fillStyle=o.color||C.text;c.fillText(s,px,py);c.restore();}
+  // A double-headed arrow between two screen points, for marking ε and δ.
+  span(x1,y1,x2,y2,color){
+    const c=this.ctx,dx=x2-x1,dy=y2-y1,l=Math.hypot(dx,dy);if(l<6)return;const ux=dx/l,uy=dy/l,h=Math.min(6,l/3);
+    c.save();c.strokeStyle=color;c.fillStyle=color;c.lineWidth=1.6;c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke();
+    for(const [px,py,s] of [[x1,y1,1],[x2,y2,-1]]){c.beginPath();c.moveTo(px,py);c.lineTo(px+s*ux*h-uy*h*.6,py+s*uy*h+ux*h*.6);c.lineTo(px+s*ux*h+uy*h*.6,py+s*uy*h-ux*h*.6);c.closePath();c.fill();}
+    c.restore();
+  }
+}
+
+// ---------- Scenes and the frame loop ----------
+const scenes=[];
+function scene(canvasId,draw){const s={el:$(canvasId),draw,dirty:true,visible:true};scenes.push(s);return s;}
+function frame(now){
+  const active=tweens.size>0||runners.size>0;
+  for(const t of tweens){const k=clamp((now-t.start)/t.ms,0,1);t.obj[t.key]=t.from+(t.to-t.from)*t.easing(k);if(k>=1)tweens.delete(t);}
+  for(const r of runners){const k=clamp((now-r.start)/r.ms,0,1);r.fn(k);if(k>=1){runners.delete(r);r.done&&r.done();}}
+  for(const s of scenes){if(s.visible&&(active||s.dirty||s.loop||(s.plot&&s.plot.dirty))){s.dirty=false;if(s.plot)s.plot.dirty=false;s.draw(now);}}
+  requestAnimationFrame(frame);
+}
+if('IntersectionObserver' in window){
+  const io=new IntersectionObserver(es=>es.forEach(e=>{const s=scenes.find(s=>s.el===e.target);if(s){s.visible=e.isIntersecting;if(s.visible)s.dirty=true;}}),{rootMargin:'120px'});
+  setTimeout(()=>scenes.forEach(s=>io.observe(s.el)),0);
+}
+// A log-scale slider: position 0..1000 maps to a value from `a` to `b`.
+function logSlider(el,a,b){
+  return{get:()=>a*Math.pow(b/a,Number(el.value)/1000),set:v=>{el.value=1000*Math.log(clamp(v,Math.min(a,b),Math.max(a,b))/a)/Math.log(b/a);}};
+}
+function segment(boxId,items,current,onPick){
+  const box=$(boxId);
+  box.innerHTML=items.map(([k,label])=>`<button type="button" data-k="${k}" aria-pressed="${k===current}">${label}</button>`).join('');
+  box.querySelectorAll('button').forEach(b=>b.onclick=()=>{box.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));onPick(b.dataset.k);});
+}
+// Largest δ with |f(x) − L| < ε for every x with 0 < |x − a| < δ (0 if none works).
+function deltaMax(f,a,L,eps,span){
+  const bad=x=>{const y=f(x);return !Number.isFinite(y)||Math.abs(y-L)>=eps;};
+  const lo=1e-7,N=1800;let ok=0;
+  for(let i=0;i<=N;i++){
+    const d=lo*Math.pow(span/lo,i/N);
+    if(bad(a-d)||bad(a+d)){
+      if(i===0)return 0;
+      let g=ok,b=d;for(let k=0;k<40;k++){const m=(g+b)/2;if(bad(a-m)||bad(a+m))b=m;else g=m;}
+      return g;
+    }
+    ok=d;
+  }
+  return span;
+}
+
+
+const D=Math.PI/180;
+const FACT=[1];for(let i=1;i<=40;i++)FACT[i]=FACT[i-1]*i;
+const SUP=n=>String(n).replace(/\d/g,d=>'⁰¹²³⁴⁵⁶⁷⁸⁹'[d]);
+function segDx(p,m,px){const sx=(p.view.xmax-p.view.xmin)/(p.R-p.L),sy=(p.view.ymax-p.view.ymin)/(p.B-p.T);return px/Math.sqrt(1/(sx*sx)+(m*m)/(sy*sy));}
+function tangentSeg(p,x,y,m,color,px=90,w=2.4){const d=segDx(p,m,px);p.line(p.X(x-d),p.Y(y-m*d),p.X(x+d),p.Y(y+m*d),color,w);}
+function fullLine(p,x0,y0,m,color,w=2,dash=null,a=.9){const v=p.view;p.line(p.X(v.xmin),p.Y(y0+m*(v.xmin-x0)),p.X(v.xmax),p.Y(y0+m*(v.xmax-x0)),color,w,dash,a);}
+function dragOn(canvas,onMove){
+  let down=false;
+  canvas.addEventListener('pointerdown',e=>{down=true;canvas.setPointerCapture(e.pointerId);onMove(e);});
+  canvas.addEventListener('pointermove',e=>{if(down)onMove(e);});
+  const up=()=>{down=false;};canvas.addEventListener('pointerup',up);canvas.addEventListener('pointercancel',up);
+  canvas.style.cursor='ew-resize';
+}
+const localX=(p,e)=>{const r=p.c.getBoundingClientRect();return p.iX(e.clientX-r.left);};
+// Taylor polynomial at 0 from a coefficient function c(k), degree n
+const poly=(c,n)=>x=>{let s=0,xp=1;for(let k=0;k<=n;k++){const ck=c(k);if(ck)s+=ck*xp;xp*=x;}return s;};
+// "x³/6"-style text for a term with coefficient ±1/k!
+function termText(sign,k,first){
+  const body=k===0?'1':k===1?'x':'x'+SUP(k)+(FACT[k]>1&&k>1?'/'+FACT[k]:'');
+  return (first?(sign<0?'−':''):(sign<0?' − ':' + '))+body;
+}
+const sinC=k=>k%2?((k-1)/2%2?-1:1)/FACT[k]:0;
+
+
+// =================== Term-by-term animation (shared) ===================
+// ids: {canvas, fn, play, next, back, restart, speed, read, status}
+function makeTermAnim(ids){
+  const F={
+    sin:{label:'sin x',f:Math.sin,c:k=>k%2?((k-1)/2%2?-1:1)/FACT[k]:0,K:15,v:[-9.5,9.5,-2.6,2.6]},
+    cos:{label:'cos x',f:Math.cos,c:k=>k%2?0:(k/2%2?-1:1)/FACT[k],K:14,v:[-9.5,9.5,-2.6,2.6]},
+    exp:{label:'eˣ',f:Math.exp,c:k=>1/FACT[k],K:10,v:[-4.6,3,-2.2,12]},
+    cube:{label:'x³ − 2x + 1',f:x=>x*x*x-2*x+1,c:k=>[1,-2,0,1][k]||0,K:3,v:[-2.4,2.4,-4,6.5]}
+  };
+  const JOBS=['the value','the slope','the bend','the twist','the 4th derivative','the 5th derivative','the 6th derivative','the 7th derivative','the 8th derivative','the 9th derivative','the 10th derivative','the 11th derivative','the 12th derivative','the 13th derivative','the 14th derivative','the 15th derivative'];
+  const st={fn:'sin',k:1,t:1,playing:false,last:0,speed:1};
+  const p=new Plot($(ids.canvas),{xmin:-9.5,xmax:9.5,ymin:-2.6,ymax:2.6});
+  const G=()=>F[st.fn];
+  const polyUpTo=n=>x=>{const g=G();let s=0,t=1;for(let k=0;k<=n;k++){const c=g.c(k);if(c)s+=c*t;t*=x;}return s;};
+  const termStr=k=>{const c=G().c(k);if(!c)return '0';const r=Math.abs(c)*FACT[k];
+    if(Math.abs(r-1)<1e-9)return termText(Math.sign(c),k,true);
+    const body=k===0?'':k===1?'x':'x'+SUP(k);return (c<0?'−':'')+num(Math.abs(c),4)+body;};
+  const series=n=>{let out='',first=true;for(let k=0;k<=n;k++){const c=G().c(k);if(!c)continue;const t=termStr(k);out+=first?t:(t.startsWith('−')?' − '+t.slice(1):' + '+t);first=false;}return out||'0';};
+  const dur=k=>(G().c(k)?2700:1000)/st.speed;
+  function ui(){
+    const g=G(),k=st.k,c=g.c(k),P=polyUpTo(k);
+    let err=0;for(let i=0;i<=100;i++){const x=-1+2*i/100;err=Math.max(err,Math.abs(P(x)-g.f(x)));}
+    const added=st.t>=.55;
+    $(ids.status).innerHTML=`<div class="verdict ${c?'ok':''}" style="${c?'':'color:var(--soft);border:1px solid var(--edge2)'}">${c?`Term ${k}: ${termStr(k).startsWith('−')?'':'+ '}${termStr(k)}`:`Term ${k} is 0`}<span>· ${c?'fixes '+JOBS[k]:'f'+(k?'⁽'+SUP(k)+'⁾':'')+'(0) = 0, so nothing to add'}</span></div>`;
+    $(ids.read).innerHTML=`series so far: <b style="color:var(--yellow)">${series(added?k:k-1)}</b><br>matches ${JOBS.slice(0,(added?k:k-1)+1).map(j=>j.replace('the ','')).join(', ')||'nothing yet'} at 0<br>largest gap on [−1, 1]: <b>${num(err,6)}</b>`+(k>=g.K&&st.t>=1?(st.fn==='cube'?' · exact: the series stops here':' · keeps improving forever'):'');
+    $(ids.play).textContent=st.playing?'❚❚ Pause':(k>=g.K&&st.t>=1?'▶ Replay':'▶ Play');
+  }
+  const s=scene(ids.canvas,now=>{
+    const g=G();
+    if(st.playing){const dt=Math.min(60,now-(st.last||now));st.t+=dt/dur(st.k);if(st.t>=1){if(st.single){st.t=1;st.playing=false;st.single=false;}else if(st.k<g.K){st.k++;st.t=0;}else{st.t=1;st.playing=false;}}ui();}
+    st.last=now;
+    if(p.follow({xmin:g.v[0],xmax:g.v[1],ymin:g.v[2],ymax:g.v[3]}))s.dirty=true;
+    const k=st.k,t=reduce?1:st.t,Pold=polyUpTo(k-1),Pnew=polyUpTo(k),c=g.c(k);
+    const fadeIn=clamp(t/.28,0,1),morph=ease(clamp((t-.3)/.45,0,1)),fadeOut=1-clamp((t-.82)/.18,0,1);
+    const cur=x=>lerp(Pold(x),Pnew(x),morph);
+    p.begin();p.grid();p.clip();
+    p.curve(g.f,{color:C.blue,width:3.4});
+    if(k>0)p.curve(Pold,{color:C.yellow,width:1.6,alpha:.28,glow:false});
+    if(c&&morph>0&&morph<1||c&&t<.3){
+      // shade the gap this term closes
+      const ctx=p.ctx,N=240,v=p.view;ctx.save();ctx.fillStyle=rgba(C.yellow,.16);ctx.beginPath();
+      for(let i=0;i<=N;i++){const x=v.xmin+(v.xmax-v.xmin)*i/N,y=clamp(cur(x),v.ymin-50,v.ymax+50);i?ctx.lineTo(p.X(x),p.Y(y)):ctx.moveTo(p.X(x),p.Y(y));}
+      for(let i=N;i>=0;i--){const x=v.xmin+(v.xmax-v.xmin)*i/N,y=clamp(Pnew(x),v.ymin-50,v.ymax+50);ctx.lineTo(p.X(x),p.Y(y));}
+      ctx.closePath();ctx.fill();ctx.restore();
+    }
+    if(c)p.curve(x=>c*Math.pow(x,k),{color:C.purple,width:2.4,alpha:fadeIn*fadeOut*.95});
+    p.curve(cur,{color:C.yellow,width:3});
+    p.dot(0,g.f(0),5.5,'#ffffff');
+    p.unclip();
+    if(c&&fadeIn*fadeOut>.05)p.text('the new term: '+termStr(k),p.R-12,p.T+16,{align:'right',color:C.purple,font:'600 13px "JetBrains Mono", monospace'});
+    p.text(c?`adding term ${k} → fixes ${JOBS[k]}`:`term ${k} = 0 → skip`,p.L+12,p.T+16,{align:'left',color:C.yellow,font:'600 13px Inter, sans-serif'});
+  });
+  s.plot=p;s.loop=true;
+  segment(ids.fn,Object.entries(F).map(([k,g])=>[k,g.label]),st.fn,k=>{st.fn=k;st.k=0;st.t=0;st.playing=!reduce;st.last=0;ui();});
+  $(ids.play).onclick=()=>{const g=G();st.single=false;if(st.k>=g.K&&st.t>=1){st.k=0;st.t=0;}st.playing=!st.playing;st.last=0;ui();};
+  $(ids.next).onclick=()=>{const g=G();st.playing=false;if(st.t<1)st.t=1;else if(st.k<g.K){st.k++;st.t=0;st.playing=true;st.single=true;st.last=0;}ui();};
+  $(ids.back).onclick=()=>{st.playing=false;st.k=Math.max(0,st.k-1);st.t=1;ui();};
+  $(ids.restart).onclick=()=>{st.k=0;st.t=0;st.playing=true;st.last=0;ui();};
+  const spOut=()=>{const o=$(ids.speed).nextElementSibling;if(o)o.textContent=num(st.speed,1)+'×';};
+  $(ids.speed).addEventListener('input',()=>{st.speed=Number($(ids.speed).value);spOut();});spOut();
+  ui();
+}
+
+const EX={
+  sin:{label:'sin x',f:Math.sin,fs:[Math.sin,Math.cos,x=>-Math.sin(x),x=>-Math.cos(x)],names:['sin x','cos x','−sin x','−cos x'],v:[-6.6,6.6,-1.8,1.8],r:[-6,6],dn:n=>['sin x','cos x','−sin x','−cos x'][n%4],d0:n=>[0,1,0,-1][n%4]},
+  cube:{label:'x³',f:x=>x*x*x,fs:[x=>x*x*x,x=>3*x*x,x=>6*x,()=>6],names:['x³','3x²','6x','6'],v:[-2.1,2.1,-8.5,8.5],r:[-1.9,1.9],dn:n=>['x³','3x²','6x','6'][n]||'0',d0:n=>n===3?6:0},
+  exp:{label:'eˣ',f:Math.exp,fs:[Math.exp,Math.exp,Math.exp,Math.exp],names:['eˣ','eˣ','eˣ','eˣ'],v:[-2.8,2,-.6,7.2],r:[-2.5,1.9],dn:()=>'eˣ',d0:()=>1}
+};
+const EXITEMS=Object.entries(EX).map(([k,g])=>[k,g.label]);
+const macC=g=>k=>g.d0(k)/FACT[k];
+function macSeries(g,n){let out='',first=true;for(let k=0;k<=n;k++){const d=g.d0(k);if(!d)continue;const c=d/FACT[k];const t=Math.abs(Math.abs(c)*FACT[k]-1)<1e-9?termText(Math.sign(c),k,true):(c<0?'−':'')+(Math.abs(c)===1?'':num(Math.abs(c),4))+(k?'x'+(k>1?SUP(k):''):'');out+=first?t:(t.startsWith('−')?' − '+t.slice(1):' + '+t);first=false;}return out||'0';}
+
+// =================== Hero ===================
+{
+  const p=new Plot($('c0'),{xmin:-9.5,xmax:9.5,ymin:-2.3,ymax:2.3},{labels:false,pad:{l:8,r:8,t:8,b:8}});
+  const degs=[1,3,5,7,9,11,13,15,17];
+  const s=scene('c0',now=>{
+    const t=reduce?5:now/1000,i=Math.floor(t/1.5)%degs.length,f=reduce?1:ease(clamp((t%1.5)/.7,0,1));
+    const P1=poly(sinC,degs[i]),P0=poly(sinC,i===0?degs[0]:degs[i-1]);
+    p.begin();p.grid({xStep:Math.PI/2,yStep:1});p.clip();
+    p.curve(Math.sin,{color:C.blue,width:3.2});
+    p.curve(x=>lerp(P0(x),P1(x),f),{color:C.yellow,width:2.6});
+    p.dot(0,0,5,'#ffffff');p.unclip();
+    p.text('derivatives matched at 0: '+(degs[i]+1),p.L+12,p.T+16,{align:'left',color:C.yellow,font:'600 13px "JetBrains Mono", monospace'});
+  });
+  s.plot=p;s.loop=!reduce;
+}
+
+// =================== 1. What a derivative does ===================
+{
+  const st={fn:'sin',u:.62,h:1,runner:null};
+  const p=new Plot($('c1'),{xmin:-6.6,xmax:6.6,ymin:-1.8,ymax:1.8});
+  const hs=logSlider($('h1'),1.5,.001);hs.set(st.h);
+  const G=()=>EX[st.fn],X=()=>{const g=G();return g.r[0]+(g.r[1]-g.r[0])*st.u;};
+  function ui(){
+    const g=G(),x=X(),h=st.h,m=(g.f(x+h)-g.f(x))/h,d=g.fs[1](x);
+    $('x1o').textContent=num(x,2);$('x1').value=st.u*1000;$('h1o').textContent=num(h,decFor(h));
+    $('r1').innerHTML=`secant slope = [f(${num(x+h,3)}) − f(${num(x,2)})] / ${num(h,decFor(h))} = <b style="color:var(--gold)">${num(m,4)}</b><br>as h → 0 it settles on f ′(x) = ${g.names[1]}, which at x = ${num(x,2)} is <b style="color:var(--yellow)">${num(d,4)}</b>`;
+    s.dirty=true;
+  }
+  const s=scene('c1',()=>{
+    const g=G(),x=X(),h=st.h,fx=g.f(x),fh=g.f(x+h),m=(fh-fx)/h;
+    if(p.follow({xmin:g.v[0],xmax:g.v[1],ymin:g.v[2],ymax:g.v[3]}))s.dirty=true;
+    p.begin();p.grid();p.clip();
+    fullLine(p,x,fx,g.fs[1](x),C.yellow,1.6,[6,5],.8);
+    fullLine(p,x,fx,m,C.gold,2.2,null,.9);
+    p.curve(g.f,{color:C.blue,width:3.4});
+    p.line(p.X(x),p.Y(fx),p.X(x+h),p.Y(fx),C.green,2.4);p.line(p.X(x+h),p.Y(fx),p.X(x+h),p.Y(fh),C.red,2.4);
+    p.dot(x,fx,6,'#ffffff');p.dot(x+h,fh,5.5,C.gold);
+    p.unclip();
+    if(p.X(x+h)-p.X(x)>20){p.text('run h',(p.X(x)+p.X(x+h))/2,p.Y(fx)+14,{color:C.green,font:'600 12px Inter'});p.text('rise',p.X(x+h)+20,(p.Y(fx)+p.Y(fh))/2,{color:C.red,font:'600 12px Inter'});}
+    p.text('gold: secant · dashed yellow: tangent',p.R-10,p.T+14,{align:'right',color:C.soft,font:'600 12px Inter, sans-serif'});
+  });
+  s.plot=p;
+  segment('fn1',EXITEMS,st.fn,k=>{st.fn=k;ui();});
+  $('x1').addEventListener('input',()=>{st.u=Number($('x1').value)/1000;ui();});
+  $('h1').addEventListener('input',()=>{stop(st.runner);st.h=hs.get();ui();});
+  dragOn($('c1'),e=>{const g=G();st.u=clamp((localX(p,e)-g.r[0])/(g.r[1]-g.r[0]),0,1);ui();});
+  $('play1').onclick=()=>{stop(st.runner);st.runner=run(reduce?1:4200,k=>{st.h=1.5*Math.pow(.001/1.5,ease(k));hs.set(st.h);ui();});};
+  ui();
+}
+
+// =================== 2–4. First, second, third derivative ===================
+function derivChapter(pre,level){
+  const st={fn:'sin',u:.65};
+  const top=new Plot($(pre+'a'),{xmin:-6.6,xmax:6.6,ymin:-1.8,ymax:1.8}),bot=new Plot($(pre+'b'),{xmin:-6.6,xmax:6.6,ymin:-1.8,ymax:1.8});
+  const G=()=>EX[st.fn],X=()=>{const g=G();return g.r[0]+(g.r[1]-g.r[0])*st.u;};
+  const LABEL=['','f ′(x): slope','f ″(x): bend','f ‴(x): twist'];
+  const COL=[C.blue,C.yellow,C.purple,C.gold];
+  function bestAt0(n){const g=G();return x=>{let s=0;for(let k=0;k<=n;k++)s+=g.fs[Math.min(k,3)](0)*(k<=3?1:0)/FACT[k]*Math.pow(x,k);return s;};}
+  function ui(){
+    const g=G(),x=X(),v=g.fs.map(f=>f(x)),z=g.fs.map(f=>f(0));
+    $(pre+'xo').textContent=num(x,2);$(pre+'x').value=st.u*1000;
+    const names=['f','f ′','f ″','f ‴'];
+    let out=names.slice(0,level+1).map((n,i)=>`<span style="color:${['var(--text)','var(--yellow)','var(--purple)','var(--gold)'][i]}">${n}(${num(x,2)}) = ${g.names[i]} = <b>${num(v[i],4)}</b></span>`).join('<br>');
+    const terms=[num(z[0],3),`${num(z[1],3)}x`,`(${num(z[2],3)}/2)x²`,`(${num(z[3],3)}/6)x³`].slice(0,level+1).join(' + ');
+    out+=`<br><br>at 0: ${names.slice(0,level+1).map((n,i)=>`${n}(0) = ${num(z[i],3)}`).join(', ')}<br>best ${['','line','parabola','cubic'][level]} at 0: <b style="color:var(--yellow)">y = ${terms}</b>`;
+    $(pre+'r').innerHTML=out;
+    const d=v[level],w=[['rising','falling','flat'],['a cup (bending up)','a cap (bending down)','not bending'],['bend increasing','bend decreasing','bend constant']][level-1];
+    $(pre+'v').innerHTML=`<div class="verdict ${Math.abs(d)<.03?'':d>0?'ok':'bad'}" style="${Math.abs(d)<.03?'color:var(--yellow);border:1px solid rgba(255,228,94,.35);background:rgba(255,228,94,.07)':''}">At x = ${num(x,2)}: ${Math.abs(d)<.03?w[2]:d>0?w[0]:w[1]} <span>· ${['f ′','f ″','f ‴'][level-1]} = ${num(d,3)}</span></div>`;
+    s1.dirty=true;s2.dirty=true;
+  }
+  const s1=scene(pre+'a',()=>{
+    const g=G(),x=X(),fx=g.f(x),[f,f1,f2,f3]=g.fs;
+    if(top.follow({xmin:g.v[0],xmax:g.v[1],ymin:g.v[2],ymax:g.v[3]}))s1.dirty=true;
+    top.begin();top.grid();top.clip();
+    const span=(g.v[1]-g.v[0])*.28;
+    if(level===1){
+      top.curve(f,{colorAt:t=>f1(t)>=0?C.green:C.red,width:3.4});
+      fullLine(top,0,f(0),f1(0),C.teal,1.6,[6,5],.7);
+      tangentSeg(top,x,fx,f1(x),C.yellow,80,2.6);
+    }else if(level===2){
+      top.curve(f,{colorAt:t=>Math.abs(f2(t))<1e-9?C.blue:f2(t)>0?C.teal:C.gold,width:3.4});
+      top.curve(bestAt0(2),{color:C.purple,width:1.6,alpha:.6,glow:false});
+      top.curve(t=>fx+f1(x)*(t-x)+f2(x)/2*(t-x)**2,{color:C.purple,width:2.2,x0:x-span,x1:x+span});
+    }else{
+      top.curve(f,{color:C.blue,width:3.4});
+      top.curve(bestAt0(3),{color:C.gold,width:1.6,alpha:.6,glow:false});
+      top.curve(t=>fx+f1(x)*(t-x)+f2(x)/2*(t-x)**2+f3(x)/6*(t-x)**3,{color:C.gold,width:2.2,x0:x-span,x1:x+span});
+    }
+    top.vline(x,'#ffffff',1,[4,4],.25);top.dot(0,f(0),4.5,'#ffffff',false);top.dot(x,fx,6,'#ffffff');
+    top.unclip();
+    const key=level===1?'green rising · red falling · dashed: best line at 0':level===2?'teal cup · gold cap · purple: best parabola here (faint: at 0)':'gold: best cubic here (faint: at 0)';
+    top.text(key,top.L+10,top.T+12,{align:'left',color:C.soft,font:'600 11.5px Inter, sans-serif'});
+  });
+  s1.plot=top;
+  const s2=scene(pre+'b',()=>{
+    const g=G(),x=X(),fd=g.fs[level];
+    const fs=level===3?[g.fs[2],g.fs[3]]:[fd];
+    let lo=Infinity,hi=-Infinity;fs.forEach(f=>{for(let j=0;j<=200;j++){const y=f(g.v[0]+(g.v[1]-g.v[0])*j/200);lo=Math.min(lo,y);hi=Math.max(hi,y);}});
+    const pad=Math.max(.5,(hi-lo)*.18);
+    if(bot.follow({xmin:g.v[0],xmax:g.v[1],ymin:Math.min(lo-pad,-.5),ymax:Math.max(hi+pad,.5)}))s2.dirty=true;
+    bot.begin();bot.grid({yTicks:3});bot.clip();
+    bot.hline(0,'#ffffff',1,null,.3);
+    if(level===3){bot.curve(g.fs[2],{color:C.purple,width:2,alpha:.6,glow:false});tangentSeg(bot,x,g.fs[2](x),g.fs[3](x),C.gold,50,2.4);bot.dot(x,g.fs[2](x),4.5,C.purple,false);}
+    bot.curve(fd,{color:COL[level],width:2.8});
+    bot.vline(x,'#ffffff',1,[4,4],.25);bot.hole(0,fd(0),'#ffffff');bot.dot(x,fd(x),5.5,COL[level]);
+    bot.unclip();
+    bot.text(LABEL[level]+(level===3?' (gold) = slope of f ″ (purple)':'')+`  ·  value at 0: ${num(fd(0),3)}`,bot.L+8,bot.T+12,{align:'left',color:COL[level],font:'600 12px Inter, sans-serif'});
+  });
+  s2.plot=bot;
+  segment(pre+'fn',EXITEMS,st.fn,k=>{st.fn=k;ui();});
+  $(pre+'x').addEventListener('input',()=>{st.u=Number($(pre+'x').value)/1000;ui();});
+  dragOn($(pre+'a'),e=>{const g=G();st.u=clamp((localX(top,e)-g.r[0])/(g.r[1]-g.r[0]),0,1);ui();});
+  ui();
+}
+derivChapter('d1',1);derivChapter('d2',2);derivChapter('d3',3);
+
+// =================== 5. Building with polynomials ===================
+{
+  const T={
+    sin:{label:'sin x',f:Math.sin,a:[0,1,0,-1/6,0],v:[-3.4,3.4,-2,2]},
+    exp:{label:'eˣ',f:Math.exp,a:[1,1,.5,1/6,1/24],v:[-3,2.4,-1.5,8]},
+    cos:{label:'cos x',f:Math.cos,a:[1,0,-.5,0,1/24],v:[-3.4,3.4,-2,2]}
+  };
+  const st={fn:'sin',a:[0,0,0,0,0],blocks:true};
+  const p=new Plot($('c5'),{xmin:-3.4,xmax:3.4,ymin:-2,ymax:2});
+  const G=()=>T[st.fn],P=x=>st.a.reduce((s,c,k)=>s+c*Math.pow(x,k),0);
+  const BC=['#ffffff',C.teal,C.purple,C.gold,C.green];
+  function ui(){
+    const g=G();
+    st.a.forEach((v,i)=>{$('a'+i).value=v;$('a'+i+'o').textContent=num(v,3);});
+    let gap=0;for(let i=0;i<=120;i++){const x=-1+2*i/120;gap=Math.max(gap,Math.abs(P(x)-g.f(x)));}
+    $('r5').innerHTML=`p(x) = ${st.a.map((c,k)=>(k?(c<0?' − ':' + '):(c<0?'−':''))+num(Math.abs(c),3)+(k?'x'+(k>1?SUP(k):''):'')).join('')}<br>largest gap from ${g.label} on [−1, 1]: <b style="color:${gap<.02?'var(--green)':'var(--red)'}">${num(gap,4)}</b>`;
+    $('v5').innerHTML=gap<.02?`<div class="verdict ok">✓ Excellent match near 0 <span>· gap below 0.02</span></div>`:gap<.2?`<div class="verdict ok" style="color:var(--yellow);border-color:rgba(255,228,94,.35);background:rgba(255,228,94,.07)">Close <span>· gap ${num(gap,3)}: keep tuning</span></div>`:`<div class="verdict bad">Not yet <span>· gap ${num(gap,2)}</span></div>`;
+    s.dirty=true;
+  }
+  const s=scene('c5',()=>{
+    const g=G();
+    if(p.follow({xmin:g.v[0],xmax:g.v[1],ymin:g.v[2],ymax:g.v[3]}))s.dirty=true;
+    p.begin();p.grid();p.clip();
+    p.bandV(-1,1,C.green,.05);
+    if(st.blocks)st.a.forEach((c,k)=>{if(Math.abs(c)>1e-9)p.curve(x=>c*Math.pow(x,k),{color:BC[k],width:1.6,alpha:.55,glow:false});});
+    p.curve(g.f,{color:C.blue,width:3.4});
+    p.curve(P,{color:C.yellow,width:2.6});
+    p.unclip();
+    p.text('thin coloured curves: each block times its amount',p.L+10,p.T+12,{align:'left',color:C.soft,font:'600 11.5px Inter, sans-serif'});
+  });
+  s.plot=p;
+  segment('fn5',Object.entries(T).map(([k,g])=>[k,g.label]),st.fn,k=>{st.fn=k;ui();});
+  [0,1,2,3,4].forEach(i=>$('a'+i).addEventListener('input',()=>{st.a[i]=Number($('a'+i).value);ui();}));
+  $('blocks5').onclick=()=>{st.blocks=!st.blocks;$('blocks5').setAttribute('aria-pressed',st.blocks);s.dirty=true;};
+  $('zero5').onclick=()=>{[0,1,2,3,4].forEach(i=>tween(st.a,i,0,500));run(520,ui);};
+  $('reveal5').onclick=()=>{G().a.forEach((v,i)=>tween(st.a,i,v,900));run(920,ui);};
+  ui();
+}
+
+// =================== 6. Why derivatives make it exact ===================
+{
+  const sty=document.createElement('style');
+  sty.textContent=`@keyframes stairIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+  .stair{display:flex;flex-direction:column;gap:10px}
+  .srow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-family:var(--serif);font-size:18px;animation:stairIn .5s ease}
+  .srow .lhs{min-width:78px;color:var(--soft);font-style:italic}
+  .chip{display:inline-flex;align-items:center;padding:3px 9px;border-radius:8px;border:1px solid var(--edge2);background:var(--bg2);transition:opacity .35s,background .35s,border-color .35s}
+  .chip.keep{border-color:var(--yellow);background:rgba(255,228,94,.1);color:var(--yellow);font-weight:600}
+  .chip.gone{opacity:.25;text-decoration:line-through}
+  .srow .at0{margin-left:auto;font-family:var(--mono);font-size:13px;color:var(--yellow)}
+  .srow .plus{color:var(--muted)}`;
+  document.body.appendChild(sty);
+  const st={m:0,zero:false,fn:'sin'};
+  const SUBN=n=>String(n).replace(/\d/g,d=>'₀₁₂₃₄₅₆₇₈₉'[d]);
+  const chip=(k,m)=>{const fac=FACT[k]/FACT[k-m],pw=k-m;return (fac===1?'':fac)+'a'+SUBN(k)+(pw===0?'':pw===1?'x':'x'+SUP(pw));};
+  function ui(){
+    const g=EX[st.fn],rows=[];
+    for(let m=0;m<=st.m;m++){
+      const lhs=m===0?'p(x)':'p'+["","′","″","‴","⁗"][m]+'(x)';
+      const chips=[];for(let k=m;k<=4;k++){const isKeep=k===m,cls=isKeep?(st.zero?'keep':''):(st.zero?'gone':'');chips.push(`<span class="chip ${cls}">${chip(k,m)}</span>`);}
+      rows.push(`<div class="srow" ${m<st.m?'style="animation:none"':''}><span class="lhs">${lhs} =</span>${chips.join('<span class="plus">+</span>')}<span class="plus">+ …</span>${st.zero?`<span class="at0">at 0: ${FACT[m]===1?'':FACT[m]}a${SUBN(m)}</span>`:''}</div>`);
+    }
+    $('stair6').innerHTML='<div class="stair">'+rows.join('')+'</div>';
+    $('zero6').setAttribute('aria-pressed',st.zero);
+    const m=st.m;
+    $('r6').innerHTML=st.zero?`At x = 0 every term with an x vanishes. Row ${m} leaves only <b style="color:var(--yellow)">${FACT[m]}·a${SUBN(m)}</b>${m>=2?` (${Array.from({length:m},(_,i)=>m-i).join('·')} = ${FACT[m]} = ${m}!)`:''}.`
+      :`Each differentiation brings the power down as a multiplier and lowers it by one. The front term turns into a constant${m>0?' and the previous constant is gone':''}. Press <b>Set x = 0</b> to see what survives.`;
+    $('next6').disabled=st.m>=4;
+    $('p6').innerHTML=`<b>Now use ${g.label}:</b><br>`+Array.from({length:st.m+1},(_,n)=>`p${["","′","″","‴","⁗"][n]}(0) = ${FACT[n]===1?'':FACT[n]}a${SUBN(n)} must equal f${n?'⁽'+SUP(n)+'⁾':''}(0) = ${num(g.d0(n),0)} &nbsp;⟹&nbsp; <b style="color:var(--yellow)">a${SUBN(n)} = ${num(g.d0(n),0)}/${FACT[n]}${g.d0(n)&&FACT[n]>1?' = '+(g.d0(n)<0?'−':'')+(Math.abs(g.d0(n))===FACT[n]?'1':'1/'+FACT[n]/Math.abs(g.d0(n))):g.d0(n)===0?' = 0':''}</b>`).join('<br>');
+  }
+  segment('fn6',EXITEMS,st.fn,k=>{st.fn=k;ui();});
+  $('next6').onclick=()=>{if(st.m<4){st.m++;st.zero=false;ui();}};
+  $('zero6').onclick=()=>{st.zero=!st.zero;ui();};
+  $('reset6').onclick=()=>{st.m=0;st.zero=false;ui();};
+  ui();
+}
+
+// =================== 7. The Maclaurin series ===================
+{
+  const st={fn:'sin',n:5};
+  const p=new Plot($('c7'),{xmin:-6.6,xmax:6.6,ymin:-1.8,ymax:1.8});
+  const G=()=>EX[st.fn];
+  const V7={sin:[-9,9,-2.4,2.4],cube:[-2.2,2.2,-8,8],exp:[-4,3,-1.5,12]};
+  function ui(){
+    const g=G(),n=st.n,P=poly(macC(g),n);
+    $('n7o').textContent=n;
+    let rows='';for(let k=0;k<=Math.max(n,3);k++){const d=g.d0(k),on=k<=n;rows+=`<tr style="${on?'':'opacity:.35'}"><td>${k}</td><td style="text-align:left">${g.dn(k)}</td><td>${d}</td><td>÷ ${FACT[k]}</td><td style="text-align:left;color:var(--yellow)">${d?(Math.abs(d)===FACT[k]?(d<0?'−':'')+(k?'x'+(k>1?SUP(k):''):'1'):Math.abs(d)===1?termText(Math.sign(d),k,true):(d<0?'−':'')+'('+Math.abs(d)+'/'+FACT[k]+')'+(k?'x'+(k>1?SUP(k):''):'')):'0'}</td></tr>`;}
+    $('t7').innerHTML=rows;
+    $('r7').innerHTML=`degree ${n}: <b style="color:var(--yellow)">${macSeries(g,n)}</b><br>at x = 1: f(1) = <b>${num(g.f(1),6)}</b> · series = <b>${num(P(1),6)}</b> · error ${num(Math.abs(g.f(1)-P(1)),6)}`;
+    s.dirty=true;
+  }
+  const s=scene('c7',()=>{
+    const g=G(),v=V7[st.fn];
+    if(p.follow({xmin:v[0],xmax:v[1],ymin:v[2],ymax:v[3]}))s.dirty=true;
+    p.begin();p.grid();p.clip();
+    p.curve(g.f,{color:C.blue,width:3.4});
+    p.curve(poly(macC(g),st.n),{color:C.yellow,width:2.6});
+    p.dot(0,g.f(0),5.5,'#ffffff');p.unclip();
+  });
+  s.plot=p;
+  segment('fn7',EXITEMS,st.fn,k=>{st.fn=k;ui();});
+  $('n7').addEventListener('input',()=>{st.n=Number($('n7').value);ui();});
+  ui();
+}
+
+// =================== 8. Watch each term ===================
+makeTermAnim({canvas:'c8',fn:'fn8',play:'play8',next:'next8',back:'back8',restart:'restart8',speed:'sp8',read:'r8',status:'v8'});
+
+// ---------- Chapter nav highlight ----------
+if('IntersectionObserver' in window){
+  const links=[...document.querySelectorAll('.chapters a')];
+  const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){links.forEach(l=>l.setAttribute('aria-current',String(l.getAttribute('href')==='#'+e.target.id)));}}),{rootMargin:'-45% 0px -50% 0px'});
+  document.querySelectorAll('.chapter').forEach(sec=>io.observe(sec));
+}
+requestAnimationFrame(frame);
+})();
+</script>
+
+</body>
+</html>

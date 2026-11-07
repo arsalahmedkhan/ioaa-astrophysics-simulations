@@ -1,0 +1,855 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Derivatives Lab</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="theme-color" content="#0d0f14">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&family=STIX+Two+Text:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap">
+<style>
+/* Layout: a long, quiet chalkboard. Each chapter pairs a short explanation with one live scene; colour carries meaning: blue = the function, yellow = slopes and tangents, teal = the point a, green = rising or works, red = falling or error, purple = acceleration. One dark look, chosen on purpose. */
+:root{
+  color-scheme:dark;
+  --bg:#0d0f14;--bg2:#10131a;--panel:#141821;--panel2:#191e29;--edge:rgba(255,255,255,.08);--edge2:rgba(255,255,255,.15);
+  --text:#ECEFF4;--soft:#B6BFCC;--muted:#7D8797;
+  --blue:#58C4DD;--yellow:#FFE45E;--gold:#F0AC5F;--green:#83C167;--red:#FC6255;--teal:#5CD0B3;--purple:#B48EDB;
+  --serif:"STIX Two Text","Cambria Math","Times New Roman",serif;
+  --sans:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --r:16px;
+}
+*{box-sizing:border-box}
+html{background:var(--bg);scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 var(--sans)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+.page{max-width:1180px;margin:0 auto;padding-block:28px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+a{color:var(--blue)}
+.m{font-family:var(--serif);font-style:italic;font-size:1.08em;letter-spacing:.01em}
+.mu{font-family:var(--serif);font-style:normal;font-size:1.08em}
+.y{color:var(--yellow)}.t{color:var(--teal)}.b{color:var(--blue)}.g{color:var(--green)}.r{color:var(--red)}.o{color:var(--gold)}
+sub,sup{font-size:.72em}
+
+/* Top line */
+.topline{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-bottom:18px;border-bottom:1px solid var(--edge)}
+.mark{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.2em;font-size:12px;color:var(--soft)}
+.mark i{width:30px;height:30px;border-radius:9px;border:1px solid rgba(88,196,221,.35);display:grid;place-items:center;font-style:normal;color:var(--blue);font-family:var(--serif);font-size:18px;letter-spacing:0}
+.pill{font-size:11px;letter-spacing:.16em;font-weight:800;color:var(--muted);border:1px solid var(--edge);border-radius:99px;padding:8px 12px;white-space:nowrap}
+
+/* Hero */
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:32px;align-items:center;padding-block:40px 30px}
+@media(max-width:900px){.hero{grid-template-columns:minmax(0,1fr);padding-block:28px 18px}}
+.eyebrow{font-size:11px;letter-spacing:.24em;font-weight:800;text-transform:uppercase;color:var(--blue);margin:0 0 14px}
+h1{font-family:var(--serif);font-weight:600;font-size:clamp(46px,7vw,84px);line-height:1;letter-spacing:-.02em;margin:0;text-wrap:balance}
+h1 em{font-style:italic;color:var(--yellow)}
+.lede{font-size:17px;color:var(--soft);max-width:52ch;margin:18px 0 0}
+.bigformula{font-family:var(--serif);font-size:clamp(24px,3vw,32px);margin-top:26px;display:flex;align-items:baseline;gap:.25em;flex-wrap:wrap}
+.lim{display:inline-flex;flex-direction:column;align-items:center;line-height:1;margin-right:.15em}
+.lim small{font-size:.5em;font-style:italic;margin-top:.25em;white-space:nowrap}
+.hero-stage{border-radius:var(--r);overflow:hidden;border:1px solid var(--edge);background:var(--bg2)}
+.hero-stage canvas{display:block;width:100%;height:clamp(240px,30vw,340px)}
+.hero-cap{font-size:12.5px;color:var(--muted);padding:10px 14px;border-top:1px solid var(--edge)}
+
+/* Chapter nav */
+.chapters{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:rgba(13,15,20,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-block:1px solid var(--edge);margin-inline:-4px}
+.chapters ol{list-style:none;display:flex;gap:6px;margin:0;padding:10px 4px;overflow-x:auto;scrollbar-width:none}
+.chapters ol::-webkit-scrollbar{display:none}
+.chapters a{display:inline-flex;gap:8px;align-items:center;white-space:nowrap;text-decoration:none;color:var(--soft);font-size:13px;font-weight:600;padding:7px 12px;border-radius:99px;border:1px solid transparent}
+.chapters a b{font-family:var(--serif);font-weight:600;color:var(--blue);font-size:15px}
+.chapters a:hover,.chapters a[aria-current=true]{border-color:var(--edge2);color:var(--text);background:rgba(255,255,255,.03)}
+
+/* Chapters */
+.chapter{padding-block:58px 10px;scroll-margin-top:60px}
+.ch-head{display:flex;align-items:baseline;gap:16px;margin-bottom:22px}
+.ch-num{font-family:var(--serif);font-size:20px;font-weight:600;color:var(--blue);width:40px;height:40px;border-radius:50%;border:1px solid rgba(88,196,221,.4);display:grid;place-items:center;flex:none;transform:translateY(-4px)}
+h2{font-family:var(--serif);font-weight:600;font-size:clamp(28px,3.4vw,40px);line-height:1.1;margin:0;letter-spacing:-.01em;text-wrap:balance}
+.ch-grid{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:30px;align-items:start}
+@media(max-width:980px){.ch-grid{grid-template-columns:minmax(0,1fr)}}
+.ch-text{display:flex;flex-direction:column;gap:14px;min-width:0}
+.ch-text p{margin:0;color:var(--soft);font-size:16px;line-height:1.72;max-width:62ch}
+.ch-text p strong{color:var(--text);font-weight:600}
+.formula{font-family:var(--serif);font-size:20px;line-height:1.5;background:var(--panel);border:1px solid var(--edge);border-radius:12px;padding:14px 16px;overflow-x:auto}
+.formula .note{display:block;font-family:var(--sans);font-size:12.5px;color:var(--muted);margin-top:6px;line-height:1.5}
+
+/* Stage */
+.stage{background:var(--panel);border:1px solid var(--edge);border-radius:var(--r);overflow:hidden;min-width:0}
+.stage canvas{display:block;width:100%;height:clamp(320px,38vw,470px);touch-action:pan-y;background:var(--bg2)}
+.controls{display:flex;flex-direction:column;gap:12px;padding:14px 16px 16px;border-top:1px solid var(--edge)}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.ctrl{display:grid;grid-template-columns:minmax(74px,auto) minmax(0,1fr) 92px;align-items:center;gap:12px}
+.ctrl label{font-size:13px;color:var(--soft);white-space:nowrap}
+.ctrl output{font:600 13px var(--mono);text-align:right;color:var(--text);font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--blue);cursor:pointer}
+.ctrl.eps input{accent-color:var(--yellow)}.ctrl.delta input{accent-color:var(--teal)}.ctrl.lval input{accent-color:var(--yellow)}
+.btn{font:600 13px var(--sans);color:var(--text);background:transparent;border:1px solid var(--edge2);border-radius:99px;padding:8px 14px;cursor:pointer;transition:background .15s,border-color .15s}
+.btn:hover{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.28)}
+.btn.primary{background:var(--blue);border-color:var(--blue);color:#06141a}
+.btn.primary:hover{background:#7fd3e6}
+.btn[aria-pressed=true]{border-color:var(--blue);color:var(--blue);background:rgba(88,196,221,.08)}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+button:focus-visible,input:focus-visible,a:focus-visible,summary:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.seg{display:inline-flex;flex-wrap:wrap;gap:4px;padding:4px;border-radius:12px;background:var(--bg2);border:1px solid var(--edge)}
+.seg button{font:600 13px var(--sans);color:var(--soft);background:transparent;border:0;border-radius:8px;padding:7px 11px;cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--panel2);color:var(--text);box-shadow:inset 0 0 0 1px var(--edge2)}
+.seg button .m{font-size:1.05em}
+.readout{font:13px/1.75 var(--mono);color:var(--soft);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.readout b{color:var(--text);font-weight:600}
+.verdict{display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600;border-radius:10px;padding:8px 12px;line-height:1.45}
+.verdict.ok{color:var(--green);background:rgba(131,193,103,.08);border:1px solid rgba(131,193,103,.3)}
+.verdict.bad{color:var(--red);background:rgba(252,98,85,.08);border:1px solid rgba(252,98,85,.3)}
+.verdict span{color:var(--soft);font-weight:500}
+
+/* Tables and boxes */
+table.vals{border-collapse:collapse;font:13px var(--mono);width:100%;font-variant-numeric:tabular-nums}
+table.vals th{font:700 11px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:right;padding:6px 8px;border-bottom:1px solid var(--edge)}
+table.vals td{text-align:right;padding:5px 8px;color:var(--soft);border-bottom:1px solid rgba(255,255,255,.04)}
+table.vals tr.on td{color:var(--text);background:rgba(88,196,221,.07)}
+table.vals td.lx{color:var(--teal)}table.vals td.rx{color:var(--gold)}
+.tablewrap{overflow-x:auto;background:var(--panel);border:1px solid var(--edge);border-radius:12px;padding:6px 8px}
+.idea{margin-top:26px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}
+@media(max-width:800px){.idea{grid-template-columns:minmax(0,1fr)}}
+.takeaway{background:var(--panel);border:1px solid var(--edge);border-radius:14px;padding:16px 18px}
+.takeaway h3,.tries h3{margin:0 0 6px;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.takeaway p{margin:0;color:var(--soft);line-height:1.7}
+.tries{background:var(--panel);border:1px solid var(--edge);border-radius:14px;padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+.tries details{border-top:1px solid var(--edge);padding-top:10px}
+.tries details:first-of-type{border-top:0;padding-top:0}
+.tries summary{cursor:pointer;color:var(--text);font-size:14.5px;line-height:1.55;list-style:none}
+.tries summary::-webkit-details-marker{display:none}
+.tries summary::after{content:"Show answer";display:block;margin-top:4px;font-size:12px;font-weight:700;color:var(--blue)}
+.tries details[open] summary::after{content:"Hide answer"}
+.tries details p{margin:6px 0 0;color:var(--soft);font-size:14px;line-height:1.6}
+.proof{background:var(--panel);border:1px solid var(--edge);border-radius:12px;padding:12px 14px;font-size:14px;color:var(--soft);line-height:1.65}
+.proof b{color:var(--text)}
+.statement{font-family:var(--serif);font-size:19px;line-height:1.6}
+
+/* Summary */
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+@media(max-width:980px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:620px){.cards{grid-template-columns:minmax(0,1fr)}}
+.card{background:var(--panel);border:1px solid var(--edge);border-radius:14px;padding:16px 18px}
+.card h3{margin:0 0 8px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--blue)}
+.card p{margin:0;color:var(--soft);font-size:14.5px;line-height:1.65}
+.card .f{font-family:var(--serif);font-size:18px;color:var(--text);display:block;margin:4px 0}
+footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--edge);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:12px}
+@media(max-width:560px){.ctrl{grid-template-columns:minmax(0,1fr) 84px}.ctrl label{grid-column:1/-1}.statement{font-size:17px}}
+
+
+/* Shared extras for the Derivatives and Integrals labs */
+.stage canvas.short{height:clamp(180px,20vw,240px);border-top:1px solid var(--edge)}
+.stage canvas.track{height:clamp(110px,11vw,140px)}
+.stage canvas.mini{height:clamp(120px,11vw,150px);border-top:1px solid var(--edge)}
+.motion-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr)}
+.motion-grid>canvas{height:100%!important;min-height:330px;border-right:1px solid var(--edge)}
+.motion-grid .minis{display:flex;flex-direction:column;min-width:0}
+.motion-grid .minis canvas:first-child{border-top:0}
+@media(max-width:700px){.motion-grid{grid-template-columns:minmax(0,1fr)}.motion-grid>canvas{min-height:260px;height:260px!important;border-right:0}.motion-grid .minis canvas:first-child{border-top:1px solid var(--edge)}}
+.keyrow{display:flex;gap:6px 16px;flex-wrap:wrap;font-size:12.5px;color:var(--soft)}
+.keyrow span{display:inline-flex;align-items:center;gap:7px}
+.keyrow i{display:inline-block;width:16px;height:3px;border-radius:2px}
+.keyrow i.box{height:10px;width:14px;border-radius:3px}
+.bar{display:flex;height:14px;border-radius:7px;overflow:hidden;background:var(--bg2);border:1px solid var(--edge)}
+.bar span{display:block;height:100%;transition:width .2s}
+.slices{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:4px;align-items:end;height:64px;padding:6px 8px;background:var(--bg2);border:1px solid var(--edge);border-radius:10px}
+.slices span{display:block;border-radius:3px 3px 0 0;min-height:2px}
+.statusrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="topline"><div class="mark"><i>d</i>DERIVATIVES LAB</div><div class="pill">IOAA · MATH TOOLKIT / 04</div></header>
+
+  <section class="hero">
+    <div>
+      <p class="eyebrow">The mathematics of change</p>
+      <h1>How fast, <em>right now</em>?</h1>
+      <p class="lede">A derivative is the slope of a curve at a single point, the rate of change at an instant. Zoom in until a curve turns straight, watch slopes become a new function, and see why the rules work.</p>
+      <div class="bigformula" aria-label="f prime of a equals the limit as h approaches 0 of f of a plus h minus f of a, over h"><span class="m b">f</span><span class="mu">′(</span><span class="m t">a</span><span class="mu">) =</span><span class="lim"><span class="mu">lim</span><small>h → 0</small></span><span class="mu">[</span><span class="m b">f</span><span class="mu">(</span><span class="m t">a</span><span class="mu"> + </span><span class="m">h</span><span class="mu">) − </span><span class="m b">f</span><span class="mu">(</span><span class="m t">a</span><span class="mu">)] / </span><span class="m">h</span></div>
+    </div>
+    <figure class="hero-stage" style="margin:0"><canvas id="c0" aria-label="A tangent line sliding along a curve, its slope changing as it goes"></canvas><figcaption class="hero-cap">The <span class="y">yellow tangent</span> touches the curve at one point. Its slope there is the derivative, and it changes as the point moves.</figcaption></figure>
+  </section>
+
+  <nav class="chapters" aria-label="Chapters"><ol>
+    <li><a href="#zoom"><b>1</b>Zoom until it’s straight</a></li>
+    <li><a href="#func"><b>2</b>The derivative is a function</a></li>
+    <li><a href="#rules"><b>3</b>Rules from pictures</a></li>
+    <li><a href="#motion"><b>4</b>Motion and orbits</a></li>
+    <li><a href="#approx"><b>5</b>Linear approximation</a></li>
+    <li><a href="#summary"><b>✦</b>Summary</a></li>
+  </ol></nav>
+
+  <!-- ===================== 1 ===================== -->
+  <section class="chapter" id="zoom">
+    <div class="ch-head"><span class="ch-num">1</span><h2>Zoom until it’s straight</h2></div>
+    <div class="ch-grid">
+      <div class="ch-text">
+        <p>Pick a point on a smooth curve and zoom in. The bend fades away, and the curve becomes almost exactly a straight line, its <strong>tangent</strong>. The slope of that line is the <strong>derivative</strong> <span class="m">f</span> ′(<span class="m t">a</span>).</p>
+        <div class="formula">tangent: &nbsp;<span class="m">y</span> = <span class="m">f</span>(<span class="m t">a</span>) + <span class="y"><span class="m">f</span> ′(<span class="m">a</span>)</span>·(<span class="m">x</span> − <span class="m t">a</span>)<span class="note">“Differentiable” means: zoom in far enough and the curve can’t be told apart from this line.</span></div>
+        <p>Not every curve does this. A <strong>corner</strong>, like |<span class="m">x</span>| at 0, looks the same at every zoom. Its left and right slopes disagree, so there is no derivative there.</p>
+        <div class="seg" role="group" aria-label="Choose a function" id="fn1"></div>
+        <div id="v1"></div>
+      </div>
+      <div class="stage">
+        <canvas id="c1" aria-label="The chosen curve, zoomed in around the point a, with its tangent line"></canvas>
+        <div class="controls">
+          <div class="ctrl"><label for="a1">Point <span class="m t">a</span></label><input id="a1" type="range" min="-1.5" max="1.5" step="0.01" value="1"><output id="a1o"></output></div>
+          <div class="ctrl"><label for="z1">Zoom</label><input id="z1" type="range" min="0" max="1000" value="0"><output id="z1o"></output></div>
+          <div class="row"><button class="btn primary" id="play1">▶ Zoom in</button><button class="btn" id="tan1" aria-pressed="true">Show tangent</button></div>
+          <div class="readout" id="r1"></div>
+        </div>
+      </div>
+    </div>
+    <div class="idea">
+      <div class="takeaway"><h3>The idea</h3><p>A derivative is the slope a curve settles into when you look closely enough. Smooth curves are <em>locally linear</em>. This is why physics can treat any small change as if it were a straight-line change.</p></div>
+      <div class="tries"><h3>Try it</h3>
+        <details><summary>Choose |x| (corner), set a = 0 and zoom in. Does it ever straighten?</summary><p>No. Every zoom shows the same V shape. The left slope is −1 and the right slope is +1. They disagree, so |<i>x</i>| has no derivative at 0.</p></details>
+        <details><summary>For sin x at a = 0, what is the slope?</summary><p>cos 0 = 1. Near 0 the sine curve is the line <i>y</i> = <i>x</i>, which is exactly the small-angle rule sin <i>θ</i> ≈ <i>θ</i>.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 2 ===================== -->
+  <section class="chapter" id="func">
+    <div class="ch-head"><span class="ch-num">2</span><h2>The derivative is a function</h2></div>
+    <div class="ch-grid">
+      <div class="ch-text">
+        <p>Slide the point along the curve and record the tangent’s slope each time. Those slopes trace out a <strong>new graph</strong>: the derivative <span class="m y">f</span> ′(<span class="m">x</span>).</p>
+        <p>Read the two together. Where <span class="m">f</span> <span class="g">rises</span>, <span class="m">f</span> ′ is above zero. Where it <span class="r">falls</span>, <span class="m">f</span> ′ is below zero. At a peak or a valley the tangent is flat, so <span class="m">f</span> ′ = 0.</p>
+        <div class="formula">maximum or minimum &nbsp;⟹&nbsp; <span class="m">f</span> ′(<span class="m">x</span>) = 0<span class="note">The reverse isn’t always true: x³ has a flat tangent at 0 but no peak or valley there.</span></div>
+        <div class="seg" role="group" aria-label="Choose a function" id="fn2"></div>
+        <div id="v2"></div>
+      </div>
+      <div class="stage">
+        <canvas id="c2a" aria-label="The function with a tangent at the chosen point. Drag to move the point"></canvas>
+        <canvas id="c2b" class="short" aria-label="The derivative traced out below"></canvas>
+        <div class="controls">
+          <div class="keyrow"><span><i style="background:var(--green)"></i>f rising</span><span><i style="background:var(--red)"></i>f falling</span><span><i style="background:var(--yellow)"></i>tangent / f ′(x)</span><span>Drag on the top graph</span></div>
+          <div class="ctrl"><label for="a2">Point <span class="m t">x</span></label><input id="a2" type="range" min="0" max="1000" value="350"><output id="a2o"></output></div>
+          <div class="row"><button class="btn primary" id="play2">▶ Sweep</button></div>
+          <div class="readout" id="r2"></div>
+        </div>
+      </div>
+    </div>
+    <div class="idea">
+      <div class="takeaway"><h3>The idea</h3><p>Differentiating turns one function into another. The new one tells you, at every <span class="m">x</span>, how steeply the old one is changing. Its zeros are where the old one can have peaks and valleys. This is how you find the highest point a projectile reaches.</p></div>
+      <div class="tries"><h3>Try it</h3>
+        <details><summary>For x³ − 3x, where is the tangent flat?</summary><p>At <i>x</i> = ±1, where 3<i>x</i>² − 3 = 0. There is a maximum at <i>x</i> = −1 (value 2) and a minimum at <i>x</i> = 1 (value −2).</p></details>
+        <details><summary>Where does sin x rise fastest?</summary><p>Where its derivative cos <i>x</i> is largest, at <i>x</i> = 0, ±2π, …, where the slope is 1.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 3 ===================== -->
+  <section class="chapter" id="rules">
+    <div class="ch-head"><span class="ch-num">3</span><h2>Rules from pictures</h2></div>
+    <div class="ch-grid">
+      <div class="ch-text">
+        <p>Grow a square of side <span class="m">x</span> by a tiny <span class="m">dx</span>. The area gains two thin <span class="y">strips</span> of size <span class="m">x</span>·<span class="m">dx</span>, plus a tiny <span class="r">corner</span> <span class="m">dx</span>².</p>
+        <div class="formula" id="f3">d(<span class="m">x</span>²) = <span class="y">2<span class="m">x</span>·<span class="m">dx</span></span> + <span class="r"><span class="m">dx</span>²</span> &nbsp;⟹&nbsp; d(<span class="m">x</span>²)/<span class="m">dx</span> = 2<span class="m">x</span> + <span class="m">dx</span> → 2<span class="m">x</span><span class="note">As dx shrinks, the corner shrinks much faster than the strips, so in the limit only 2x remains.</span></div>
+        <div class="seg" role="group" aria-label="Choose a rule" id="fn3"></div>
+        <p id="t3"></p>
+        <div class="bar" id="bar3" aria-label="Share of the change from each piece"></div>
+        <div class="keyrow" id="key3"></div>
+      </div>
+      <div class="stage">
+        <canvas id="c3" aria-label="A square or rectangle growing by a thin strip on two sides"></canvas>
+        <div class="controls">
+          <div class="ctrl" id="row3a"><label for="s3a" id="l3a">Side <span class="m">x</span></label><input id="s3a" type="range" min="0.5" max="2" step="0.01" value="1.4"><output id="s3ao"></output></div>
+          <div class="ctrl" id="row3b" hidden><label for="s3b">Side <span class="m">g</span></label><input id="s3b" type="range" min="0.5" max="2" step="0.01" value="1.1"><output id="s3bo"></output></div>
+          <div class="ctrl"><label for="d3">Growth <span class="m">dx</span></label><input id="d3" type="range" min="0" max="1000" value="0"><output id="d3o"></output></div>
+          <div class="row"><button class="btn primary" id="play3">▶ Shrink dx</button><button class="btn" id="zoom3" aria-pressed="false">🔍 Zoom into the corner</button></div>
+          <div class="readout" id="r3"></div>
+        </div>
+      </div>
+    </div>
+    <div class="idea">
+      <div class="takeaway"><h3>The idea</h3><p>Every derivative rule is a statement about which pieces of a small change survive as <span class="m">dx</span> → 0. Pieces with one factor of <span class="m">dx</span> survive. Pieces with <span class="m">dx</span>² or smaller vanish. The product rule (<span class="m">fg</span>)′ = <span class="m">f</span> ′<span class="m">g</span> + <span class="m">fg</span> ′ is just the two strips of a growing rectangle.</p></div>
+      <div class="tries"><h3>Try it</h3>
+        <details><summary>Set x = 1 and shrink dx to 0.01. What share of the change is the corner?</summary><p>About 0.5%: dx² / (2x·dx + dx²) = 0.0001 / 0.0201. By dx = 0.001 it is 0.05%.</p></details>
+        <details><summary>In the product picture, what is d(fg) made of?</summary><p>g·df + f·dg + df·dg. Dividing by dx and letting dx → 0 leaves f ′g + fg ′.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 4 ===================== -->
+  <section class="chapter" id="motion">
+    <div class="ch-head"><span class="ch-num">4</span><h2>Motion and orbits</h2></div>
+    <div class="ch-grid">
+      <div class="ch-text">
+        <p>Velocity is the derivative of position, and acceleration is the derivative of velocity. On the graphs, each is the <strong>slope</strong> of the one above it.</p>
+        <div class="formula"><span class="m">v</span> = <span class="m">dx</span>/<span class="m">dt</span>, &nbsp;&nbsp; <span class="m">a</span> = <span class="m">dv</span>/<span class="m">dt</span><span class="note">The yellow tangent on each graph has the slope that the graph below it is plotting.</span></div>
+        <p>For a planet seen edge-on, its distance along our line of sight goes up and down like a sine wave. The derivative is the <strong>radial velocity</strong> that astronomers measure from Doppler shifts. This is how most exoplanets were first found.</p>
+        <div class="seg" role="group" aria-label="Choose a motion" id="fn4"></div>
+        <div id="v4"></div>
+      </div>
+      <div class="stage">
+        <div class="motion-grid"><canvas id="c4m" aria-label="The moving object"></canvas><div class="minis"><canvas id="c4x" class="mini" aria-label="Position against time"></canvas><canvas id="c4v" class="mini" aria-label="Velocity against time"></canvas><canvas id="c4a" class="mini" aria-label="Acceleration against time"></canvas></div></div>
+        <div class="controls">
+          <div class="ctrl"><label for="t4">Time <span class="m">t</span></label><input id="t4" type="range" min="0" max="1000" value="0"><output id="t4o"></output></div>
+          <div class="row"><button class="btn primary" id="play4">❚❚ Pause</button></div>
+          <div class="readout" id="r4"></div>
+        </div>
+      </div>
+    </div>
+    <div class="idea">
+      <div class="takeaway"><h3>The idea</h3><p>Derivatives are how physics describes change. A thrown ball has constant acceleration, so its velocity is a straight line and its height a parabola. A planet’s line-of-sight motion is a sine wave, and its derivative, the radial velocity, is a cosine wave shifted by a quarter period.</p></div>
+      <div class="tries"><h3>Try it</h3>
+        <details><summary>When is the ball’s velocity zero, and how high is it then?</summary><p>At <i>t</i> = 20/9.8 ≈ 2.04 s, at the top, <i>h</i> ≈ 20.4 m. The acceleration is still −9.8 m/s² there: gravity never switches off.</p></details>
+        <details><summary>For the planet, when is the radial velocity largest?</summary><p>When it crosses <i>z</i> = 0 and is moving straight toward or away from us. For Earth’s orbit that is 2π AU/yr ≈ 29.8 km/s.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 5 ===================== -->
+  <section class="chapter" id="approx">
+    <div class="ch-head"><span class="ch-num">5</span><h2>Linear approximation</h2></div>
+    <div class="ch-grid">
+      <div class="ch-text">
+        <p>Near <span class="m t">a</span>, the tangent line is an excellent stand-in for the curve. That gives a quick estimate for <span class="m">f</span> a short step <span class="m">h</span> away:</p>
+        <div class="formula"><span class="m">f</span>(<span class="m t">a</span> + <span class="m">h</span>) ≈ <span class="m">f</span>(<span class="m t">a</span>) + <span class="y"><span class="m">f</span> ′(<span class="m">a</span>)</span>·<span class="m">h</span><span class="note">The error shrinks like h²: halve the step and the error drops about four times.</span></div>
+        <p>Astronomers use this constantly. sin <span class="m">θ</span> ≈ <span class="m">θ</span> and tan <span class="m">θ</span> ≈ <span class="m">θ</span> for tiny angles give parallax distances <span class="m">d</span> ≈ 1/<span class="m">p</span> and angular sizes <span class="m">θ</span> ≈ <span class="m">D</span>/<span class="m">d</span>.</p>
+        <div class="seg" role="group" aria-label="Choose an approximation" id="fn5"></div>
+        <div id="v5"></div>
+      </div>
+      <div class="stage">
+        <canvas id="c5" aria-label="The curve, its tangent line, and the gap between them a step h from a"></canvas>
+        <div class="controls">
+          <div class="ctrl"><label for="h5">Step <span class="m">h</span></label><input id="h5" type="range" min="0" max="1000" value="0"><output id="h5o"></output></div>
+          <div class="row"><button class="btn primary" id="play5">▶ Shrink h</button><button class="btn" id="zoom5" aria-pressed="false">🔍 Zoom in</button></div>
+          <div class="readout" id="r5"></div>
+        </div>
+      </div>
+    </div>
+    <div class="idea">
+      <div class="takeaway"><h3>The idea</h3><p>The derivative is the best <em>linear</em> prediction of how a function changes. Its error is second order, about ½<span class="m">f</span> ″(<span class="m">a</span>)<span class="m">h</span>², so for small steps it is extraordinarily good.</p></div>
+      <div class="tries"><h3>Try it</h3>
+        <details><summary>Use sin θ ≈ θ at θ = 10° (0.1745 rad). How big is the error?</summary><p>sin(0.1745) = 0.1736, so the error is 0.0009, about 0.5%. At 1° it is only 0.005%.</p></details>
+        <details><summary>Estimate √4.1 with the tangent at 4.</summary><p>2 + 0.1/4 = 2.025. The true value is 2.02485, so the error is only 0.00015.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== Summary ===================== -->
+  <section class="chapter" id="summary">
+    <div class="ch-head"><span class="ch-num">✦</span><h2>Summary</h2></div>
+    <div class="cards">
+      <div class="card"><h3>Definition</h3><p><span class="f">f ′(a) = lim<sub>h→0</sub> [f(a + h) − f(a)] / h</span>The slope of the tangent: the rate of change at an instant.</p></div>
+      <div class="card"><h3>Tangent line</h3><p><span class="f">y = f(a) + f ′(a)(x − a)</span>The straight line a smooth curve becomes when you zoom in.</p></div>
+      <div class="card"><h3>Power rule</h3><p><span class="f">d/dx xⁿ = n xⁿ⁻¹</span>From the strips of a growing square, cube, …</p></div>
+      <div class="card"><h3>Product and quotient</h3><p><span class="f">(fg)′ = f ′g + fg ′</span><span class="f">(f/g)′ = (f ′g − fg ′) / g²</span></p></div>
+      <div class="card"><h3>Chain rule</h3><p><span class="f">(f(g(x)))′ = f ′(g(x))·g ′(x)</span>Rates multiply: if g changes 3× as fast as x and f 2× as fast as g, f changes 6× as fast as x.</p></div>
+      <div class="card"><h3>Common derivatives</h3><p><span class="f">sin → cos, &nbsp;cos → −sin</span><span class="f">eˣ → eˣ, &nbsp;ln x → 1/x</span></p></div>
+      <div class="card"><h3>Peaks and valleys</h3><p><span class="f">f ′(x) = 0</span>Candidates for maxima and minima. f ″ &lt; 0 means a peak, f ″ &gt; 0 a valley.</p></div>
+      <div class="card"><h3>Motion</h3><p><span class="f">v = dx/dt, &nbsp;a = dv/dt</span>Radial velocity is the derivative of distance along the line of sight.</p></div>
+      <div class="card"><h3>Linear approximation</h3><p><span class="f">f(a + h) ≈ f(a) + f ′(a)h</span>Error ≈ ½f ″(a)h². Gives sin θ ≈ θ for small angles.</p></div>
+    </div>
+  </section>
+
+  <footer><span>DERIVATIVES LAB · Built for astronomy &amp; physics learners</span><span>All graphs are computed live · Works offline</span></footer>
+</div>
+
+<script>
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+const C={bg:'#10131a',grid:'rgba(88,196,221,.16)',gridMinor:'rgba(88,196,221,.06)',axis:'rgba(236,239,244,.55)',tick:'#8a94a4',text:'#ECEFF4',soft:'#B6BFCC',
+  blue:'#58C4DD',yellow:'#FFE45E',gold:'#F0AC5F',green:'#83C167',red:'#FC6255',teal:'#5CD0B3',purple:'#B48EDB',halo:'rgba(16,19,26,.92)'};
+const MATH='italic 17px "STIX Two Text", "Times New Roman", serif';
+const clamp=(n,lo,hi)=>Math.max(lo,Math.min(hi,n));
+const lerp=(a,b,t)=>a+(b-a)*t;
+const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+// Display numbers: a real minus sign, no float noise, ∞ for blow-ups.
+function num(n,d=3){
+  if(!Number.isFinite(n))return Number.isNaN(n)?'undefined':n>0?'∞':'−∞';
+  let r=Number(n.toFixed(d));if(Object.is(r,-0))r=0;
+  return r.toString().replace('-','−');
+}
+const decFor=h=>clamp(Math.ceil(-Math.log10(Math.abs(h)||1))+1,2,7);
+const rgba=(hex,a)=>{const n=parseInt(hex.slice(1),16);return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`;};
+
+// ---------- Animation engine ----------
+const tweens=new Set(),runners=new Set();
+function tween(obj,key,to,ms=700,easing=ease){
+  for(const t of tweens)if(t.obj===obj&&t.key===key)tweens.delete(t);
+  if(ms<=0||reduce){obj[key]=to;return;}
+  tweens.add({obj,key,from:obj[key],to,start:performance.now(),ms,easing});
+}
+function run(ms,fn,done){const r={start:performance.now(),ms,fn,done};runners.add(r);return r;}
+const stop=r=>{if(r)runners.delete(r);};
+
+// ---------- A plot: world ↔ screen, grid, curves, bands, labels ----------
+class Plot{
+  constructor(canvas,view,opt={}){
+    this.c=canvas;this.ctx=canvas.getContext('2d');this.view={...view};this.home={...view};
+    this.pad=Object.assign({l:10,r:14,t:14,b:28},opt.pad||{});this.labels=opt.labels!==false;
+    this.resize();if('ResizeObserver' in window)new ResizeObserver(()=>{this.resize();this.dirty=true;}).observe(canvas);
+  }
+  resize(){const r=this.c.getBoundingClientRect(),dpr=Math.min(window.devicePixelRatio||1,2);this.W=r.width||600;this.H=r.height||360;this.c.width=Math.round(this.W*dpr);this.c.height=Math.round(this.H*dpr);this.ctx.setTransform(dpr,0,0,dpr,0,0);}
+  setView(v,ms=750){for(const k of ['xmin','xmax','ymin','ymax'])tween(this.view,k,v[k],ms);}
+  // Smoothly follow a moving target view; returns true while still moving.
+  follow(v,k=.16){let moving=false;for(const key of ['xmin','xmax','ymin','ymax']){const d=v[key]-this.view[key],span=this.view.xmax-this.view.xmin+this.view.ymax-this.view.ymin;if(Math.abs(d)>span*1e-4){this.view[key]+=d*(reduce?1:k);moving=true;}else this.view[key]=v[key];}return moving;}
+  get L(){return this.pad.l}get R(){return this.W-this.pad.r}get T(){return this.pad.t}get B(){return this.H-this.pad.b}
+  iX(px){const v=this.view;return v.xmin+(px-this.L)/(this.R-this.L)*(v.xmax-v.xmin);}
+  iY(py){const v=this.view;return v.ymin+(this.B-py)/(this.B-this.T)*(v.ymax-v.ymin);}
+  X(x){const v=this.view;return this.L+(x-v.xmin)/(v.xmax-v.xmin)*(this.R-this.L);}
+  Y(y){const v=this.view;return this.B-(y-v.ymin)/(v.ymax-v.ymin)*(this.B-this.T);}
+  begin(){const c=this.ctx;c.setLineDash([]);c.globalAlpha=1;c.fillStyle=C.bg;c.fillRect(0,0,this.W,this.H);}
+  clip(){const c=this.ctx;c.save();c.beginPath();c.rect(this.L,this.T,this.R-this.L,this.B-this.T);c.clip();}
+  unclip(){this.ctx.restore();}
+  static step(span,n){const raw=span/n,p=Math.pow(10,Math.floor(Math.log10(raw))),f=raw/p;return (f<1.5?1:f<3.5?2:f<7.5?5:10)*p;}
+  grid(o={}){
+    const c=this.ctx,v=this.view,sx=o.xStep||Plot.step(v.xmax-v.xmin,o.xTicks||(this.W<480?5:8)),sy=o.yStep||Plot.step(v.ymax-v.ymin,o.yTicks||(this.H<300?4:6));
+    const line=(x1,y1,x2,y2)=>{c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke();};
+    c.save();c.lineWidth=1;
+    c.strokeStyle=C.gridMinor;
+    for(let x=Math.ceil(v.xmin/(sx/2))*(sx/2);x<=v.xmax;x+=sx/2)line(this.X(x),this.T,this.X(x),this.B);
+    for(let y=Math.ceil(v.ymin/(sy/2))*(sy/2);y<=v.ymax;y+=sy/2)line(this.L,this.Y(y),this.R,this.Y(y));
+    c.strokeStyle=C.grid;
+    for(let x=Math.ceil(v.xmin/sx)*sx;x<=v.xmax;x+=sx)line(this.X(x),this.T,this.X(x),this.B);
+    for(let y=Math.ceil(v.ymin/sy)*sy;y<=v.ymax;y+=sy)line(this.L,this.Y(y),this.R,this.Y(y));
+    const ax=v.xmin<=0&&v.xmax>=0?this.X(0):this.L,ay=v.ymin<=0&&v.ymax>=0?this.Y(0):this.B;
+    c.strokeStyle=C.axis;c.lineWidth=1.5;line(ax,this.T,ax,this.B);line(this.L,ay,this.R,ay);
+    this.ax=ax;this.ay=ay;
+    if(this.labels){
+      const dx=Math.max(0,Math.ceil(-Math.log10(sx)+1e-9)),dy=Math.max(0,Math.ceil(-Math.log10(sy)+1e-9));
+      c.font='11px "JetBrains Mono", ui-monospace, monospace';c.fillStyle=C.tick;c.textAlign='center';c.textBaseline='top';
+      const lyX=clamp(ay+6,this.T,this.H-14);
+      for(let x=Math.ceil(v.xmin/sx)*sx;x<=v.xmax+1e-12;x+=sx){const px=this.X(x);if(Math.abs(x)<sx*1e-6&&ax!==this.L)continue;if(px<this.L+10||px>this.R-10)continue;c.fillText((o.xFmt?o.xFmt(x):num(x,dx)),px,lyX);}
+      c.textBaseline='middle';c.lineJoin='round';
+      const inside=ax===this.L||ax<this.L+40,lxY=inside?this.L+6:ax-6;c.textAlign=inside?'left':'right';
+      for(let y=Math.ceil(v.ymin/sy)*sy;y<=v.ymax+1e-12;y+=sy){const py=this.Y(y);if(Math.abs(y)<sy*1e-6&&ay!==this.B)continue;if(py<this.T+8||py>this.B-8)continue;const t=num(y,dy);
+        if(inside){c.lineWidth=4;c.strokeStyle=C.halo;c.strokeText(t,lxY,py);}c.fillText(t,lxY,py);}
+    }
+    c.restore();
+  }
+  // Draw y = f(x), breaking the line at discontinuities and blow-ups.
+  // colorAt(x, y) may return a colour per sample (used to paint the ε–δ test).
+  curve(f,o={}){
+    const c=this.ctx,v=this.view,x0=Math.max(o.x0??v.xmin,v.xmin),x1=Math.min(o.x1??v.xmax,v.xmax);if(x1<=x0)return;
+    const N=o.n||Math.ceil((this.X(x1)-this.X(x0))*1.6)+2,yr=v.ymax-v.ymin,lo=v.ymin-yr*3,hi=v.ymax+yr*3,breaks=o.breaks||[],tiny=(x1-x0)*1e-7;
+    c.save();c.lineWidth=o.width||3;c.lineJoin='round';c.lineCap='round';c.globalAlpha=o.alpha??1;
+    if(o.glow!==false){c.shadowColor=rgba(o.color||C.blue,.55);c.shadowBlur=o.blur??9;}
+    let pen=false,px0=null,py0=null,col=null,prevX=null;
+    const flush=()=>{if(pen){c.stroke();}pen=false;};
+    const put=(x,y,colr)=>{
+      if(!Number.isFinite(y)){flush();return;}
+      const yy=clamp(y,lo,hi),px=this.X(x),py=this.Y(yy);
+      if(pen&&(Math.abs(py-py0)>this.H*1.5||colr!==col)){
+        if(colr!==col&&Math.abs(py-py0)<=this.H*1.5){c.lineTo(px,py);c.stroke();c.beginPath();c.moveTo(px,py);col=colr;c.strokeStyle=colr;px0=px;py0=py;return;}
+        flush();
+      }
+      if(!pen){c.beginPath();c.strokeStyle=colr;c.moveTo(px,py);pen=true;col=colr;}else c.lineTo(px,py);
+      px0=px;py0=py;
+    };
+    const colorOf=(x,y)=>o.colorAt?o.colorAt(x,y):(o.color||C.blue);
+    for(let i=0;i<=N;i++){
+      const x=x0+(x1-x0)*i/N;
+      if(prevX!==null)for(const b of breaks){if(prevX<b&&x>=b){const yl=f(b-tiny);put(b-tiny,yl,colorOf(b-tiny,yl));flush();const yr2=f(b+tiny);put(b+tiny,yr2,colorOf(b+tiny,yr2));}}
+      const y=f(x);put(x,y,colorOf(x,y));prevX=x;
+    }
+    flush();c.restore();
+  }
+  bandH(y0,y1,color,a){const c=this.ctx,t=Math.min(this.Y(y0),this.Y(y1)),b=Math.max(this.Y(y0),this.Y(y1));c.save();c.fillStyle=rgba(color,a);c.fillRect(this.L,t,this.R-this.L,b-t);c.restore();}
+  bandV(x0,x1,color,a){const c=this.ctx,l=Math.min(this.X(x0),this.X(x1)),r=Math.max(this.X(x0),this.X(x1));c.save();c.fillStyle=rgba(color,a);c.fillRect(l,this.T,r-l,this.B-this.T);c.restore();}
+  line(x1,y1,x2,y2,color,w=1.5,dash=null,a=1){const c=this.ctx;c.save();c.globalAlpha=a;c.strokeStyle=color;c.lineWidth=w;if(dash)c.setLineDash(dash);c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke();c.restore();}
+  hline(y,color,w,dash,a){this.line(this.L,this.Y(y),this.R,this.Y(y),color,w,dash,a);}
+  vline(x,color,w,dash,a){this.line(this.X(x),this.T,this.X(x),this.B,color,w,dash,a);}
+  dot(x,y,r,color,glow=true){const c=this.ctx;c.save();if(glow){c.shadowColor=color;c.shadowBlur=12;}c.fillStyle=color;c.beginPath();c.arc(this.X(x),this.Y(y),r,0,Math.PI*2);c.fill();c.restore();}
+  hole(x,y,color){const c=this.ctx;c.save();c.fillStyle=C.bg;c.strokeStyle=color;c.lineWidth=2.2;c.beginPath();c.arc(this.X(x),this.Y(y),5.5,0,Math.PI*2);c.fill();c.stroke();c.restore();}
+  text(s,px,py,o={}){const c=this.ctx;c.save();c.font=o.font||'600 12px Inter, system-ui, sans-serif';c.textAlign=o.align||'center';c.textBaseline=o.base||'middle';c.lineJoin='round';
+    if(o.halo!==false){c.lineWidth=5;c.strokeStyle=C.halo;c.strokeText(s,px,py);}c.fillStyle=o.color||C.text;c.fillText(s,px,py);c.restore();}
+  // A double-headed arrow between two screen points, for marking ε and δ.
+  span(x1,y1,x2,y2,color){
+    const c=this.ctx,dx=x2-x1,dy=y2-y1,l=Math.hypot(dx,dy);if(l<6)return;const ux=dx/l,uy=dy/l,h=Math.min(6,l/3);
+    c.save();c.strokeStyle=color;c.fillStyle=color;c.lineWidth=1.6;c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke();
+    for(const [px,py,s] of [[x1,y1,1],[x2,y2,-1]]){c.beginPath();c.moveTo(px,py);c.lineTo(px+s*ux*h-uy*h*.6,py+s*uy*h+ux*h*.6);c.lineTo(px+s*ux*h+uy*h*.6,py+s*uy*h-ux*h*.6);c.closePath();c.fill();}
+    c.restore();
+  }
+}
+
+// ---------- Scenes and the frame loop ----------
+const scenes=[];
+function scene(canvasId,draw){const s={el:$(canvasId),draw,dirty:true,visible:true};scenes.push(s);return s;}
+function frame(now){
+  const active=tweens.size>0||runners.size>0;
+  for(const t of tweens){const k=clamp((now-t.start)/t.ms,0,1);t.obj[t.key]=t.from+(t.to-t.from)*t.easing(k);if(k>=1)tweens.delete(t);}
+  for(const r of runners){const k=clamp((now-r.start)/r.ms,0,1);r.fn(k);if(k>=1){runners.delete(r);r.done&&r.done();}}
+  for(const s of scenes){if(s.visible&&(active||s.dirty||s.loop||(s.plot&&s.plot.dirty))){s.dirty=false;if(s.plot)s.plot.dirty=false;s.draw(now);}}
+  requestAnimationFrame(frame);
+}
+if('IntersectionObserver' in window){
+  const io=new IntersectionObserver(es=>es.forEach(e=>{const s=scenes.find(s=>s.el===e.target);if(s){s.visible=e.isIntersecting;if(s.visible)s.dirty=true;}}),{rootMargin:'120px'});
+  setTimeout(()=>scenes.forEach(s=>io.observe(s.el)),0);
+}
+// A log-scale slider: position 0..1000 maps to a value from `a` to `b`.
+function logSlider(el,a,b){
+  return{get:()=>a*Math.pow(b/a,Number(el.value)/1000),set:v=>{el.value=1000*Math.log(clamp(v,Math.min(a,b),Math.max(a,b))/a)/Math.log(b/a);}};
+}
+function segment(boxId,items,current,onPick){
+  const box=$(boxId);
+  box.innerHTML=items.map(([k,label])=>`<button type="button" data-k="${k}" aria-pressed="${k===current}">${label}</button>`).join('');
+  box.querySelectorAll('button').forEach(b=>b.onclick=()=>{box.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));onPick(b.dataset.k);});
+}
+// Largest δ with |f(x) − L| < ε for every x with 0 < |x − a| < δ (0 if none works).
+function deltaMax(f,a,L,eps,span){
+  const bad=x=>{const y=f(x);return !Number.isFinite(y)||Math.abs(y-L)>=eps;};
+  const lo=1e-7,N=1800;let ok=0;
+  for(let i=0;i<=N;i++){
+    const d=lo*Math.pow(span/lo,i/N);
+    if(bad(a-d)||bad(a+d)){
+      if(i===0)return 0;
+      let g=ok,b=d;for(let k=0;k<40;k++){const m=(g+b)/2;if(bad(a-m)||bad(a+m))b=m;else g=m;}
+      return g;
+    }
+    ok=d;
+  }
+  return span;
+}
+
+
+// Pixel-length helper: world dx so that a line of slope m is about `px` pixels long on screen (each side).
+function segDx(p,m,px){const sx=(p.view.xmax-p.view.xmin)/(p.R-p.L),sy=(p.view.ymax-p.view.ymin)/(p.B-p.T);return px/Math.sqrt(1/(sx*sx)+(m*m)/(sy*sy));}
+function tangentSeg(p,x,y,m,color,px=90,w=2.6){const d=segDx(p,m,px);p.line(p.X(x-d),p.Y(y-m*d),p.X(x+d),p.Y(y+m*d),color,w);}
+// A single-headed arrow between two screen points.
+function arrowPx(p,x1,y1,x2,y2,color,w=2.4){
+  const c=p.ctx,dx=x2-x1,dy=y2-y1,l=Math.hypot(dx,dy);if(l<3)return;const ux=dx/l,uy=dy/l,h=Math.min(9,l*.5);
+  c.save();c.strokeStyle=color;c.fillStyle=color;c.lineWidth=w;c.lineCap='round';c.shadowColor=color;c.shadowBlur=8;
+  c.beginPath();c.moveTo(x1,y1);c.lineTo(x2-ux*h*.8,y2-uy*h*.8);c.stroke();
+  c.beginPath();c.moveTo(x2,y2);c.lineTo(x2-ux*h-uy*h*.55,y2-uy*h+ux*h*.55);c.lineTo(x2-ux*h+uy*h*.55,y2-uy*h-ux*h*.55);c.closePath();c.fill();c.restore();
+}
+const equalView=(p,cx,cy,hw)=>{const r=(p.B-p.T)/(p.R-p.L);return{xmin:cx-hw,xmax:cx+hw,ymin:cy-hw*r,ymax:cy+hw*r};};
+function dragOn(canvas,onMove){
+  let down=false;
+  canvas.addEventListener('pointerdown',e=>{down=true;canvas.setPointerCapture(e.pointerId);onMove(e);});
+  canvas.addEventListener('pointermove',e=>{if(down)onMove(e);});
+  const up=()=>{down=false;};canvas.addEventListener('pointerup',up);canvas.addEventListener('pointercancel',up);
+  canvas.style.cursor='ew-resize';
+}
+const localX=(p,e)=>{const r=p.c.getBoundingClientRect();return p.iX(e.clientX-r.left);};
+
+// =================== Hero: a tangent sliding along a curve ===================
+{
+  const f=x=>Math.sin(x)+.25*x,d=x=>Math.cos(x)+.25;
+  const p=new Plot($('c0'),{xmin:-.4,xmax:7,ymin:-1.3,ymax:2.9},{labels:false,pad:{l:8,r:8,t:8,b:8}});
+  const s=scene('c0',now=>{
+    const t=reduce?1.1:now/1000*.42,a=.4+6.1*(.5-.5*Math.cos(t)),y=f(a),m=d(a);
+    p.begin();p.grid({xStep:1,yStep:1});p.clip();
+    p.curve(f,{color:C.blue,width:3.2});
+    tangentSeg(p,a,y,m,C.yellow,110,3);
+    p.dot(a,y,6,'#ffffff');p.unclip();
+    p.text('slope = '+num(m,2),clamp(p.X(a),p.L+60,p.R-60),clamp(p.Y(y)-30,p.T+12,p.B-12),{color:C.yellow,font:'600 13px "JetBrains Mono", monospace'});
+  });
+  s.plot=p;s.loop=!reduce;
+}
+
+// =================== 1. Zoom until it's straight ===================
+{
+  const F={
+    sq:{label:'x²',f:x=>x*x,d:x=>2*x,ds:'2a',a:1,r:[-1.5,1.5]},
+    sin:{label:'sin x',f:Math.sin,d:Math.cos,ds:'cos a',a:1,r:[-3,3]},
+    exp:{label:'eˣ',f:Math.exp,d:Math.exp,ds:'eᵃ',a:.5,r:[-1.5,1.5]},
+    abs:{label:'|x|  (corner)',f:Math.abs,d:x=>Math.abs(x)<1e-9?NaN:Math.sign(x),ds:'±1',a:0,r:[-1.5,1.5]}
+  };
+  const st={fn:'sq',a:1,zoom:1,tan:true,runner:null};
+  const p=new Plot($('c1'),{xmin:-1,xmax:3,ymin:-1,ymax:3});
+  const zs=logSlider($('z1'),1,1e-4);zs.set(1);
+  const aEl=$('a1'),G=()=>F[st.fn];
+  function ui(){
+    const g=G(),a=st.a,m=g.d(a),w=2.2*st.zoom,corner=!Number.isFinite(m);
+    $('a1o').textContent=num(a,2);$('z1o').textContent='×'+num(1/st.zoom,st.zoom>.1?1:0);
+    let bend=0;
+    if(!corner){const hh=w*(p.B-p.T)/(p.R-p.L);let mx=0;for(let i=0;i<=80;i++){const x=a-w+2*w*i/80;mx=Math.max(mx,Math.abs(g.f(x)-(g.f(a)+m*(x-a))));}bend=mx/(2*hh)*100;}
+    $('r1').innerHTML=`f(${num(a,2)}) = <b>${num(g.f(a),4)}</b><br>`+(corner?`slope from the left = <b style="color:var(--teal)">−1</b>, from the right = <b style="color:var(--gold)">+1</b>`:`f ′(${num(a,2)}) = ${g.ds} = <b style="color:var(--yellow)">${num(m,4)}</b>`)+`<br>window width = ${num(2*w,decFor(w)+1)}`;
+    $('v1').innerHTML=corner?`<div class="verdict bad">✗ A corner never straightens <span>· no derivative at 0</span></div>`
+      :`<div class="verdict ok">✓ ${bend<.5?'Looks straight':'Still bending'} <span>· the curve strays from its tangent by ${num(bend,bend<1?3:1)}% of the window height</span></div>`;
+    s.dirty=true;
+  }
+  const s=scene('c1',()=>{
+    const g=G(),a=st.a,ya=g.f(a),m=g.d(a),w=2.2*st.zoom;
+    p.view=equalView(p,a,ya,w);
+    p.begin();p.grid();p.clip();
+    if(st.tan){
+      if(Number.isFinite(m))p.line(p.X(a-w),p.Y(ya-m*w),p.X(a+w),p.Y(ya+m*w),C.yellow,2.2,null,.9);
+      else{p.line(p.X(a-w),p.Y(ya+w),p.X(a),p.Y(ya),C.teal,2.2,null,.9);p.line(p.X(a),p.Y(ya),p.X(a+w),p.Y(ya+w),C.gold,2.2,null,.9);}
+    }
+    p.curve(g.f,{color:C.blue,width:3.2});
+    p.dot(a,ya,6,'#ffffff');
+    p.unclip();
+    if(st.tan&&!Number.isFinite(m)){p.text('slope −1',p.X(a-w*.55),p.Y(ya+w*.55)-16,{color:C.teal});p.text('slope +1',p.X(a+w*.55),p.Y(ya+w*.55)-16,{color:C.gold});}
+    else if(st.tan)p.text('tangent · slope '+num(m,3),clamp(p.X(a+w*.5),p.L+80,p.R-80),clamp(p.Y(ya+m*w*.5)-18,p.T+12,p.B-12),{color:C.yellow});
+    p.text('a',p.X(a),p.B-10,{font:MATH,color:C.teal});
+  });
+  s.plot=p;
+  segment('fn1',Object.entries(F).map(([k,g])=>[k,g.label]),st.fn,k=>{
+    stop(st.runner);st.fn=k;const g=F[k];aEl.min=g.r[0];aEl.max=g.r[1];
+    tween(st,'a',g.a,650);tween(st,'zoom',1,650);run(680,()=>{aEl.value=st.a;zs.set(st.zoom);ui();});
+  });
+  aEl.addEventListener('input',()=>{st.a=Number(aEl.value);ui();});
+  $('z1').addEventListener('input',()=>{stop(st.runner);st.zoom=zs.get();ui();});
+  $('play1').onclick=()=>{stop(st.runner);st.runner=run(reduce?1:4600,k=>{st.zoom=Math.pow(1e-4,ease(k));zs.set(st.zoom);ui();});};
+  $('tan1').onclick=()=>{st.tan=!st.tan;$('tan1').setAttribute('aria-pressed',st.tan);s.dirty=true;};
+  aEl.value=st.a;ui();
+}
+
+// =================== 2. The derivative is a function ===================
+{
+  const F={
+    sq:{label:'x²',f:x=>x*x,d:x=>2*x,ds:'2x',v:[-2.2,2.2,-.6,4.6],dv:[-4.8,4.8],crit:[0]},
+    cub:{label:'x³ − 3x',f:x=>x*x*x-3*x,d:x=>3*x*x-3,ds:'3x² − 3',v:[-2.4,2.4,-3.4,3.4],dv:[-4,8.5],crit:[-1,1]},
+    sin:{label:'sin x',f:Math.sin,d:Math.cos,ds:'cos x',v:[-6.6,6.6,-1.7,1.7],dv:[-1.7,1.7],crit:[-3*Math.PI/2,-Math.PI/2,Math.PI/2,3*Math.PI/2]},
+    exp:{label:'eˣ',f:Math.exp,d:Math.exp,ds:'eˣ',v:[-2.6,1.9,-.6,6.4],dv:[-.6,6.4],crit:[]}
+  };
+  const st={fn:'cub',u:.3,runner:null};
+  const g=()=>F[st.fn];
+  const top=new Plot($('c2a'),{xmin:-2.4,xmax:2.4,ymin:-3.4,ymax:3.4});
+  const bot=new Plot($('c2b'),{xmin:-2.4,xmax:2.4,ymin:-4,ymax:8.5});
+  const X=()=>{const G=g();return G.v[0]+(G.v[1]-G.v[0])*st.u;};
+  function ui(){
+    const G=g(),x=X(),m=G.d(x);
+    $('a2o').textContent=num(x,2);$('a2').value=st.u*1000;
+    $('r2').innerHTML=`f(${num(x,2)}) = <b>${num(G.f(x),3)}</b><br>slope of the tangent = f ′(${num(x,2)}) = ${G.ds} = <b style="color:var(--yellow)">${num(m,3)}</b>`;
+    const flat=Math.abs(m)<.05;
+    $('v2').innerHTML=flat?`<div class="verdict ok" style="color:var(--yellow);border-color:rgba(255,228,94,.35);background:rgba(255,228,94,.07)">— Flat tangent <span>· f ′ = 0: a possible peak or valley</span></div>`
+      :m>0?`<div class="verdict ok">↗ Rising <span>· f ′(x) &gt; 0</span></div>`:`<div class="verdict bad">↘ Falling <span>· f ′(x) &lt; 0</span></div>`;
+    s.dirty=true;s2.dirty=true;
+  }
+  const s=scene('c2a',()=>{
+    const G=g(),x=X(),y=G.f(x),m=G.d(x);
+    top.begin();top.grid();top.clip();
+    top.curve(G.f,{colorAt:t=>G.d(t)>=0?C.green:C.red,width:3.2});
+    tangentSeg(top,x,y,m,C.yellow,95);
+    top.vline(x,'#ffffff',1,[4,4],.25);
+    G.crit.forEach(c=>top.hole(c,G.f(c),'#ffffff'));
+    top.dot(x,y,6,'#ffffff');
+    top.unclip();
+    G.crit.forEach(c=>{const isMax=G.d(c+1e-3)<G.d(c-1e-3),py=top.Y(G.f(c))+(isMax?-17:17);if(py>top.T+6&&py<top.B-6&&top.X(c)>top.L&&top.X(c)<top.R)top.text(isMax?'max':'min',top.X(c),py,{color:C.soft,font:'600 11.5px Inter, sans-serif'});});
+    top.text('f(x)',top.L+30,top.T+12,{color:C.blue,font:'italic 600 15px "STIX Two Text", serif'});
+  });
+  s.plot=top;
+  const s2=scene('c2b',()=>{
+    const G=g(),x=X(),m=G.d(x);
+    bot.begin();bot.grid({yTicks:4});bot.clip();
+    bot.hline(0,'#ffffff',1.2,null,.35);
+    bot.curve(G.d,{color:C.yellow,width:2,alpha:.22,glow:false});
+    bot.curve(G.d,{color:C.yellow,width:3,x1:x});
+    bot.vline(x,'#ffffff',1,[4,4],.25);
+    G.crit.forEach(c=>bot.hole(c,0,C.yellow));
+    bot.dot(x,m,6,C.yellow);
+    bot.unclip();
+    bot.text('f ′(x)',bot.L+30,bot.T+12,{color:C.yellow,font:'italic 600 15px "STIX Two Text", serif'});
+  });
+  s2.plot=bot;
+  function setViews(ms){const G=g();top.setView({xmin:G.v[0],xmax:G.v[1],ymin:G.v[2],ymax:G.v[3]},ms);bot.setView({xmin:G.v[0],xmax:G.v[1],ymin:G.dv[0],ymax:G.dv[1]},ms);}
+  segment('fn2',Object.entries(F).map(([k,G])=>[k,G.label]),st.fn,k=>{stop(st.runner);st.fn=k;setViews(800);run(820,ui);});
+  $('a2').addEventListener('input',()=>{stop(st.runner);st.u=Number($('a2').value)/1000;ui();});
+  dragOn($('c2a'),e=>{stop(st.runner);const G=g();st.u=clamp((localX(top,e)-G.v[0])/(G.v[1]-G.v[0]),0,1);ui();});
+  $('play2').onclick=()=>{stop(st.runner);st.runner=run(reduce?1:6500,k=>{st.u=.01+.98*k;ui();});};
+  setViews(0);ui();
+}
+
+// =================== 3. Rules from pictures ===================
+{
+  const st={mode:'sq',x:1.4,g:1.1,dx:.5,zoom:false,runner:null};
+  const p=new Plot($('c3'),{xmin:-.4,xmax:3,ymin:-.4,ymax:3},{labels:false});
+  const ds=logSlider($('d3'),.8,.001);ds.set(st.dx);
+  // a = right strip (yellow), b = top strip (teal), c = corner (red)
+  const pieces=()=>st.mode==='sq'?{W:st.x,H:st.x,dW:st.dx,dH:st.dx,a:st.x*st.dx,b:st.x*st.dx,c:st.dx*st.dx}
+    :{W:st.x,H:st.g,dW:st.dx,dH:st.dx*.6,a:st.g*st.dx,b:st.x*st.dx*.6,c:st.dx*st.dx*.6};
+  function text(){
+    const sq=st.mode==='sq';
+    $('row3b').hidden=sq;$('l3a').innerHTML=sq?'Side <span class="m">x</span>':'Side <span class="m">f</span>';
+    $('f3').innerHTML=sq?'d(<span class="m">x</span>²) = <span class="y">2<span class="m">x</span>·<span class="m">dx</span></span> + <span class="r"><span class="m">dx</span>²</span> &nbsp;⟹&nbsp; d(<span class="m">x</span>²)/<span class="m">dx</span> = 2<span class="m">x</span> + <span class="m">dx</span> → 2<span class="m">x</span><span class="note">As dx shrinks, the corner shrinks much faster than the strips, so in the limit only 2x remains.</span>'
+      :'d(<span class="m">fg</span>) = <span class="y"><span class="m">g</span>·<span class="m">df</span></span> + <span class="t"><span class="m">f</span>·<span class="m">dg</span></span> + <span class="r"><span class="m">df</span>·<span class="m">dg</span></span> &nbsp;⟹&nbsp; (<span class="m">fg</span>)′ = <span class="m">f</span> ′<span class="m">g</span> + <span class="m">f</span><span class="m">g</span> ′<span class="note">Here f grows at rate 1 and g at rate 0.6 as x increases by dx. The tiny corner df·dg vanishes in the limit.</span>';
+    $('t3').innerHTML=sq?'The bar shows how the change in area is shared. Shrink <span class="m">dx</span> and watch the red corner’s share disappear.':'A rectangle with sides <span class="m">f</span> and <span class="m">g</span> grows in both directions at once. Its area <span class="m">fg</span> gains a <span class="y">strip on the right</span>, a <span class="t">strip on top</span> and a tiny <span class="r">corner</span>.';
+    $('t3').style.cssText='margin:0;color:var(--soft);line-height:1.7';
+  }
+  function ui(){
+    const P=pieces(),tot=P.a+P.b+P.c,d=decFor(st.dx),pa=P.a/tot*100,pb=P.b/tot*100,pc=P.c/tot*100,sq=st.mode==='sq';
+    $('s3ao').textContent=num(st.x,2);$('s3bo').textContent=num(st.g,2);$('d3o').textContent=num(st.dx,d);
+    $('bar3').innerHTML=`<span style="width:${pa}%;background:var(--yellow)"></span><span style="width:${pb}%;background:var(--teal)"></span><span style="width:${pc}%;background:var(--red)"></span>`;
+    $('key3').innerHTML=`<span><i class="box" style="background:var(--yellow)"></i>${sq?'x·dx':'g·df'} ${num(pa,1)}%</span><span><i class="box" style="background:var(--teal)"></i>${sq?'x·dx':'f·dg'} ${num(pb,1)}%</span><span><i class="box" style="background:var(--red)"></i>${sq?'dx²':'df·dg'} ${num(pc,pc<1?3:1)}%</span>`;
+    $('r3').innerHTML=sq?`change in area = 2x·dx + dx² = ${num(P.a+P.b,5)} + ${num(P.c,7)} = <b>${num(tot,5)}</b><br>change ÷ dx = 2x + dx = <b>${num(tot/st.dx,4)}</b> → 2x = <b style="color:var(--yellow)">${num(2*st.x,3)}</b>`
+      :`d(fg) = ${num(P.a,5)} + ${num(P.b,5)} + ${num(P.c,7)} = <b>${num(tot,5)}</b><br>÷ dx = <b>${num(tot/st.dx,4)}</b> → f ′g + fg ′ = 1·${num(st.g,2)} + ${num(st.x,2)}·0.6 = <b style="color:var(--yellow)">${num(st.g+.6*st.x,3)}</b>`;
+    s.dirty=true;
+  }
+  const s=scene('c3',()=>{
+    const P=pieces(),sq=st.mode==='sq';
+    const Mx=Math.max(P.W+P.dW,P.H+P.dH),r=(p.B-p.T)/(p.R-p.L),half=Mx*.62+.22;
+    const target=st.zoom?equalView(p,P.W+P.dW/2,P.H+P.dH/2,Math.max(Math.max(P.dW,P.dH)*3,.003)):equalView(p,Mx/2,Mx/2,Math.max(half/r,half));
+    if(p.follow(target))s.dirty=true;
+    p.begin();p.grid({xStep:.5,yStep:.5});p.clip();
+    const R=(x0,y0,x1,y1,col,a)=>{const c=p.ctx,X0=p.X(x0),Y1=p.Y(y1),w=p.X(x1)-X0,h=p.Y(y0)-Y1;c.save();c.fillStyle=rgba(col,a);c.fillRect(X0,Y1,w,h);c.strokeStyle=col;c.lineWidth=1.6;c.strokeRect(X0,Y1,w,h);c.restore();};
+    R(0,0,P.W,P.H,C.blue,.2);R(P.W,0,P.W+P.dW,P.H,C.yellow,.38);R(0,P.H,P.W,P.H+P.dH,C.teal,.38);R(P.W,P.H,P.W+P.dW,P.H+P.dH,C.red,.6);
+    p.unclip();
+    const big='italic 600 20px "STIX Two Text", serif';
+    const cx=p.X(P.W/2),cy=p.Y(P.H/2);if(cx>p.L&&cx<p.R&&cy>p.T&&cy<p.B)p.text(sq?'x²':'f · g',cx,cy,{font:big,color:C.blue});
+    const lab=(t,x,y,col)=>{if(x>p.L+8&&x<p.R-8&&y>p.T+8&&y<p.B-8)p.text(t,x,y,{font:MATH,color:col});};
+    lab(sq?'x':'f',p.X(P.W/2),p.Y(0)+14,C.soft);lab(sq?'x':'g',p.X(0)-12,p.Y(P.H/2),C.soft);
+    if(p.X(P.W+P.dW)-p.X(P.W)>16){lab(sq?'dx':'df',p.X(P.W+P.dW/2),p.Y(0)+14,C.yellow);}
+    if(p.Y(P.H)-p.Y(P.H+P.dH)>14){lab(sq?'dx':'dg',p.X(0)-16,p.Y(P.H+P.dH/2),C.teal);}
+    if(p.X(P.W+P.dW)-p.X(P.W)>34)lab(sq?'dx²':'df·dg',p.X(P.W+P.dW/2),p.Y(P.H+P.dH/2),C.red);
+  });
+  s.plot=p;
+  segment('fn3',[['sq','Power rule: x²'],['prod','Product rule: f·g']],st.mode,k=>{st.mode=k;text();ui();});
+  $('s3a').addEventListener('input',()=>{st.x=Number($('s3a').value);ui();});
+  $('s3b').addEventListener('input',()=>{st.g=Number($('s3b').value);ui();});
+  $('d3').addEventListener('input',()=>{stop(st.runner);st.dx=ds.get();ui();});
+  $('play3').onclick=()=>{stop(st.runner);st.runner=run(reduce?1:4200,k=>{st.dx=.8*Math.pow(.001/.8,ease(k));ds.set(st.dx);ui();});};
+  $('zoom3').onclick=()=>{st.zoom=!st.zoom;$('zoom3').setAttribute('aria-pressed',st.zoom);s.dirty=true;};
+  text();ui();
+}
+
+// =================== 4. Motion and orbits ===================
+{
+  const W=2*Math.PI;
+  const M={
+    ball:{label:'Ball thrown up',T:20/4.9,x:t=>20*t-4.9*t*t,v:t=>20-9.8*t,a:()=>-9.8,names:['height h','velocity v','acceleration a'],u:['m','m/s','m/s²'],tu:'s',xr:[-2,23],vr:[-24,24],ar:[-13,13]},
+    orbit:{label:'Planet, along our line of sight',T:2,x:t=>Math.sin(W*t),v:t=>W*Math.cos(W*t),a:t=>-W*W*Math.sin(W*t),names:['distance z','radial velocity v','acceleration a'],u:['AU','AU/yr','AU/yr²'],tu:'yr',xr:[-1.35,1.35],vr:[-7.8,7.8],ar:[-46,46]}
+  };
+  const st={m:'ball',t:0,playing:!reduce,last:0};
+  const G=()=>M[st.m];
+  const pm=new Plot($('c4m'),{xmin:-1,xmax:1,ymin:-1,ymax:1},{labels:false,pad:{l:8,r:8,t:8,b:8}});
+  const mk=id=>new Plot($(id),{xmin:0,xmax:1,ymin:-1,ymax:1},{pad:{l:10,r:10,t:22,b:20}});
+  const px=mk('c4x'),pv=mk('c4v'),pa=mk('c4a');
+  function setViews(){const g=G();px.view={xmin:0,xmax:g.T,ymin:g.xr[0],ymax:g.xr[1]};pv.view={xmin:0,xmax:g.T,ymin:g.vr[0],ymax:g.vr[1]};pa.view={xmin:0,xmax:g.T,ymin:g.ar[0],ymax:g.ar[1]};[px,pv,pa].forEach(p=>p.dirty=true);}
+  function ui(){
+    const g=G(),t=st.t;
+    $('t4o').textContent=num(t,2)+' '+g.tu;$('t4').value=t/g.T*1000;
+    $('r4').innerHTML=`${g.names[0]} = <b style="color:var(--blue)">${num(g.x(t),2)}</b> ${g.u[0]}<br>${g.names[1]} = slope of ${g.names[0].split(' ')[1]} = <b style="color:var(--yellow)">${num(g.v(t),2)}</b> ${g.u[1]}<br>${g.names[2]} = slope of v = <b style="color:var(--purple)">${num(g.a(t),2)}</b> ${g.u[2]}`;
+    const v=g.v(t);
+    $('v4').innerHTML=st.m==='ball'?(Math.abs(v)<.4?`<div class="verdict ok" style="color:var(--yellow);border-color:rgba(255,228,94,.35);background:rgba(255,228,94,.07)">— At the top <span>· v = 0, but a is still −9.8</span></div>`:v>0?`<div class="verdict ok">↑ Rising <span>· v &gt; 0, slowing down</span></div>`:`<div class="verdict bad">↓ Falling <span>· v &lt; 0, speeding up</span></div>`)
+      :(v>0?`<div class="verdict bad">Receding <span>· v &gt; 0 · light is redshifted</span></div>`:`<div class="verdict ok" style="color:var(--blue);border-color:rgba(88,196,221,.35);background:rgba(88,196,221,.07)">Approaching <span>· v &lt; 0 · light is blueshifted</span></div>`);
+  }
+  const sm=scene('c4m',now=>{
+    const g=G();
+    if(st.playing){const dt=Math.min(.05,(now-(st.last||now))/1000);st.t+=dt*(st.m==='ball'?1:.35);if(st.t>g.T)st.t=0;ui();}
+    st.last=now;
+    const t=st.t;
+    pm.begin();
+    if(st.m==='ball'){
+      pm.view={xmin:-6,xmax:6,ymin:-2,ymax:23.5};
+      pm.grid({xStep:100,yStep:5});
+      const h=g.x(t),v=g.v(t);
+      pm.ctx.save();pm.ctx.globalAlpha=.25;for(let k=1;k<=10;k++){const tt=t-k*.18;if(tt<0)break;pm.dot(0,g.x(tt),4,C.blue,false);}pm.ctx.restore();
+      pm.hline(0,C.soft,2,null,.8);
+      pm.dot(0,h,9,C.blue);
+      const by=pm.Y(h),bx=pm.X(0);
+      arrowPx(pm,bx+18,by,bx+18,by-v*4.2,C.yellow);
+      arrowPx(pm,bx+40,by,bx+40,by+9.8*4.2,C.purple);
+      pm.text('v',bx+18+10,by-v*4.2/2,{font:MATH,color:C.yellow,align:'left'});
+      pm.text('a',bx+40+10,by+9.8*2.1,{font:MATH,color:C.purple,align:'left'});
+      pm.text('height (m)',pm.L+40,pm.T+12,{color:C.tick,font:'600 11px Inter'});
+      for(let k=0;k<=20;k+=5)pm.text(String(k),pm.X(0)-14,pm.Y(k),{color:C.tick,font:'11px "JetBrains Mono", monospace',align:'right'});
+    }else{
+      pm.view=equalView(pm,0,0,1.75);
+      pm.grid({xStep:.5,yStep:.5});
+      const th=W*t,P=[Math.cos(th),Math.sin(th)],v=g.v(t);
+      const c=pm.ctx;c.save();c.strokeStyle=rgba(C.soft,.45);c.lineWidth=1.2;c.beginPath();c.arc(pm.X(0),pm.Y(0),pm.X(1)-pm.X(0),0,Math.PI*2);c.stroke();c.restore();
+      pm.dot(0,0,9,C.gold);
+      const col=v>0?C.red:C.blue;
+      pm.dot(P[0],P[1],7,col);
+      // velocity (tangent) and its line-of-sight part
+      const vx=-Math.sin(th)*W*.09,vy=Math.cos(th)*W*.09;
+      arrowPx(pm,pm.X(P[0]),pm.Y(P[1]),pm.X(P[0]+vx),pm.Y(P[1]+vy),C.yellow,2);
+      pm.line(pm.X(P[0]),pm.Y(P[1]),pm.X(P[0]),pm.Y(P[1]+vy),C.teal,2,[4,3],.95);
+      // observer far below; the z axis is the line of sight
+      arrowPx(pm,pm.X(1.5),pm.Y(-1.25),pm.X(1.5),pm.Y(1.25),C.tick,1.4);
+      pm.text('z (away from us)',pm.X(1.5)-6,pm.Y(1.36),{color:C.tick,font:'600 11px Inter',align:'right'});
+      pm.line(pm.X(1.38),pm.Y(P[1]),pm.X(1.62),pm.Y(P[1]),C.blue,3);
+      pm.text('▼ to observer',pm.X(0),pm.B-12,{color:C.tick,font:'600 11px Inter'});
+      pm.text('star',pm.X(0)+16,pm.Y(0)-14,{color:C.gold,font:'600 11px Inter'});
+    }
+  });
+  sm.plot=pm;sm.loop=true;
+  const mini=(p,id,f,df,col,tcol,name,i)=>{
+    const s=scene(id,()=>{
+      const g=G(),t=st.t;
+      p.begin();p.grid({xTicks:4,yTicks:2});p.clip();
+      p.hline(0,'#ffffff',1,null,.3);
+      p.curve(f(),{color:col,width:2,alpha:.22,glow:false});
+      p.curve(f(),{color:col,width:2.6,x1:t});
+      if(df)tangentSeg(p,t,f()(t),df()(t),tcol,46,2.2);
+      p.vline(t,'#ffffff',1,[4,4],.3);
+      p.dot(t,f()(t),5,col);
+      p.unclip();
+      p.text(G().names[i]+(i?(' = slope of '+(i===1?G().names[0].split(' ')[1]:'v')):''),p.L+6,p.T-10,{align:'left',color:col,font:'600 11.5px Inter, sans-serif',halo:false});
+    });
+    s.plot=p;s.loop=true;
+  };
+  mini(px,'c4x',()=>G().x,()=>G().v,C.blue,C.yellow,'',0);
+  mini(pv,'c4v',()=>G().v,()=>G().a,C.yellow,C.purple,'',1);
+  mini(pa,'c4a',()=>G().a,null,C.purple,null,'',2);
+  segment('fn4',Object.entries(M).map(([k,g])=>[k,g.label]),st.m,k=>{st.m=k;st.t=0;setViews();ui();});
+  $('t4').addEventListener('input',()=>{st.t=Number($('t4').value)/1000*G().T;ui();});
+  const playBtn=()=>{$('play4').textContent=st.playing?'❚❚ Pause':'▶ Play';};
+  $('play4').onclick=()=>{st.playing=!st.playing;st.last=0;playBtn();};
+  $('t4').addEventListener('pointerdown',()=>{st.playing=false;playBtn();});
+  setViews();ui();playBtn();
+}
+
+// =================== 5. Linear approximation ===================
+{
+  const F={
+    sin:{label:'sin θ ≈ θ',f:Math.sin,d:Math.cos,a:0,hmax:1.3,v:[-.25,1.65,-.25,1.45],k:2,c:1/6,ck:'1/6',ex:'sin θ ≈ θ'},
+    sqrt:{label:'√x near 4',f:Math.sqrt,d:x=>.5/Math.sqrt(x),a:4,hmax:4,v:[-.4,9,-.3,3.6],k:1,c:1/64,ck:'|f ″(4)|/2 = 1/64',ex:'√(4 + h) ≈ 2 + h/4'},
+    exp:{label:'eˣ near 0',f:Math.exp,d:Math.exp,a:0,hmax:1.5,v:[-1.6,1.9,-.5,5],k:1,c:.5,ck:'f ″(0)/2 = 1/2',ex:'eʰ ≈ 1 + h'},
+    inv:{label:'1/(1 − x) near 0',f:x=>1/(1-x),d:x=>1/((1-x)*(1-x)),a:0,hmax:.8,v:[-.9,.95,-.3,6],k:1,c:1,ck:'f ″(0)/2 = 1',ex:'1/(1 − h) ≈ 1 + h'}
+  };
+  const st={fn:'sin',h:1,zoom:false,runner:null};
+  const p=new Plot($('c5'),{xmin:-.25,xmax:1.65,ymin:-.25,ymax:1.45});
+  let hs=logSlider($('h5'),1.3,.001);hs.set(st.h);
+  const G=()=>F[st.fn];
+  function ui(){
+    const g=G(),a=g.a,h=st.h,tr=g.f(a+h),es=g.f(a)+g.d(a)*h,err=Math.abs(tr-es),d=decFor(h)+2;
+    $('h5o').textContent=num(h,decFor(h));
+    const ratio=g.k===2?err/(h*h*h):err/(h*h);
+    $('r5').innerHTML=`true value f(a + h) = <b>${num(tr,d+3)}</b><br>tangent estimate f(a) + f ′(a)h = <b style="color:var(--yellow)">${num(es,d+3)}</b><br>error = <b style="color:var(--red)">${err<1e-6?err.toExponential(2).replace('e-',' × 10^−'):num(err,7)}</b> · error ÷ h${g.k===2?'³':'²'} = ${num(ratio,4)} → ${g.ck}`;
+    const rel=err/Math.abs(tr)*100;
+    $('v5').innerHTML=`<div class="verdict ${rel<1?'ok':'bad'}">${g.ex} <span>· ${st.fn==='sin'?'θ = '+num(h,4)+' rad = '+num(h*180/Math.PI,2)+'° · ':''}off by ${num(rel,rel<.01?5:rel<1?3:1)}%</span></div>`;
+    s.dirty=true;
+  }
+  const s=scene('c5',()=>{
+    const g=G(),a=g.a,h=st.h,fa=g.f(a),m=g.d(a),tr=g.f(a+h),es=fa+m*h;
+    if(st.zoom){const cx=a+h*.6,cy=(fa+tr)/2,hw=Math.max(h*.95,.0008);if(p.follow(equalView(p,cx,cy,hw)))s.dirty=true;}
+    else if(p.follow({xmin:g.v[0],xmax:g.v[1],ymin:g.v[2],ymax:g.v[3]}))s.dirty=true;
+    const v=p.view;
+    p.begin();p.grid();p.clip();
+    p.line(p.X(v.xmin),p.Y(fa+m*(v.xmin-a)),p.X(v.xmax),p.Y(fa+m*(v.xmax-a)),C.yellow,2,null,.85);
+    p.curve(g.f,{color:C.blue,width:3.2});
+    p.vline(a+h,'#ffffff',1,[4,4],.25);
+    p.line(p.X(a+h),p.Y(tr),p.X(a+h),p.Y(es),C.red,3);
+    p.dot(a,fa,6,'#ffffff');p.dot(a+h,tr,5.5,C.blue);p.dot(a+h,es,5.5,C.yellow);
+    p.unclip();
+    const up=es>tr;
+    p.text('estimate',p.X(a+h)+8,p.Y(es)+(up?-12:12),{align:'left',color:C.yellow});
+    p.text('true',p.X(a+h)+8,p.Y(tr)+(up?12:-12),{align:'left',color:C.blue});
+    const by=Math.min(p.B-12,p.Y(Math.min(fa,tr,es))+26);
+    if(p.X(a+h)-p.X(a)>18){p.span(p.X(a),by,p.X(a+h),by,C.green);p.text('h',(p.X(a)+p.X(a+h))/2,by+12,{font:MATH,color:C.green});}
+  });
+  s.plot=p;
+  segment('fn5',Object.entries(F).map(([k,g])=>[k,g.label]),st.fn,k=>{
+    stop(st.runner);st.fn=k;const g=F[k];hs=logSlider($('h5'),g.hmax,.001);st.h=Math.min(st.h,g.hmax*.8);if(k!=='sin')st.h=g.hmax*.6;hs.set(st.h);
+    p.setView({xmin:g.v[0],xmax:g.v[1],ymin:g.v[2],ymax:g.v[3]},800);run(820,ui);
+  });
+  $('h5').addEventListener('input',()=>{stop(st.runner);st.h=hs.get();ui();});
+  $('play5').onclick=()=>{stop(st.runner);const h0=G().hmax*.9;st.runner=run(reduce?1:4300,k=>{st.h=h0*Math.pow(.002/h0,ease(k));hs.set(st.h);ui();});};
+  $('zoom5').onclick=()=>{st.zoom=!st.zoom;$('zoom5').setAttribute('aria-pressed',st.zoom);s.dirty=true;};
+  ui();
+}
+
+// ---------- Chapter nav highlight ----------
+if('IntersectionObserver' in window){
+  const links=[...document.querySelectorAll('.chapters a')];
+  const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){links.forEach(l=>l.setAttribute('aria-current',String(l.getAttribute('href')==='#'+e.target.id)));}}),{rootMargin:'-45% 0px -50% 0px'});
+  document.querySelectorAll('.chapter').forEach(sec=>io.observe(sec));
+}
+requestAnimationFrame(frame);
+})();
+</script>
+
+</body>
+</html>
