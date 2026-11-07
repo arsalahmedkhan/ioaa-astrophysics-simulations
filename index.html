@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IOAA Astrophysics Simulations</title>
-<link rel="preconnect" href="https://googleapis.com">
-<link rel="preconnect" href="https://gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://googleapis.com/css2?family=Inter:wght@400;600;800&display=swap">
+<title>IOAA Astrophysics Simulations & Labs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap">
 <style>
 :root {
     color-scheme: dark;
@@ -16,6 +16,7 @@
     --soft: #9eb0c8;
     --text: #edf5ff;
     --accent: #54d4df;
+    --yellow: #ffe45e;
 }
 * { box-sizing: border-box; }
 body {
@@ -27,39 +28,77 @@ body {
     display: flex;
     justify-content: center;
 }
-.container { max-width: 800px; width: 100%; }
+.container { max-width: 900px; width: 100%; }
 h1 { font-size: 32px; font-weight: 800; margin-bottom: 5px; }
-.subtitle { color: var(--soft); margin-bottom: 40px; font-size: 16px; }
-.section-title { font-size: 14px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 15px; }
-.grid { display: flex; flex-direction: column; gap: 15px; }
+.subtitle { color: var(--soft); margin-bottom: 35px; font-size: 16px; }
+.section-title { font-size: 13px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent); margin: 30px 0 12px; font-weight: 700; }
+.grid { display: flex; flex-direction: column; gap: 14px; }
 .card {
     background: var(--panel);
     border: 1px solid var(--edge);
-    padding: 20px;
+    padding: 20px 22px;
     border-radius: 12px;
     text-decoration: none;
     color: inherit;
     transition: transform 0.2s, border-color 0.2s;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
 }
 .card:hover {
     transform: translateY(-2px);
     border-color: rgba(84, 212, 223, 0.4);
 }
-.card h3 { margin: 0 0 8px 0; font-size: 18px; color: #fff; }
+.card h3 { margin: 0; font-size: 18px; color: #fff; }
 .card p { margin: 0; font-size: 14px; color: var(--soft); line-height: 1.5; }
+.tag { font-size: 11px; font-weight: 700; color: var(--yellow); text-transform: uppercase; letter-spacing: 0.08em; }
 </style>
 </head>
 <body>
 
 <div class="container">
     <h1>🔭 IOAA Astrophysics Simulations</h1>
-    <p class="subtitle">Interactive web-based visualizers for Olympiad training.</p>
+    <p class="subtitle">Interactive web-based visualizers and mathematical sandboxes designed for Olympiad training.</p>
     
-    <div class="section-title">Module 1: Celestial Mechanics</div>
+    <div class="section-title">Module 1: Vector Geometry & Kinematics</div>
     <div class="grid">
         <a href="dot_cross_product_interactive.html" class="card">
+            <span class="tag">Kinematics & Dynamics</span>
             <h3>📐 Dot & Cross Product Interactive Lab</h3>
-            <p>Visualize vector A and vector B projections dynamically across both 2D layouts and 3D rotating canvas systems.</p>
+            <p>Explore 3D cross products and scalar projections to compute orbital angular momentum ($\vec{L} = \vec{r} \times \vec{p}$) and analyze stellar line-of-sight velocity components.</p>
+        </a>
+    </div>
+
+    <div class="section-title">Module 2: Mathematical Foundations</div>
+    <div class="grid">
+        <a href="limits.html" class="card">
+            <span class="tag">Astrometry & Optics</span>
+            <h3>📈 Limits Lab</h3>
+            <p>Examine point-source behaviors and the rigorous foundation behind the small-angle approximation ($\sin\theta \approx \theta$) used extensively in parallax and angular size calculations.</p>
+        </a>
+        <a href="derivatives.html" class="card">
+            <span class="tag">Stellar Dynamics</span>
+            <h3>📉 Derivatives Lab</h3>
+            <p>Visualize instantaneous rates of change to interpret exoplanet transit light-curve ingress/egress slopes and spectroscopic stellar radial velocity curves.</p>
+        </a>
+        <a href="integrals.html" class="card">
+            <span class="tag">Stellar Structure</span>
+            <h3>📊 Integrals Lab</h3>
+            <p>Calculate total stellar luminosity, enclosed mass profiles through density integration, and radiant flux distributions across extended sources.</p>
+        </a>
+    </div>
+
+    <div class="section-title">Module 3: Series Approximations & Perturbation Theory</div>
+    <div class="grid">
+        <a href="maclaurin_series.html" class="card">
+            <span class="tag">Celestial Mechanics</span>
+            <h3>⚡ Maclaurin Series Lab</h3>
+            <p>Approximate complex gravitational potentials, solve Kepler's equation via series expansions, and evaluate relativistic orbital mechanics corrections.</p>
+        </a>
+        <a href="taylor_series.html" class="card">
+            <span class="tag">Orbital Perturbations</span>
+            <h3>✨ Taylor Series Lab</h3>
+            <p>Model tidal forces, Roche lobe equipotential surfaces, and orbital perturbations using multi-variable Taylor series expansions.</p>
         </a>
     </div>
 </div>
